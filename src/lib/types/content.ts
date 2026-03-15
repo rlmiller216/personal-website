@@ -1,0 +1,98 @@
+// Content types matching Notion database schemas.
+//
+// Used by: services/*.service.ts for mapping, routes/ for page data
+// Depends on: nothing (pure type definitions)
+
+/** A professional project from the Projects database. */
+export interface Project {
+	title: string;
+	description: string;
+	sector: string;
+	status: string;
+	role: string;
+	imageUrl: string;
+	url: string;
+	featured: boolean;
+	order: number;
+}
+
+/** An open source tool from the Open Source database. */
+export interface Tool {
+	title: string;
+	description: string;
+	category: string;
+	githubUrl: string;
+	demoUrl: string;
+	tags: string[];
+	featured: boolean;
+}
+
+/** A curated resource from the Resources database. */
+export interface Resource {
+	title: string;
+	description: string;
+	type: string;
+	category: string;
+	author: string;
+	url: string;
+	whyILoveIt: string;
+	imageUrl: string;
+}
+
+/** Rich text annotation from Notion. */
+export interface RichTextAnnotation {
+	bold: boolean;
+	italic: boolean;
+	strikethrough: boolean;
+	underline: boolean;
+	code: boolean;
+	color: string;
+}
+
+/** A single span of rich text with annotations and optional link. */
+export interface RichTextSpan {
+	text: string;
+	annotations: RichTextAnnotation;
+	href: string | null;
+}
+
+/**
+ * A serializable Notion block for Svelte rendering.
+ *
+ * The server transforms Notion API BlockObjectResponse[] into ContentBlock[]
+ * at build time. Svelte components render these without touching the Notion API.
+ */
+export interface ContentBlock {
+	id: string;
+	type:
+		| 'paragraph'
+		| 'heading_1'
+		| 'heading_2'
+		| 'heading_3'
+		| 'bulleted_list'
+		| 'numbered_list'
+		| 'bulleted_list_item'
+		| 'numbered_list_item'
+		| 'to_do'
+		| 'toggle'
+		| 'quote'
+		| 'callout'
+		| 'divider'
+		| 'image'
+		| 'code'
+		| 'bookmark'
+		| 'embed'
+		| 'video';
+	richText: RichTextSpan[];
+	children: ContentBlock[];
+	/** Image/video/embed URL. */
+	url: string;
+	/** Image caption or bookmark description. */
+	caption: RichTextSpan[];
+	/** Code block language (e.g., "typescript", "python"). */
+	language: string;
+	/** To-do item checked state. */
+	checked: boolean;
+	/** Callout icon (emoji or URL). */
+	icon: string;
+}
