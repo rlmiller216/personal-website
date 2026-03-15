@@ -5,6 +5,8 @@
 ## Quick Start
 
 ```bash
+# Node.js is installed at ~/local/nodejs/ — ensure PATH includes it
+export PATH="$HOME/local/nodejs/node-v22.15.0-darwin-arm64/bin:$PATH"
 npm install
 npm run dev          # localhost:5173
 npm run build        # static HTML → build/
@@ -139,6 +141,11 @@ tests/
 ### Interests (Notion Pages)
 One page per interest: Poetry, Art, Music, Travel, Food. Parent "Interests" page contains child pages.
 
+### Notion API Gotchas
+- Properties named "URL" must use `userDefined:URL` in Notion MCP tools (conflicts with internal `url` field)
+- Notion API key format is `ntn_...` (not `secret_...` as older docs suggest)
+- Integration must have **Read content** capability checked (not checked by default on new internal integrations)
+
 ## Environment Variables
 
 ```bash
@@ -215,8 +222,19 @@ Signed S3 URLs expire. Hourly Netlify build hook rebuilds keep them fresh. If we
 ### Tailwind CSS 4
 Uses CSS-based configuration (`@import "tailwindcss"`) instead of v3's JS config. Follow whatever `npx sv add tailwindcss` generates.
 
+### CLI Quirks
+- `npx sv create` and `npx sv add` require clean git working directory or `--skip-preflight`
+- `npx shadcn-svelte init` prompts for lib alias — pass `--lib-alias '$lib'` to skip
+- Tailwind CSS 4 setup: install `tailwindcss` + `@tailwindcss/vite`, add plugin to `vite.config.ts`, use `@import 'tailwindcss'` in `app.css`
+
 ### adapter-static Dynamic Routes
 `interests/[slug]/+page.server.ts` must export `entries()` returning all valid slugs from Notion. Required for pre-rendering dynamic routes.
+
+## Notion Page IDs (for reference)
+
+- Parent page: `324e5dbc-4add-81eb-a723-de691193f81b`
+- Interests parent: `324e5dbc-4add-8174-838f-d8c9451bb497`
+- Interest slugs: poetry, art, music, travel, food
 
 ## Design Pipeline
 
