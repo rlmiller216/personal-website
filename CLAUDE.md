@@ -6,7 +6,7 @@
 
 ```bash
 # Node.js is installed at ~/local/nodejs/ — ensure PATH includes it
-export PATH="$HOME/local/nodejs/node-v22.15.0-darwin-arm64/bin:$PATH"
+export PATH="$HOME/local/nodejs/node-v22.15.0-darwin-arm64/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 npm install
 npm run dev          # localhost:5173
 npm run build        # static HTML → build/
@@ -141,6 +141,11 @@ tests/
 ### Interests (Notion Pages)
 One page per interest: Poetry, Art, Music, Travel, Food. Parent "Interests" page contains child pages.
 
+### Notion SDK v5
+- Uses `dataSources.query()` with `data_source_id` (NOT the removed `databases.query()`)
+- Type: `QueryDataSourceParameters` (NOT `QueryDatabaseParameters`)
+- Env vars use `$env/dynamic/private` (not static — dynamic doesn't need type declarations in app.d.ts)
+
 ### Notion API Gotchas
 - Properties named "URL" must use `userDefined:URL` in Notion MCP tools (conflicts with internal `url` field)
 - Notion API key format is `ntn_...` (not `secret_...` as older docs suggest)
@@ -150,10 +155,10 @@ One page per interest: Poetry, Art, Music, Travel, Food. Parent "Interests" page
 
 ```bash
 # Notion
-NOTION_API_KEY=secret_...
-NOTION_PROJECTS_DB_ID=...
-NOTION_TOOLS_DB_ID=...
-NOTION_RESOURCES_DB_ID=...
+NOTION_API_KEY=ntn_...
+NOTION_PROJECTS_DS_ID=...
+NOTION_TOOLS_DS_ID=...
+NOTION_RESOURCES_DS_ID=...
 NOTION_INTERESTS_PAGE_ID=...
 NOTION_ABOUT_PAGE_ID=...
 
@@ -163,6 +168,19 @@ SITE_TAGLINE="Scientist committed to the greater good"
 SITE_HERO_HEADLINE="..."
 SITE_HERO_INTRO="..."
 ```
+
+## Documentation
+
+- `docs/product-requirements.md` — MoSCoW feature tracking
+- `docs/SRC_ARCHITECTURE.md` — Source code map, module inventory, dependency graph
+- `docs/SYSTEM_ARCHITECTURE.md` — Notion→SvelteKit→Netlify pipeline, domain model
+- `docs/WORKFLOWS.md` — Content authoring, build pipeline, block rendering, error handling
+
+## Tests
+
+- 36 tests across 2 files: `notion.service.test.ts` (20) + `notion-blocks.test.ts` (16)
+- Mock Notion SDK responses — no live API calls in tests
+- Run: `npx vitest run`
 
 ## Development Rules
 
