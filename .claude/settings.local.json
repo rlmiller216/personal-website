@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(claude-md-management:revise-claude-md)",
+      "Skill(claude-md-management:revise-claude-md:*)",
+      "Bash(ls -la /Users/admin/.claude/projects/*/memory/)",
+      "Bash(mkdir -p ~/memory/sessions)",
+      "Bash(mkdir -p ~/.claude/skills/spec/references)",
+      "Bash(mkdir -p ~/.claude/skills/logic/references)",
+      "Bash(mkdir -p ~/.claude/skills/design)",
+      "Bash(brew list:*)",
+      "Read(//usr/local/bin/**)",
+      "Read(//opt/homebrew/bin/**)"
+    ]
+  }
+}
