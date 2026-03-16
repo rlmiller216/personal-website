@@ -177,6 +177,11 @@ RM_HERO_INTRO="..."
 - `docs/SRC_ARCHITECTURE.md` — Source code map, module inventory, dependency graph
 - `docs/SYSTEM_ARCHITECTURE.md` — Notion→SvelteKit→Netlify pipeline, domain model
 - `docs/WORKFLOWS.md` — Content authoring, build pipeline, block rendering, error handling
+- `docs/MEMORY_ARCHITECTURE.md` — 3-layer memory system (hot/warm/cold pattern)
+
+## Memory System
+
+Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, project decisions, and skill preferences across sessions. Not in git. See `docs/MEMORY_ARCHITECTURE.md` for the full design.
 
 ## Tests
 
