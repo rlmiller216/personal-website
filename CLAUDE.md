@@ -51,8 +51,6 @@ src/
       ProjectCard.svelte    → Project display card
       ToolCard.svelte       → Open source tool card
       ResourceCard.svelte   → Resource card
-      InterestCard.svelte   → Interest topic card
-      Hero.svelte           → Homepage hero section
       NotionBlocks.svelte   → Renders ContentBlock[] as Svelte components
       NotionBlock.svelte    → Individual block type dispatcher
     server/
@@ -162,12 +160,15 @@ NOTION_RESOURCES_DS_ID=...
 NOTION_INTERESTS_PAGE_ID=...
 NOTION_ABOUT_PAGE_ID=...
 
-# Site metadata (never hardcode these in templates)
-SITE_NAME="Rebecca Miller"
-SITE_TAGLINE="Scientist committed to the greater good"
-SITE_HERO_HEADLINE="..."
-SITE_HERO_INTRO="..."
+# Site metadata — prefixed RM_ because Netlify reserves SITE_NAME
+RM_SITE_NAME="RLM"
+RM_SITE_TAGLINE="Scientist committed to the greater good"
+RM_HERO_HEADLINE="..."
+RM_HERO_INTRO="..."
 ```
+
+### Netlify Reserved Names
+`SITE_NAME` is reserved by Netlify. All site metadata env vars use the `RM_` prefix instead.
 
 ## Documentation
 
@@ -178,7 +179,8 @@ SITE_HERO_INTRO="..."
 
 ## Tests
 
-- 36 tests across 2 files: `notion.service.test.ts` (20) + `notion-blocks.test.ts` (16)
+- 44 tests across 2 files: `notion.service.test.ts` (28) + `notion-blocks.test.ts` (16)
+- Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mock Notion SDK responses — no live API calls in tests
 - Run: `npx vitest run`
 
@@ -304,3 +306,15 @@ Interpret creatively and make unexpected choices that feel genuinely designed fo
 5. Netlify serves the static files
 
 **Rebecca never touches code.** All content changes happen in Notion.
+
+## Deployment
+
+- **Live site:** https://rlmiller.netlify.app
+- **GitHub repo:** https://github.com/rlmiller216/personal-website
+- **Hosting:** Netlify (free tier), auto-deploys on push to `main`
+- **Build command:** `npm run build` → publish dir: `build`
+- **Contact form:** Formspree endpoint `xbdzaneq`
+- **Redeploy:** Push to GitHub, or trigger manually in Netlify dashboard
+
+### Property Extractors Accept `undefined`
+All property extractors (`getTitle`, `getRichText`, etc.) accept `PageProperty | undefined`. This prevents crashes when a Notion database doesn't have an expected property name. Tested with 8 dedicated undefined-guard tests.

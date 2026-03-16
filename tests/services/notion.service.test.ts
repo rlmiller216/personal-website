@@ -83,6 +83,10 @@ describe('getTitle', () => {
 		expect(getTitle(mockCheckbox(true))).toBe('');
 	});
 
+	it('returns empty string for undefined property', () => {
+		expect(getTitle(undefined)).toBe('');
+	});
+
 	it('concatenates multi-span titles', () => {
 		const prop = {
 			id: 'title',
@@ -104,6 +108,10 @@ describe('getRichText', () => {
 	it('returns empty for wrong type', () => {
 		expect(getRichText(mockTitle('title'))).toBe('');
 	});
+
+	it('returns empty for undefined property', () => {
+		expect(getRichText(undefined)).toBe('');
+	});
 });
 
 describe('getSelect', () => {
@@ -117,6 +125,10 @@ describe('getSelect', () => {
 
 	it('returns empty for wrong type', () => {
 		expect(getSelect(mockCheckbox(false))).toBe('');
+	});
+
+	it('returns empty for undefined property', () => {
+		expect(getSelect(undefined)).toBe('');
 	});
 });
 
@@ -132,6 +144,10 @@ describe('getMultiSelect', () => {
 	it('returns empty array for wrong type', () => {
 		expect(getMultiSelect(mockTitle('test'))).toEqual([]);
 	});
+
+	it('returns empty array for undefined property', () => {
+		expect(getMultiSelect(undefined)).toEqual([]);
+	});
 });
 
 describe('getUrl', () => {
@@ -141,6 +157,10 @@ describe('getUrl', () => {
 
 	it('returns empty for null URL', () => {
 		expect(getUrl(mockUrl(null))).toBe('');
+	});
+
+	it('returns empty for undefined property', () => {
+		expect(getUrl(undefined)).toBe('');
 	});
 });
 
@@ -156,6 +176,10 @@ describe('getCheckbox', () => {
 	it('returns false for wrong type', () => {
 		expect(getCheckbox(mockTitle('test'))).toBe(false);
 	});
+
+	it('returns false for undefined property', () => {
+		expect(getCheckbox(undefined)).toBe(false);
+	});
 });
 
 describe('getNumber', () => {
@@ -165,6 +189,10 @@ describe('getNumber', () => {
 
 	it('returns 0 for null', () => {
 		expect(getNumber(mockNumber(null))).toBe(0);
+	});
+
+	it('returns 0 for undefined property', () => {
+		expect(getNumber(undefined)).toBe(0);
 	});
 });
 
@@ -179,5 +207,9 @@ describe('getFileUrl', () => {
 
 	it('returns empty for no files', () => {
 		expect(getFileUrl({ id: 'files', type: 'files' as const, files: [] })).toBe('');
+	});
+
+	it('returns empty for undefined property', () => {
+		expect(getFileUrl(undefined)).toBe('');
 	});
 });
