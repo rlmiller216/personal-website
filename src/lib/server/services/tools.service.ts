@@ -17,7 +17,8 @@ import {
 	getUrl,
 	getMultiSelect,
 	getCheckbox,
-	getFileUrl
+	getFileUrl,
+	getNumber
 } from './notion.service';
 
 const MODULE = '[tools]';
@@ -34,7 +35,8 @@ export function mapTool(page: PageObjectResponse): Tool {
 		demoUrl: getUrl(props['Demo URL']),
 		tags: getMultiSelect(props['Tags']),
 		featured: getCheckbox(props['Featured']),
-		imageUrl: getFileUrl(props['Files & media'])
+		imageUrl: getFileUrl(props['Files & media']),
+		order: getNumber(props['Order'])
 	};
 }
 
@@ -46,7 +48,8 @@ async function fetchAllTools(): Promise<Tool[]> {
 		return [];
 	}
 
-	const results = await fetchAndMap(env.NOTION_TOOLS_DS_ID, mapTool);
+	const results = await fetchAndMap(env.NOTION_TOOLS_DS_ID, mapTool,
+		{ property: 'Order', direction: 'ascending' });
 
 	warnSlugCollisions(results, MODULE);
 
@@ -64,7 +67,8 @@ export async function getFeaturedTools(): Promise<Tool[]> {
 		return [];
 	}
 
-	return fetchAndMap(env.NOTION_TOOLS_DS_ID, mapTool, undefined, {
+	return fetchAndMap(env.NOTION_TOOLS_DS_ID, mapTool,
+		{ property: 'Order', direction: 'ascending' }, {
 		property: 'Featured',
 		checkbox: { equals: true }
 	});

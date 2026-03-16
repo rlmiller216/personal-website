@@ -38,6 +38,7 @@ export interface Tool {
 	tags: string[];
 	featured: boolean;
 	imageUrl: string;
+	order: number;
 }
 
 /** A curated resource from the Resources database. */
