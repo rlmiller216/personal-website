@@ -1,10 +1,20 @@
 // Content types matching Notion database schemas.
 //
 // Used by: services/*.service.ts for mapping, routes/ for page data
-// Depends on: nothing (pure type definitions)
+// Depends on: nothing (pure type definitions + slugify helper)
+
+/** Convert a title to a URL-safe kebab-case slug. */
+export function slugify(title: string): string {
+	return title
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/^-|-$/g, '');
+}
 
 /** A professional project from the Projects database. */
 export interface Project {
+	id: string;
+	slug: string;
 	title: string;
 	description: string;
 	sector: string;
@@ -18,6 +28,8 @@ export interface Project {
 
 /** An open source tool from the Open Source database. */
 export interface Tool {
+	id: string;
+	slug: string;
 	title: string;
 	description: string;
 	category: string;
@@ -29,6 +41,8 @@ export interface Tool {
 
 /** A curated resource from the Resources database. */
 export interface Resource {
+	id: string;
+	slug: string;
 	title: string;
 	description: string;
 	type: string;
