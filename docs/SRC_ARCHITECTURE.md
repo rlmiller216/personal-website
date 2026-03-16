@@ -246,7 +246,7 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
 - Lime Yellow — highlights (`.text-highlight` utility, tags, callouts)
 - Two additional palette colors for supporting roles
 
-**Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Raleway (body, weights 400–700). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px) bump Bodoni Moda to font-weight 600 to compensate for hairline strokes that vanish on small/low-DPI screens.
+**Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Raleway (body, weights 400–800). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px) bump all weights: body 400→500, headings→700, bold→800 to compensate for thin strokes on small/high-DPI screens.
 
 **Animations:** `fadeUp`, `fadeIn`, `gradientShift` keyframes. Stagger animation support for up to 12 children via `--stagger-index` custom property.
 

@@ -50,7 +50,7 @@ Notion databases/pages
 
 **NotionBlock dispatcher pattern:** `NotionBlock.svelte` is a thin dispatcher (~33 lines) that routes blocks to three sub-components by type: `NotionTextBlock` (paragraphs, headings, lists, toggles, quotes, callouts), `NotionMediaBlock` (images, video, audio, code, embeds, bookmarks, files, equations), and `NotionLayoutBlock` (dividers, tables, column layouts, synced blocks). Circular import (NotionTextBlock → NotionBlock) enables recursive rendering of nested lists/toggles — Svelte 5 handles this via lazy resolution.
 
-**Smart embed detection:** Embed and video blocks are analyzed via `getEmbedConfig()` (in `embed-config.ts`) to detect providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and set responsive aspect ratios. YouTube/Vimeo video blocks are automatically converted to embed type to prevent broken `<video>` tags. Mol* embeds use a `snapshot-url` parameter to load pre-configured 3D protein visualizations from `.molx` session files in `static/molstar/`.
+**Smart embed detection:** Embed and video blocks are analyzed via `getEmbedConfig()` (in `embed-config.ts`) to detect providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and set responsive aspect ratios and min-heights. Embed min-height uses `min(configured, 70vh)` to prevent overflow on mobile viewports. YouTube/Vimeo video blocks are automatically converted to embed type to prevent broken `<video>` tags. Mol* embeds use a `snapshot-url` parameter to load pre-configured 3D protein visualizations from `.molx` session files in `static/molstar/`. Requires CORS headers on Netlify (`static/_headers` sets `Access-Control-Allow-Origin: *` for `/molstar/*`).
 
 **Build-time syntax highlighting:** Code blocks are highlighted via Shiki at build time with dual-theme output (github-light/github-dark) using CSS variables. The Shiki highlighter uses a promise-cached singleton pattern (same as `createCachedFetcher`). Notion-to-Shiki language mapping handles display name differences. Unknown languages fall back to plaintext.
 
@@ -70,8 +70,8 @@ Notion databases/pages
 | `#1D2440` | Space Indigo | Dark background — hero, footer, dark mode |
 
 ### Typography
-- **Headings:** Bodoni Moda (Didone serif, variable optical size). Bumped to font-weight 600 on mobile (< 768px) — hairline strokes vanish on small screens.
-- **Body:** Raleway (geometric sans-serif)
+- **Headings:** Bodoni Moda (Didone serif, variable optical size). Bumped to font-weight 700 on mobile (< 768px) — hairline strokes vanish on small/high-DPI screens.
+- **Body:** Raleway (geometric sans-serif). Bumped to font-weight 500 on mobile; bold text bumped to 800 (extrabold). Weights 400–800 loaded from Google Fonts.
 
 ### Font Utilities
 - `font-display` — applies Bodoni Moda. Use on non-heading elements that need the display font (e.g., footer branding `<p>`).
@@ -162,6 +162,7 @@ static/
   robots.txt
   404.html                  → Static 404 fallback (adapter-static)
   molstar/                  → Mol* 3D viewer session files (.molx)
+  _headers                  → Netlify custom headers (CORS for /molstar/*)
 tests/
   services/
     notion.service.test.ts
