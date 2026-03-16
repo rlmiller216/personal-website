@@ -4,7 +4,14 @@
 	 * R stays fixed at the top. L and M animate toward it on scroll.
 	 * Scales down proportionally on narrower viewports.
 	 * Hidden on mobile (<md breakpoint).
+	 * Hamburger button at bottom toggles slide-out nav overlay (managed by parent).
 	 */
+	let {
+		menuOpen = $bindable(false)
+	}: {
+		menuOpen?: boolean;
+	} = $props();
+
 	let scrollY = $state(0);
 	let viewportWidth = $state(1280);
 	let viewportHeight = $state(800);
@@ -75,7 +82,6 @@
 <aside
 	class="hidden md:flex fixed top-0 left-0 h-screen z-50 bg-white"
 	style="width: {sidebarWidth}px;"
-	aria-hidden="true"
 >
 	{#each ['R', 'L', 'M'] as letter, i}
 		<span
@@ -85,8 +91,26 @@
 				font-size: {fontSize}px;
 				top: {positions[i]}px;
 				will-change: top;"
+			aria-hidden="true"
 		>
 			{letter}
 		</span>
 	{/each}
+
+	<!-- Hamburger toggle — opens slide-out nav overlay managed by parent -->
+	<button
+		class="absolute bottom-6 left-1/2 -translate-x-1/2 p-2 rounded-lg
+			text-hero/70 hover:text-hero transition-colors"
+		onclick={() => menuOpen = !menuOpen}
+		aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+		aria-expanded={menuOpen}
+	>
+		<svg class="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			{#if menuOpen}
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+			{:else}
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+			{/if}
+		</svg>
+	</button>
 </aside>

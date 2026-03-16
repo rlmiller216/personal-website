@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { page } from '$app/state';
+	import { fly, fade } from 'svelte/transition';
 	import { Github, Linkedin, Mail } from '@lucide/svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import LetterSidebar from '$lib/components/LetterSidebar.svelte';
@@ -18,7 +19,13 @@
 	];
 
 	let mobileMenuOpen = $state(false);
+	let sidebarMenuOpen = $state(false);
 	let scrolled = $state(false);
+
+	// Mutual exclusion — prevent both menus open during resize
+	$effect(() => {
+		if (sidebarMenuOpen) mobileMenuOpen = false;
+	});
 
 	$effect(() => {
 		const onScroll = () => { scrolled = window.scrollY > 50; };
@@ -47,7 +54,47 @@
 	<meta name="twitter:card" content="summary" />
 </svelte:head>
 
-<LetterSidebar />
+<svelte:window onkeydown={(e) => { if (e.key === 'Escape' && sidebarMenuOpen) sidebarMenuOpen = false; }} />
+
+<LetterSidebar bind:menuOpen={sidebarMenuOpen} />
+
+<!-- Sidebar slide-out menu — wrapped for responsive gating (md+ only) -->
+<div class="hidden md:block">
+	{#if sidebarMenuOpen}
+		<!-- Backdrop -->
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<div
+			class="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
+			role="presentation"
+			transition:fade={{ duration: 200 }}
+			onclick={() => sidebarMenuOpen = false}
+		></div>
+
+		<!-- Slide-out panel -->
+		<nav
+			class="fixed top-0 left-14 lg:left-20 z-40 h-screen w-56
+				flex flex-col justify-center gap-2 px-8 py-16 overflow-y-auto
+				bg-white border-r border-border shadow-xl"
+			transition:fly={{ x: -300, duration: 300 }}
+		>
+			{#each navLinks as link}
+				<a
+					href={link.href}
+					class="relative py-3 px-4 text-lg font-semibold transition-colors rounded-lg
+						hover:bg-accent
+						{isActive(link.href) ? 'text-primary' : 'text-foreground'}"
+					style="font-family: 'Raleway', sans-serif;"
+					onclick={() => sidebarMenuOpen = false}
+				>
+					{#if isActive(link.href)}
+						<span class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-secondary"></span>
+					{/if}
+					{link.label}
+				</a>
+			{/each}
+		</nav>
+	{/if}
+</div>
 
 <div class="min-h-screen flex flex-col md:ml-14 lg:ml-20">
 	<!-- Nav — transparent on hero, solid on scroll -->

@@ -68,6 +68,7 @@ Notion databases/pages
 - **MCA-style sticky section headers** on homepage: each section's heading sticks below the nav while scrolling through its content, replaced by the next section's header. IntersectionObserver sentinel detects stuck state, adds `shadow-sm`. No padding compression — shadow-only transition.
 - **Feature card** for first project on homepage: full-width image with Space Indigo gradient overlay, hover scale effect. Falls back to standard grid if project has no image.
 - **Varied card layouts per section**: Projects use feature card + grid, Open Source uses list items with Ultra Violet left border, Resources use existing card grid.
+- **Sidebar hamburger menu**: opens slide-out nav overlay with fly/fade Svelte transitions. Panel is `bg-white` (matches sidebar). Responsive wrapper `hidden md:block` gates overlay to md+ viewports. Escape key dismisses. Mutual exclusion with mobile menu via `$effect`.
 - Footer: Space Indigo background with Ultra Violet accent line, Raleway uppercase RLM branding
 
 ### Accessibility Constraints
@@ -89,7 +90,7 @@ src/
       ResourceCard.svelte   → Resource card
       StickySection.svelte  → Sticky section header wrapper (homepage, IntersectionObserver shadow)
       ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage, accepts class prop)
-      LetterSidebar.svelte  → Scroll-collapsing RLM monogram sidebar (responsive, scroll-driven)
+      LetterSidebar.svelte  → Scroll-collapsing RLM monogram sidebar + hamburger menu toggle ($bindable)
       NotionBlocks.svelte   → Renders ContentBlock[] as Svelte components
       NotionBlock.svelte    → Individual block type dispatcher
     server/

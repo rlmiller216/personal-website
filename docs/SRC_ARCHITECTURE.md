@@ -29,7 +29,7 @@ src/
 │   │   ├── ResourceCard.svelte           # Resource card: Ultra Violet left border, styled quotes (~35 LOC)
 │   │   ├── StickySection.svelte          # Sticky section header: IntersectionObserver shadow, "View all →" (~70 LOC)
 │   │   ├── ThemeToggle.svelte            # Dark mode toggle: Sun/Moon icons, localStorage, class prop (~29 LOC)
-│   │   ├── LetterSidebar.svelte          # Scroll-collapsing RLM monogram sidebar (~92 LOC)
+│   │   ├── LetterSidebar.svelte          # Scroll-collapsing RLM sidebar + hamburger toggle, $bindable menuOpen (~105 LOC)
 │   │   ├── NotionBlocks.svelte           # Iterates ContentBlock[] → renders each via NotionBlock
 │   │   ├── NotionBlock.svelte            # Block type dispatcher — renders 17 block types as HTML
 │   │   └── ui/                           # shadcn-svelte auto-generated components
@@ -45,7 +45,7 @@ src/
 │           └── about.service.ts          # About page fetcher (single page → ContentBlock[])
 │
 └── routes/
-    ├── +layout.svelte                    # Root layout: LetterSidebar, scroll-aware nav, ThemeToggle, Space Indigo footer (~175 LOC)
+    ├── +layout.svelte                    # Root layout: LetterSidebar + slide-out overlay, scroll-aware nav, ThemeToggle, Space Indigo footer (~210 LOC)
     ├── +layout.server.ts                 # Loads site metadata from RM_* env vars
     ├── +layout.ts                        # export const prerender = true (all routes static)
     ├── +page.svelte                      # Home: Space Indigo hero with data-hero attr, stagger animations (~100 LOC)
@@ -174,15 +174,16 @@ return transformBlocks(rawBlocks);
 
 Svelte components for rendering content. Card components receive typed props; Notion renderers handle rich content.
 
-#### `LetterSidebar.svelte` (~92 LOC)
+#### `LetterSidebar.svelte` (~105 LOC)
 
-Scroll-collapsing RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in Raleway uppercase are vertically spread on the homepage hero, then animate to a tight stacked monogram as the user scrolls past the hero. R stays fixed at the top; L and M collapse upward via gap interpolation with easeOutCubic easing.
+Scroll-collapsing RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in Raleway uppercase are vertically spread on the homepage hero, then animate to a tight stacked monogram as the user scrolls past the hero. R stays fixed at the top; L and M collapse upward via gap interpolation with easeOutCubic easing. Hamburger button at bottom toggles a slide-out nav overlay (state managed by parent via `$bindable`).
 
 **Key patterns:**
 - **Responsive two-tier sizing:** md (768px+) uses 56px sidebar / 48px font; lg (1024px+) uses 80px sidebar / 72px font
 - **Cross-component coupling:** Reads `[data-hero]` attribute from `+page.svelte` to determine scroll range. No hero → always collapsed.
 - **`prefers-reduced-motion`:** Forces `heroHeight=0` → letters always collapsed, no animation
 - **Gap interpolation:** Single `gap` value interpolated between `spreadGap` and `collapsedGap`, positions = `[R_TOP, R_TOP+gap, R_TOP+gap*2]` — guarantees equal spacing
+- **`$bindable` menuOpen prop:** Parent binds `sidebarMenuOpen` state. Hamburger button toggles it. X icon shows when open. `aria-expanded` and dynamic `aria-label` for accessibility.
 
 #### `ThemeToggle.svelte` (~29 LOC)
 
