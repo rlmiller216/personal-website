@@ -143,8 +143,10 @@ All configuration is in `.env` (never committed). `.env.example` documents the c
 | `NOTION_RESOURCES_DS_ID` | UUID | Resources data source ID |
 | `NOTION_INTERESTS_PAGE_ID` | UUID | Interests parent page ID |
 | `NOTION_ABOUT_PAGE_ID` | UUID | About page ID |
-| `SITE_NAME` | String | Site title (future, for layout) |
-| `SITE_TAGLINE` | String | Site tagline (future, for hero) |
+| `RM_SITE_NAME` | String | Site title (used in layout nav + footer) |
+| `RM_SITE_TAGLINE` | String | Site tagline (used in hero + meta tags) |
+| `RM_HERO_HEADLINE` | String | Homepage hero headline |
+| `RM_HERO_INTRO` | String | Homepage hero intro text |
 
 **Suffix convention:** `_DS_ID` = Notion v5 data source ID (not `_DB_ID`). `_PAGE_ID` = Notion page ID.
 
