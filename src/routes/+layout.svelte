@@ -19,6 +19,10 @@
 <svelte:head>
 	<title>{data.siteName}</title>
 	<meta name="description" content={data.siteTagline} />
+	<meta property="og:site_name" content={data.siteName} />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content={data.siteTagline} />
+	<meta name="twitter:card" content="summary" />
 </svelte:head>
 
 <div class="min-h-screen flex flex-col">

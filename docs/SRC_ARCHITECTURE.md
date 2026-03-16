@@ -23,9 +23,12 @@ src/
 │   │   └── content.ts                    # Domain interfaces: Project, Tool, Resource, ContentBlock
 │   │
 │   ├── components/
+│   │   ├── ProjectCard.svelte            # Project display card with image, title, sector badge
+│   │   ├── ToolCard.svelte               # Open source tool card with tags and links
+│   │   ├── ResourceCard.svelte           # Compact resource card with image and quote
 │   │   ├── NotionBlocks.svelte           # Iterates ContentBlock[] → renders each via NotionBlock
 │   │   ├── NotionBlock.svelte            # Block type dispatcher — renders 17 block types as HTML
-│   │   └── ui/                           # shadcn-svelte auto-generated components (empty until Chunk 3)
+│   │   └── ui/                           # shadcn-svelte auto-generated components
 │   │
 │   └── server/
 │       └── services/
@@ -38,9 +41,32 @@ src/
 │           └── about.service.ts          # About page fetcher (single page → ContentBlock[])
 │
 └── routes/
-    ├── +layout.svelte                    # Root layout shell (nav + footer — placeholder)
+    ├── +layout.svelte                    # Root layout: nav bar + footer + OG meta tags
+    ├── +layout.server.ts                 # Loads site metadata from RM_* env vars
     ├── +layout.ts                        # export const prerender = true (all routes static)
-    └── +page.svelte                      # Home page (placeholder)
+    ├── +page.svelte                      # Home page: hero + featured projects/tools/resources
+    ├── +page.server.ts                   # Fetches featured items from all Notion databases
+    ├── +error.svelte                     # Branded error page (404/500)
+    ├── about/
+    │   ├── +page.svelte                  # Renders Notion blocks via NotionBlocks component
+    │   └── +page.server.ts               # Fetches about page content
+    ├── projects/
+    │   ├── +page.svelte                  # Project card grid
+    │   └── +page.server.ts               # Fetches all non-archived projects
+    ├── open-source/
+    │   ├── +page.svelte                  # Tool card grid
+    │   └── +page.server.ts               # Fetches all tools
+    ├── resources/
+    │   ├── +page.svelte                  # Resources grouped by type
+    │   └── +page.server.ts               # Fetches + groups resources
+    ├── interests/
+    │   ├── +page.svelte                  # Interest index (links to each topic)
+    │   ├── +page.server.ts               # Lists all interest slugs/titles
+    │   └── [slug]/
+    │       ├── +page.svelte              # Individual interest page with cross-links
+    │       └── +page.server.ts           # entries() for static generation + content fetch
+    └── contact/
+        └── +page.svelte                  # Formspree contact form (name/email/message)
 ```
 
 ---
@@ -87,7 +113,8 @@ The single source of truth for all Notion API interactions.
 **Key patterns:**
 - Lazy client initialization via `getClient()` — only creates the `Client` when first needed
 - Uses Notion SDK v5 API: `dataSources.query()` with `data_source_id` (not the removed `databases.query()`)
-- All property extractors use the SDK's discriminated union type `PageProperty` — no `any`
+- All property extractors accept `PageProperty | undefined` — safely returns defaults for missing properties
+- Uses the SDK's discriminated union type `PageProperty` — no `any`
 - Error handling: try/catch with `[notion]` module prefix and descriptive messages
 - Missing env var guard: returns empty array with console.warn
 
@@ -139,9 +166,9 @@ const rawBlocks = await getPageBlocks(pageId);
 return transformBlocks(rawBlocks);
 ```
 
-### `lib/components/` — Notion Renderers (193 LOC, 2 files)
+### `lib/components/` — UI Components (340 LOC, 5 files)
 
-Client-side Svelte components that render `ContentBlock[]` as styled HTML.
+Svelte components for rendering content. Card components receive typed props; Notion renderers handle rich content.
 
 #### `NotionBlocks.svelte` (16 LOC)
 
@@ -158,13 +185,20 @@ Block type dispatcher. Uses Svelte `{#if}` chain to render 17 block types with T
 - Empty paragraphs render as `<div class="h-4">` spacers
 - Images use `loading="lazy"` and caption support
 
-### `routes/` — SvelteKit Pages (13 LOC, 3 files)
+### `routes/` — SvelteKit Pages (~450 LOC, 18 files)
 
-Currently minimal placeholders. Will expand in Chunks 3-4.
+All 7 pages are fully wired to Notion data. Each route has a `+page.server.ts` (data loading) and `+page.svelte` (rendering).
 
-- `+layout.ts` (4 LOC) — `export const prerender = true` enables static generation for all routes
-- `+layout.svelte` (7 LOC) — Root layout shell with `<slot />`
-- `+page.svelte` (2 LOC) — Home page placeholder
+| Route | Purpose | Data Source |
+|---|---|---|
+| `/` | Homepage with hero + featured items | `getFeaturedProjects/Tools`, `getAllResources` |
+| `/about` | Bio rendered from Notion page | `getAboutContent()` |
+| `/projects` | Project card grid | `getAllProjects()` |
+| `/open-source` | Tool card grid | `getAllTools()` |
+| `/resources` | Resources grouped by type | `getAllResources()` + `groupByType()` |
+| `/interests` | Index of interest topics | `getAllInterests()` (titles only) |
+| `/interests/[slug]` | Individual interest page | `getInterestBySlug()` + `entries()` |
+| `/contact` | Formspree form (client-side) | None — static HTML + JS |
 
 ---
 
@@ -214,22 +248,23 @@ Currently minimal placeholders. Will expand in Chunks 3-4.
 - Database services depend on `notion.service.ts` and `content.ts`
 - Page services depend on `notion.service.ts`, `notion-blocks.ts`, and `content.ts`
 - Components depend only on `content.ts` (receive typed data, never call services)
-- Routes (future) will depend on services and components
+- Routes depend on services (in `+page.server.ts`) and components (in `+page.svelte`)
 
 ---
 
 ## 4. LOC Summary
 
-| Module | LOC | % of Total | Files |
-|---|---|---|---|
-| Notion block transformer | 236 | 16% | 1 |
-| Notion client + fetcher | 223 | 15% | 1 |
-| NotionBlock component | 177 | 12% | 1 |
-| Content types | 98 | 7% | 1 |
-| Content fetcher services | 268 | 18% | 5 |
-| Routes (placeholders) | 13 | 1% | 3 |
-| Utilities + config | 27 | 2% | 3 |
-| **Tests** | **446** | **30%** | **2** |
-| **Total** | **~1,488** | **100%** | **17** |
+| Module | LOC | Files |
+|---|---|---|
+| Notion block transformer | 236 | 1 |
+| Notion client + fetcher | 223 | 1 |
+| NotionBlock component | 177 | 1 |
+| Card components | ~150 | 3 |
+| Content types | 98 | 1 |
+| Content fetcher services | 268 | 5 |
+| Routes (pages + layouts) | ~450 | 18 |
+| Utilities + config | 27 | 3 |
+| **Tests** | **~480** | **2** |
+| **Total** | **~2,100** | **35** |
 
-> Tests are 30% of total LOC — healthy ratio for a project with thorough service-layer testing.
+> Tests are ~23% of total LOC. Routes now make up the largest section — all 7 pages fully wired to Notion.
