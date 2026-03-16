@@ -42,9 +42,9 @@
 	</div>
 </div>
 
-<section class="max-w-xl mx-auto px-6 py-12">
+<section class="max-w-6xl mx-auto px-6 py-12">
 	{#if formState === 'success'}
-		<div class="rounded-lg border-2 border-secondary p-8 text-center animate-fade-in">
+		<div class="max-w-xl rounded-lg border-2 border-secondary p-8 text-center animate-fade-in">
 			<p class="text-xl font-bold mb-1">Thanks! I'll get back to you soon.</p>
 			<p class="text-sm text-muted-foreground">Usually within a day or two.</p>
 		</div>
@@ -53,7 +53,7 @@
 			action="https://formspree.io/f/xbdzaneq"
 			method="POST"
 			onsubmit={handleSubmit}
-			class="space-y-6"
+			class="max-w-xl space-y-6"
 		>
 			<div>
 				<label for="name" class="block text-sm font-medium mb-1.5">Name</label>
