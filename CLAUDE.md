@@ -18,7 +18,7 @@ npx svelte-check     # type checking
 
 | Layer | Choice | Why |
 |-------|--------|-----|
-| Framework | SvelteKit + adapter-static | Static output, full-stack DX, /design prototypes = production code |
+| Framework | SvelteKit + adapter-static | Static output, component-based DX, Svelte 5 runes |
 | Styling | Tailwind CSS 4 + shadcn-svelte | CSS-based config, accessible components out of the box |
 | CMS | Notion API (@notionhq/client) | Rebecca already uses Notion daily. Edit there → site rebuilds |
 | Hosting | Netlify (free tier) | Static hosting, hourly build hooks for fresh Notion content |
@@ -74,6 +74,7 @@ src/
     projects/
     open-source/
     resources/
+    interests/              → Interest index (links to each topic)
     interests/[slug]/       → entries() required for adapter-static
     contact/
     +error.svelte           → Runtime error page
@@ -250,11 +251,8 @@ Uses CSS-based configuration (`@import "tailwindcss"`) instead of v3's JS config
 ### adapter-static Dynamic Routes
 `interests/[slug]/+page.server.ts` must export `entries()` returning all valid slugs from Notion. Required for pre-rendering dynamic routes.
 
-## Notion Page IDs (for reference)
-
-- Parent page: `324e5dbc-4add-81eb-a723-de691193f81b`
-- Interests parent: `324e5dbc-4add-8174-838f-d8c9451bb497`
-- Interest slugs: poetry, art, music, travel, food
+### Property Extractors Accept `undefined`
+All property extractors (`getTitle`, `getRichText`, etc.) accept `PageProperty | undefined`. This prevents crashes when a Notion database doesn't have an expected property name. Tested with 8 dedicated undefined-guard tests.
 
 ## Design Pipeline
 
@@ -265,37 +263,6 @@ For UI feature development, use these skills in order:
 3. `/design` — Generate working Svelte 5 prototype variants, let the user pick winners, iterate
 
 Session artifacts are stored in `~/memory/sessions/`.
-
-## Design Philosophy
-
-1. **"Your website is a party"** — Welcome visitors, guide them, make them feel oriented
-2. **"If everything is bold, nothing is bold"** — Use contrast and visual hierarchy
-3. **"Illuminate the path"** — Direct, active language. Clear calls to action
-4. **"Minimize the non-essential"** — Every element must earn its place
-5. **"Squint test"** — Whatever stands out when you squint should be the most important thing
-6. **"First impression = seconds"** — Hero section is the most critical design decision
-
-**Aesthetic:** "Scientific Warmth" — precision of academic work + warmth of a whole person.
-
-<frontend_aesthetics>
-You tend to converge toward generic, "on distribution" outputs. In frontend design, this creates what users call the "AI slop" aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight. Focus on:
-
-Typography: Choose fonts that are beautiful, unique, and interesting. Avoid generic fonts like Arial and Inter; opt instead for distinctive choices that elevate the frontend's aesthetics.
-
-Color & Theme: Commit to a cohesive aesthetic. Use CSS variables for consistency. Dominant colors with sharp accents outperform timid, evenly-distributed palettes. Draw from IDE themes and cultural aesthetics for inspiration.
-
-Motion: Use animations for effects and micro-interactions. Prioritize CSS-only solutions for HTML. Focus on high-impact moments: one well-orchestrated page load with staggered reveals (animation-delay) creates more delight than scattered micro-interactions.
-
-Backgrounds: Create atmosphere and depth rather than defaulting to solid colors. Layer CSS gradients, use geometric patterns, or add contextual effects that match the overall aesthetic.
-
-Avoid generic AI-generated aesthetics:
-- Overused font families (Inter, Roboto, Arial, system fonts, Space Grotesk)
-- Clichéd color schemes (particularly purple gradients on white backgrounds)
-- Predictable layouts and component patterns
-- Cookie-cutter design that lacks context-specific character
-
-Interpret creatively and make unexpected choices that feel genuinely designed for the context. Vary between light and dark themes, different fonts, different aesthetics.
-</frontend_aesthetics>
 
 ## Content Workflow
 
@@ -315,6 +282,5 @@ Interpret creatively and make unexpected choices that feel genuinely designed fo
 - **Build command:** `npm run build` → publish dir: `build`
 - **Contact form:** Formspree endpoint `xbdzaneq`
 - **Redeploy:** Push to GitHub, or trigger manually in Netlify dashboard
+- **Hardcoded social links:** GitHub (`rlmiller216`) and LinkedIn (`rlmiller216`) are in `+layout.svelte` footer — not env vars
 
-### Property Extractors Accept `undefined`
-All property extractors (`getTitle`, `getRichText`, etc.) accept `PageProperty | undefined`. This prevents crashes when a Notion database doesn't have an expected property name. Tested with 8 dedicated undefined-guard tests.
