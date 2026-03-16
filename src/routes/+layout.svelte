@@ -21,6 +21,10 @@
 	let mobileMenuOpen = $state(false);
 	let sidebarMenuOpen = $state(false);
 	let scrolled = $state(false);
+	// Inline init prevents FOUC — correct value on first client render
+	let isDesktop = $state(
+		typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
+	);
 
 	// Mutual exclusion — prevent both menus open during resize
 	$effect(() => {
@@ -31,13 +35,23 @@
 		const onScroll = () => { scrolled = window.scrollY > 50; };
 		onScroll();
 		window.addEventListener('scroll', onScroll, { passive: true });
-		return () => window.removeEventListener('scroll', onScroll);
+
+		// Keep isDesktop reactive for viewport resize across breakpoints
+		const mql = window.matchMedia('(min-width: 768px)');
+		isDesktop = mql.matches;
+		const onMedia = (e: MediaQueryListEvent) => { isDesktop = e.matches; };
+		mql.addEventListener('change', onMedia);
+
+		return () => {
+			window.removeEventListener('scroll', onScroll);
+			mql.removeEventListener('change', onMedia);
+		};
 	});
 
-	// Only the homepage hero extends behind the nav (-mt-16).
-	// Subpages start below the nav → always need solid background.
+	// Mobile: transparent on homepage hero, solid on scroll/subpages.
+	// Desktop: always solid (nav is md:relative on white bg, isDesktop forces true).
 	const isHome = $derived(page.url.pathname === '/');
-	const showSolidNav = $derived(scrolled || !isHome);
+	const showSolidNav = $derived(scrolled || !isHome || isDesktop);
 
 	function isActive(href: string): boolean {
 		if (href === '/') return page.url.pathname === '/';
@@ -92,15 +106,23 @@
 					{/if}
 				</a>
 			{/each}
+			<!-- ThemeToggle — accessible after nav scrolls away on desktop -->
+			<div class="mt-4 pt-4 border-t border-border flex items-center gap-2 px-4">
+				<ThemeToggle class="text-muted-foreground hover:text-foreground" />
+				<span class="text-sm text-muted-foreground" style="font-family: 'Raleway', sans-serif;">Theme</span>
+			</div>
 		</nav>
 	{/if}
 </div>
 
 <div class="min-h-screen flex flex-col md:ml-14 lg:ml-20">
-	<!-- Nav — transparent on hero, solid on scroll -->
+	<!-- Nav — mobile: fixed + transparent→solid. Desktop: in-flow, scrolls away. -->
 	<header
-		class="fixed top-0 left-0 md:left-14 lg:left-20 right-0 z-50 transition-[background-color,border-color,box-shadow] duration-300
-			{showSolidNav ? 'bg-white border-b border-border shadow-sm' : 'bg-transparent'}"
+		class="fixed top-0 inset-x-0 z-50
+			transition-[background-color,border-color,box-shadow] duration-300
+			{showSolidNav ? 'bg-white border-b border-border shadow-sm' : 'bg-transparent'}
+			md:relative md:inset-auto md:z-auto
+			md:bg-white md:border-b md:border-border md:shadow-sm md:transition-none"
 	>
 		<nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
 			<a
@@ -171,8 +193,8 @@
 		{/if}
 	</header>
 
-	<!-- Spacer for fixed nav -->
-	<div class="h-16"></div>
+	<!-- Spacer for fixed nav — mobile only (desktop nav is in-flow) -->
+	<div class="h-16 md:hidden"></div>
 
 	<!-- Main content -->
 	<main class="flex-1">

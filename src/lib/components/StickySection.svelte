@@ -22,11 +22,14 @@
 
 	$effect(() => {
 		if (!sentinel) return;
+		// Mobile has fixed nav at 64px — offset rootMargin. Desktop: no fixed nav.
+		const isDesktopView = window.matchMedia('(min-width: 768px)').matches;
+		const rootMargin = isDesktopView ? '0px 0px 0px 0px' : '-65px 0px 0px 0px';
 		const observer = new IntersectionObserver(
 			([entry]) => {
 				isStuck = !entry.isIntersecting;
 			},
-			{ threshold: 0, rootMargin: '-65px 0px 0px 0px' }
+			{ threshold: 0, rootMargin }
 		);
 		observer.observe(sentinel);
 		return () => observer.disconnect();
@@ -46,8 +49,7 @@
 	<!-- Sticky header — shadow-only transition when stuck, no padding compression -->
 	<div
 		class="sticky z-30 py-4 transition-shadow duration-300 {bgClass}
-			{isStuck ? 'shadow-sm' : ''}"
-		style="top: 4rem; will-change: box-shadow;"
+			{isStuck ? 'shadow-sm' : ''} top-16 md:top-0 will-change-[box-shadow]"
 	>
 		<div class="max-w-6xl mx-auto px-6 flex items-baseline justify-between">
 			<h2
