@@ -49,7 +49,7 @@ async function fetchAllTools(): Promise<Tool[]> {
 	}
 
 	const results = await fetchAndMap(env.NOTION_TOOLS_DS_ID, mapTool,
-		{ property: 'Order', direction: 'ascending' });
+		[{ property: 'Order', direction: 'ascending' }]);
 
 	warnSlugCollisions(results, MODULE);
 
@@ -68,7 +68,7 @@ export async function getFeaturedTools(): Promise<Tool[]> {
 	}
 
 	return fetchAndMap(env.NOTION_TOOLS_DS_ID, mapTool,
-		{ property: 'Order', direction: 'ascending' }, {
+		[{ property: 'Order', direction: 'ascending' }], {
 		property: 'Featured',
 		checkbox: { equals: true }
 	});
