@@ -1,7 +1,8 @@
 <script lang="ts">
 	/**
-	 * Decorative sidebar showing R, L, M letters that collapse on scroll.
-	 * R stays fixed at the top. L and M animate toward it on scroll.
+	 * Decorative sidebar showing R, L, M letters that float on scroll.
+	 * R stays fixed at the top. L and M drift toward it via exponential
+	 * decay interpolation (RAF loop), creating a cascading wave effect.
 	 * Scales down proportionally on narrower viewports.
 	 * Hidden on mobile (<md breakpoint).
 	 * Hamburger button at bottom toggles slide-out nav overlay (managed by parent).
@@ -16,6 +17,10 @@
 	let viewportWidth = $state(1280);
 	let viewportHeight = $state(800);
 	let heroHeight = $state(0);
+	let reducedMotion = $state(false);
+
+	// Damping rates: R=snappy, L=moderate, M=floaty → cascading wave
+	const RATES = [8, 5, 3];
 
 	// Responsive sizing: scale down at md (768–1023), full at lg (1024+)
 	const isLarge = $derived(viewportWidth >= 1024);
@@ -39,15 +44,23 @@
 	// Current gap interpolates between spread and collapsed
 	const gap = $derived(spreadGap + (collapsedGap - spreadGap) * eased);
 
-	// R stays put; L and M are always equally spaced below R
-	const positions = $derived([
+	// Scroll-derived target positions (R stays put; L and M spaced below)
+	const targetPositions = $derived([
 		R_TOP,
 		R_TOP + gap,
 		R_TOP + gap * 2
 	]);
 
+	// Non-reactive arrays — RAF reads/writes directly (no Svelte tracking)
+	let targets: number[] = [R_TOP, R_TOP, R_TOP];
+	let current: number[] = [R_TOP, R_TOP, R_TOP];
+
+	// Reactive — drives the template
+	let displayPositions = $state([R_TOP, R_TOP, R_TOP]);
+
+	// --- Setup effect: listeners, hero measurement, reduced motion ---
 	$effect(() => {
-		const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 		// Query hero height via data attribute set on +page.svelte
 		const hero = document.querySelector('[data-hero]') as HTMLElement | null;
@@ -78,6 +91,45 @@
 			window.removeEventListener('resize', onResize);
 		};
 	});
+
+	// --- Target sync: push scroll-derived positions into plain array ---
+	// Declared BEFORE RAF effect — Svelte 5 runs effects in declaration order.
+	$effect(() => {
+		targets = targetPositions;
+	});
+
+	// --- RAF loop: exponential decay interpolation ---
+	$effect(() => {
+		// Snap to current targets on init (no entrance flash)
+		for (let i = 0; i < 3; i++) current[i] = targets[i];
+		displayPositions = [...targets];
+
+		if (reducedMotion) return; // Snap effect below handles reduced motion
+
+		let frameId: number;
+		let last = performance.now();
+
+		function tick(now: number) {
+			const dt = Math.min((now - last) / 1000, 0.1); // Cap prevents jump after tab switch
+			last = now;
+			for (let i = 0; i < 3; i++) {
+				current[i] += (targets[i] - current[i]) * (1 - Math.exp(-RATES[i] * dt));
+			}
+			displayPositions = [current[0], current[1], current[2]];
+			frameId = requestAnimationFrame(tick);
+		}
+
+		frameId = requestAnimationFrame(tick);
+		return () => cancelAnimationFrame(frameId);
+	});
+
+	// --- Reduced motion: snap to targets on every scroll ---
+	$effect(() => {
+		if (reducedMotion) {
+			for (let i = 0; i < 3; i++) current[i] = targetPositions[i];
+			displayPositions = [...targetPositions];
+		}
+	});
 </script>
 
 <aside
@@ -89,7 +141,7 @@
 			class="absolute font-bold select-none pointer-events-none
 				left-1/2 -translate-x-1/2 text-hero dark:text-hero-foreground uppercase tracking-wide"
 			style="font-size: {fontSize}px;
-				top: {positions[i]}px;
+				top: {displayPositions[i]}px;
 				will-change: top;"
 			aria-hidden="true"
 		>

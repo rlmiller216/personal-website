@@ -29,7 +29,7 @@ src/
 │   │   ├── ResourceCard.svelte           # Resource card: Ultra Violet left border, styled quotes (~35 LOC)
 │   │   ├── StickySection.svelte          # Sticky section header: IntersectionObserver shadow, "View all →" (~70 LOC)
 │   │   ├── ThemeToggle.svelte            # Dark mode toggle: Sun/Moon icons, localStorage, class prop (~29 LOC)
-│   │   ├── LetterSidebar.svelte          # Scroll-collapsing RLM sidebar + hamburger toggle, $bindable menuOpen (~105 LOC)
+│   │   ├── LetterSidebar.svelte          # Floating RLM sidebar (RAF-driven scroll physics) + hamburger toggle (~145 LOC)
 │   │   ├── NotionBlocks.svelte           # Iterates ContentBlock[] → renders each via NotionBlock
 │   │   ├── NotionBlock.svelte            # Block type dispatcher → routes to sub-components (~33 LOC)
 │   │   ├── NotionTextBlock.svelte        # Text blocks: paragraphs, headings, lists, toggles, quotes, callouts (~87 LOC)
@@ -182,15 +182,18 @@ return transformBlocks(rawBlocks);
 
 Svelte components for rendering content. Card components receive typed props; Notion renderers handle rich content.
 
-#### `LetterSidebar.svelte` (~105 LOC)
+#### `LetterSidebar.svelte` (~145 LOC)
 
-Scroll-collapsing RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in Raleway uppercase are vertically spread on the homepage hero, then animate to a tight stacked monogram as the user scrolls past the hero. R stays fixed at the top; L and M collapse upward via gap interpolation with easeOutCubic easing. Hamburger button at bottom toggles a slide-out nav overlay (state managed by parent via `$bindable`).
+Floating RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in Raleway uppercase are vertically spread on the homepage hero, then drift to a tight stacked monogram as the user scrolls — each letter at a different rate, creating a cascading wave effect. R stays fixed at the top; L and M float toward it via exponential decay interpolation (`1 - Math.exp(-rate * dt)`) in a RAF loop. Hamburger button at bottom toggles a slide-out nav overlay (state managed by parent via `$bindable`).
 
 **Key patterns:**
+- **Exponential decay scroll physics:** Letters drift toward scroll-derived targets at different rates (R=8, L=5, M=3) via `requestAnimationFrame` loop. Higher rate = snappier response. Creates a cascading wave where R arrives first and M trails behind.
+- **Reactive architecture:** `targets`/`current` are plain arrays (no `$state`) — RAF reads them without creating Svelte dependencies. `displayPositions` is `$state` to drive template updates. `reducedMotion` is `$state` so RAF loop restarts if OS setting changes.
+- **Effect ordering:** Target sync effect declared before RAF effect — Svelte 5 runs effects in declaration order within a flush.
 - **Responsive two-tier sizing:** md (768px+) uses 56px sidebar / 48px font; lg (1024px+) uses 80px sidebar / 72px font
 - **Cross-component coupling:** Reads `[data-hero]` attribute from `+page.svelte` to determine scroll range. No hero → always collapsed.
-- **`prefers-reduced-motion`:** Forces `heroHeight=0` → letters always collapsed, no animation
-- **Gap interpolation:** Single `gap` value interpolated between `spreadGap` and `collapsedGap`, positions = `[R_TOP, R_TOP+gap, R_TOP+gap*2]` — guarantees equal spacing
+- **`prefers-reduced-motion`:** Forces `heroHeight=0` → letters always collapsed, snap to targets on every scroll (no RAF)
+- **Gap interpolation:** Single `gap` value interpolated between `spreadGap` and `collapsedGap`, target positions = `[R_TOP, R_TOP+gap, R_TOP+gap*2]` — guarantees equal spacing
 - **`$bindable` menuOpen prop:** Parent binds `sidebarMenuOpen` state. Hamburger button toggles it. X icon shows when open. `aria-expanded` and dynamic `aria-label` for accessibility.
 - **Dark mode:** Sidebar, slide-out panel, and scrolled nav use `dark:bg-hero` (Space Indigo) with `dark:text-hero-foreground` for letters/links. Borders switch to `dark:border-white/10`.
 
@@ -331,7 +334,7 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
 | Content fetcher services | 201 | 4 |
 | Routes (pages + layouts) | ~550 | 21 |
 | Utilities + config | 27 | 3 |
-| **Tests** | **~950** | **9** |
-| **Total** | **~3,400** | **53** |
+| **Tests** | **~1,000** | **10** |
+| **Total** | **~3,450** | **54** |
 
-> Tests are ~28% of total LOC. The block expansion added ~900 LOC across 18 new/modified files with 119 tests covering 22+ block types.
+> Tests are ~29% of total LOC. 124 tests across 10 files covering 22+ block types, float physics, XSS safety, and all service mappers.

@@ -87,7 +87,7 @@ Notion databases/pages
 ### Key Patterns
 - `overflow-x: hidden` on `html` — prevents horizontal bounce on mobile from elements slightly exceeding viewport width
 - OKLCH design tokens in `app.css` with light/dark mode (`--hero`, `--hero-foreground` for Space Indigo sections)
-- **Scroll-collapsing RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top (-12px), L and M animate upward on scroll to form a tight monogram. Collapse range extends 1.8× beyond hero height for a slow, cinematic feel. Responsive two-tier sizing: 56px/48px font at md, 80px/72px font at lg. Hidden on mobile.
+- **Floating RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top (-12px), L and M drift toward it on scroll via exponential decay interpolation in a RAF loop. Each letter has a different damping rate (R=8, L=5, M=3) creating a cascading wave where R arrives first and M trails behind. Collapse range extends 1.8× beyond hero height for a slow, cinematic feel. Responsive two-tier sizing: 56px/48px font at md, 80px/72px font at lg. Hidden on mobile.
 - **Non-fixed desktop nav**: nav scrolls away naturally on desktop (`md:relative md:z-10`) so sticky section headers own the top of the viewport. Transparent at top of every page (all headers extend behind nav via `-mt-16 pt-16`), solid on scroll. Mobile nav stays fixed.
 - **MCA-style sticky section headers** on homepage: each section's heading sticks at `top-16` (mobile, below fixed nav) or `top-0` (desktop). Title is a link with bold angular Ultra Violet arrow. No shadow on sticky headers.
 - **Angular icon convention**: all custom SVGs use `stroke-linecap="square"` + `stroke-linejoin="miter"` to match Raleway's geometric character. Applies to hamburger, section arrows, and close icons.
@@ -124,7 +124,7 @@ src/
       ResourceCard.svelte   → Resource card
       StickySection.svelte  → Sticky section header wrapper (homepage, linked title + angular arrow)
       ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage, accepts class prop)
-      LetterSidebar.svelte  → Scroll-collapsing RLM monogram sidebar + hamburger menu toggle ($bindable)
+      LetterSidebar.svelte  → Floating RLM sidebar (RAF-driven exponential decay scroll physics) + hamburger menu toggle ($bindable)
       DetailHeader.svelte   → Shared detail page header (back link, title, badge slot)
       NotionBlocks.svelte   → Renders ContentBlock[] as Svelte components
       NotionBlock.svelte    → Block type dispatcher → routes to sub-components
@@ -180,6 +180,7 @@ tests/
     content.test.ts         → slugify() and type interface tests
   components/
     notion-render-utils.test.ts → XSS-safe rich text rendering
+    float-physics.test.ts       → Exponential decay interpolation (smoothDamp)
 ```
 
 ## Site Structure
@@ -188,7 +189,7 @@ tests/
 |------|-------|---------------|
 | Home | `/` | Featured items from all DBs |
 | About | `/about` | Single Notion page |
-| Professional Projects | `/projects` | Notion database |
+| Projects | `/projects` | Notion database |
 | Open Source | `/open-source` | Notion database |
 | Toolkit | `/resources` | Notion database |
 | Project Detail | `/projects/[slug]` | Notion database + page blocks |
@@ -284,7 +285,7 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 119 tests across 9 files: `notion.service.test.ts` (30) + `notion-blocks.test.ts` (24) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (5) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12)
+- 124 tests across 10 files: `notion.service.test.ts` (30) + `notion-blocks.test.ts` (24) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (5) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5 — exponential decay interpolation)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs
