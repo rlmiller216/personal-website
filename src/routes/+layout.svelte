@@ -184,9 +184,6 @@
 
 	<!-- Footer — Space Indigo background -->
 	<footer class="bg-hero text-hero-foreground mt-16">
-		<!-- Ultra Violet accent line -->
-		<div class="h-1 bg-primary"></div>
-
 		<div class="max-w-6xl mx-auto px-6 py-12">
 			<!-- Top row: branding -->
 			<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
