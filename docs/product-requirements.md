@@ -12,7 +12,9 @@
 - [ ] **Interests section** with 5 sub-pages (Poetry, Art, Music, Travel, Food) from Notion
 - [ ] **Contact page** with Formspree form
 - [ ] **Responsive design** — mobile, tablet, desktop
-- [ ] **Navigation** — desktop nav bar + mobile hamburger menu
+- [x] **Scroll-aware responsive navigation** — desktop nav bar + mobile hamburger menu
+- [x] **Page header styling** — consistent header treatment across all pages
+- [x] **Footer redesign** — updated layout and styling
 - [ ] **Notion as CMS** — all content fetched from Notion API at build time
 - [ ] **Static site generation** — adapter-static produces pure HTML
 - [ ] **Netlify deployment** — free hosting with build hooks
@@ -28,13 +30,15 @@
 - [ ] **Sitemap** — auto-generated XML sitemap
 - [ ] **Hourly rebuilds** — Netlify build hook on schedule for fresh Notion content
 - [ ] **Featured items on homepage** — checkbox-driven from Notion databases
-- [ ] **Design system** — cohesive typography, color, spacing via CSS variables
+- [x] **Design system with custom color palette** — cohesive typography, color, spacing via CSS variables
+- [x] **Google Fonts integration (Bodoni Moda + Raleway)** — distinctive typography pairing
 - [ ] **Page load animations** — staggered reveals for delight
-- [ ] **"Scientific Warmth" aesthetic** — distinctive, not generic AI design
+- [x] **"Scientific Warmth" aesthetic** — distinctive, not generic AI design
+- [x] **Card hover animations / micro-interactions** — subtle feedback on interactive elements
 
 ## Could Have (Nice Extras)
 
-- [ ] **Dark mode** toggle
+- [x] **Dark mode support** — toggle with persistent preference
 - [ ] **Resource filtering** by type/category
 - [ ] **Project filtering** by sector/status
 - [ ] **Lighthouse 90+** all categories

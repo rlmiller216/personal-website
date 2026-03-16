@@ -260,3 +260,38 @@ build/
 | Manual | Netlify dashboard "Trigger deploy" | On demand |
 
 Hourly rebuilds keep Notion image URLs fresh and content current without manual intervention.
+
+---
+
+## 8. Design System
+
+### 8.1 Color Palette
+
+Five-color OKLCH palette mapped to CSS custom properties in `app.css`:
+
+| Token | Name | Role |
+|---|---|---|
+| `--color-primary` | Ultra Violet | Brand accent, interactive elements |
+| `--color-secondary` | White Smoke | Light backgrounds, cards |
+| `--color-foreground` | Onyx | Primary text |
+| `--color-accent` | Lime Yellow | Highlights, CTAs |
+| `--color-deep` | Space Indigo | Dark backgrounds, headers |
+
+All colors are defined as OKLCH values for perceptual uniformity. Tailwind consumes them via `@theme` inline mapping, producing utility classes like `bg-primary`, `text-foreground`, etc.
+
+### 8.2 Typography
+
+| Role | Typeface | Source |
+|---|---|---|
+| Headings | Bodoni Moda | Google Fonts CDN |
+| Body | Raleway | Google Fonts CDN |
+
+Font links are loaded in `app.html` `<head>`. Tailwind `@theme` maps `--font-heading` and `--font-body` to utility classes.
+
+### 8.3 Dark Mode
+
+Light/dark mode uses a `.dark` class on the `<html>` element. CSS custom properties switch values inside a `.dark {}` block in `app.css`, so all components update automatically without per-component logic.
+
+**Persistence:** `localStorage` stores the user's preference. On first visit, `prefers-color-scheme` media query determines the default.
+
+**Flash prevention:** An inline `<script>` in `app.html` runs before paint — reads `localStorage` (or `prefers-color-scheme`) and sets the `.dark` class synchronously, preventing a light-to-dark flash on dark-mode pages.

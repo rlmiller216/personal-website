@@ -23,6 +23,7 @@ npx svelte-check     # type checking
 | CMS | Notion API (@notionhq/client) | Rebecca already uses Notion daily. Edit there → site rebuilds |
 | Hosting | Netlify (free tier) | Static hosting, hourly build hooks for fresh Notion content |
 | Contact Form | Formspree | adapter-static can't do server-side form handling |
+| Typography | Bodoni Moda + Raleway (Google Fonts) | Didone serif headings + geometric sans body |
 | Icons | Lucide | Standard per Development Bible |
 
 ## Architecture
@@ -41,6 +42,36 @@ Notion databases/pages
 
 **Notion blocks → Svelte components** (NOT `{@html}` strings). Server transforms API blocks into serializable `ContentBlock[]`, then `<NotionBlocks>` renders them as styled Svelte components. This enables per-block Tailwind styling and eliminates XSS risk.
 
+## Design System
+
+### Color Palette
+| Hex | Name | Role |
+|-----|------|------|
+| `#6D3BFF` | Ultra Violet | Primary — links, buttons, active states |
+| `#F6F5F4` | White Smoke | Light background |
+| `#0D0D0D` | Onyx | Body text, dark mode base |
+| `#DFFF5C` | Lime Yellow | Secondary — highlights, CTAs, energy |
+| `#1D2440` | Space Indigo | Dark background — hero, footer, dark mode |
+
+### Typography
+- **Headings:** Bodoni Moda (Didone serif, variable optical size)
+- **Body:** Raleway (geometric sans-serif)
+
+### Key Patterns
+- OKLCH design tokens in `app.css` with light/dark mode (`--hero`, `--hero-foreground` for Space Indigo sections)
+- Space Indigo page headers on all content pages
+- Lime Yellow `.text-highlight` marker underline effect
+- Scroll-aware nav: transparent on hero, solid + backdrop-blur on scroll
+- Stagger fade-up animations (up to 12 children), gated behind `prefers-reduced-motion`
+- Card hovers: translate-up + accent borders (Lime Yellow bottom on ProjectCard, Ultra Violet top on ToolCard, Ultra Violet left on ResourceCard)
+- Footer: Space Indigo background with Ultra Violet accent line
+
+### Accessibility Constraints
+- **Lime Yellow on light bg: ~1.3:1 -- NEVER use as text.** Background/highlight only.
+- Ultra Violet on White Smoke: ~4.7:1 -- OK for large text; use Onyx for body text
+- Onyx on White Smoke: ~18:1 -- excellent for body text
+- Lime Yellow on Space Indigo: ~10:1 -- excellent
+
 ## Project Structure
 
 ```
@@ -51,6 +82,7 @@ src/
       ProjectCard.svelte    → Project display card
       ToolCard.svelte       → Open source tool card
       ResourceCard.svelte   → Resource card
+      ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage)
       NotionBlocks.svelte   → Renders ContentBlock[] as Svelte components
       NotionBlock.svelte    → Individual block type dispatcher
     server/
@@ -239,6 +271,7 @@ Errors are written for humans:
 | `utils.ts` / `helpers.ts` | Name by domain |
 | 5 identical fetcher modules | Generic fetcher + type-specific mappers |
 | Separate backend | adapter-static. Formspree for forms. |
+| Use Lime Yellow as text on light bg | Background/highlight only — fails WCAG contrast |
 
 ## Known Limitations & Mitigations
 
@@ -252,6 +285,9 @@ Uses CSS-based configuration (`@import "tailwindcss"`) instead of v3's JS config
 - `npx sv create` and `npx sv add` require clean git working directory or `--skip-preflight`
 - `npx shadcn-svelte init` prompts for lib alias — pass `--lib-alias '$lib'` to skip
 - Tailwind CSS 4 setup: install `tailwindcss` + `@tailwindcss/vite`, add plugin to `vite.config.ts`, use `@import 'tailwindcss'` in `app.css`
+
+### Google Fonts via CDN
+Bodoni Moda and Raleway load from Google Fonts CDN. Potential FOUC on slow connections. If this becomes a problem, self-host the font files in `static/fonts/`.
 
 ### adapter-static Dynamic Routes
 `interests/[slug]/+page.server.ts` must export `entries()` returning all valid slugs from Notion. Required for pre-rendering dynamic routes.

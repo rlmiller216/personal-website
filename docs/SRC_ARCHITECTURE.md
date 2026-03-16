@@ -8,9 +8,9 @@ Map of everything under `src/`, how it connects, and where to find things.
 
 ```
 src/
-├── app.css                               # Tailwind CSS 4 entry point (@import 'tailwindcss')
+├── app.css                               # Design system: OKLCH color tokens, typography, animations (~165 LOC)
 ├── app.d.ts                              # SvelteKit type augmentations (App namespace)
-├── app.html                              # HTML shell template (%sveltekit.head%, %sveltekit.body%)
+├── app.html                              # HTML shell + Google Fonts preconnect + dark-mode flash prevention (~20 LOC)
 │
 ├── lib/
 │   ├── index.ts                          # Library barrel export (currently empty)
@@ -23,9 +23,10 @@ src/
 │   │   └── content.ts                    # Domain interfaces: Project, Tool, Resource, ContentBlock
 │   │
 │   ├── components/
-│   │   ├── ProjectCard.svelte            # Project display card with image, title, sector badge
-│   │   ├── ToolCard.svelte               # Open source tool card with tags and links
-│   │   ├── ResourceCard.svelte           # Compact resource card with image and quote
+│   │   ├── ProjectCard.svelte            # Project card: hover translate-up, Ultra Violet overlay (~45 LOC)
+│   │   ├── ToolCard.svelte               # Tool card: Ultra Violet top border, Lime tags (~35 LOC)
+│   │   ├── ResourceCard.svelte           # Resource card: Ultra Violet left border, styled quotes (~35 LOC)
+│   │   ├── ThemeToggle.svelte            # Dark mode toggle: Sun/Moon icons, localStorage (~28 LOC)
 │   │   ├── NotionBlocks.svelte           # Iterates ContentBlock[] → renders each via NotionBlock
 │   │   ├── NotionBlock.svelte            # Block type dispatcher — renders 17 block types as HTML
 │   │   └── ui/                           # shadcn-svelte auto-generated components
@@ -41,10 +42,10 @@ src/
 │           └── about.service.ts          # About page fetcher (single page → ContentBlock[])
 │
 └── routes/
-    ├── +layout.svelte                    # Root layout: nav bar + footer + OG meta tags
+    ├── +layout.svelte                    # Root layout: scroll-aware nav, Bodoni logo, ThemeToggle, Space Indigo footer (~145 LOC)
     ├── +layout.server.ts                 # Loads site metadata from RM_* env vars
     ├── +layout.ts                        # export const prerender = true (all routes static)
-    ├── +page.svelte                      # Home page: hero + featured projects/tools/resources
+    ├── +page.svelte                      # Home: Space Indigo hero, gradient fade, stagger animations (~100 LOC)
     ├── +page.server.ts                   # Fetches featured items from all Notion databases
     ├── +error.svelte                     # Branded error page (404/500)
     ├── about/
@@ -79,9 +80,9 @@ Pure TypeScript interfaces with zero dependencies. Defines the contract between 
 
 | Interface | Fields | Used By |
 |---|---|---|
-| `Project` | title, description, sector, status, role, imageUrl, url, featured, order | projects.service.ts, future ProjectCard.svelte |
-| `Tool` | title, description, category, githubUrl, demoUrl, tags, featured | tools.service.ts, future ToolCard.svelte |
-| `Resource` | title, description, type, category, author, url, whyILoveIt, imageUrl | resources.service.ts, future ResourceCard.svelte |
+| `Project` | title, description, sector, status, role, imageUrl, url, featured, order | projects.service.ts, ProjectCard.svelte |
+| `Tool` | title, description, category, githubUrl, demoUrl, tags, featured | tools.service.ts, ToolCard.svelte |
+| `Resource` | title, description, type, category, author, url, whyILoveIt, imageUrl | resources.service.ts, ResourceCard.svelte |
 | `ContentBlock` | id, type, richText, children, url, caption, language, checked, icon | notion-blocks.ts, NotionBlock.svelte |
 | `RichTextSpan` | text, annotations, href | ContentBlock.richText[], NotionBlock.svelte |
 | `RichTextAnnotation` | bold, italic, strikethrough, underline, code, color | RichTextSpan.annotations |
@@ -166,9 +167,13 @@ const rawBlocks = await getPageBlocks(pageId);
 return transformBlocks(rawBlocks);
 ```
 
-### `lib/components/` — UI Components (340 LOC, 5 files)
+### `lib/components/` — UI Components (~370 LOC, 6 files)
 
 Svelte components for rendering content. Card components receive typed props; Notion renderers handle rich content.
+
+#### `ThemeToggle.svelte` (~28 LOC)
+
+Dark mode toggle using Lucide Sun/Moon icons. Uses Svelte 5 `$state` for theme tracking. Persists preference to `localStorage` and applies `.dark` class on `<html>`.
 
 #### `NotionBlocks.svelte` (16 LOC)
 
@@ -185,7 +190,7 @@ Block type dispatcher. Uses Svelte `{#if}` chain to render 17 block types with T
 - Empty paragraphs render as `<div class="h-4">` spacers
 - Images use `loading="lazy"` and caption support
 
-### `routes/` — SvelteKit Pages (~450 LOC, 18 files)
+### `routes/` — SvelteKit Pages (~550 LOC, 18 files)
 
 All 7 pages are fully wired to Notion data. Each route has a `+page.server.ts` (data loading) and `+page.svelte` (rendering).
 
@@ -199,6 +204,22 @@ All 7 pages are fully wired to Notion data. Each route has a `+page.server.ts` (
 | `/interests` | Index of interest topics | `getAllInterests()` (titles only) |
 | `/interests/[slug]` | Individual interest page | `getInterestBySlug()` + `entries()` |
 | `/contact` | Formspree form (client-side) | None — static HTML + JS |
+
+### Design System (`app.css`, `app.html`)
+
+The visual identity is defined in `app.css` (~165 LOC) using CSS custom properties with OKLCH color space.
+
+**Color palette (5 custom colors, light + dark tokens):**
+- Space Indigo — primary backgrounds (hero, nav, footer, page headers)
+- Ultra Violet — accents (borders, overlays, links, quotes)
+- Lime Yellow — highlights (`.text-highlight` utility, tags, callouts)
+- Two additional palette colors for supporting roles
+
+**Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Raleway (body, weights 400–700). Loaded via Google Fonts CDN with preconnect hints in `app.html`.
+
+**Animations:** `fadeUp`, `fadeIn`, `gradientShift` keyframes. Stagger animation support for up to 12 children via `--stagger-index` custom property.
+
+**Dark mode:** `app.html` includes a blocking `<script>` to read `localStorage` before paint, preventing flash. Token values swap via `.dark` class on `<html>`.
 
 ---
 
@@ -250,6 +271,10 @@ All 7 pages are fully wired to Notion data. Each route has a `+page.server.ts` (
 - Components depend only on `content.ts` (receive typed data, never call services)
 - Routes depend on services (in `+page.server.ts`) and components (in `+page.svelte`)
 
+**External dependencies (runtime):**
+- `@lucide/svelte` — icon components (Github, Linkedin, Mail, Sun, Moon, ArrowRight, Send)
+- Google Fonts CDN — Bodoni Moda (variable) + Raleway, loaded via `<link>` in `app.html`
+
 ---
 
 ## 4. LOC Summary
@@ -259,12 +284,13 @@ All 7 pages are fully wired to Notion data. Each route has a `+page.server.ts` (
 | Notion block transformer | 236 | 1 |
 | Notion client + fetcher | 223 | 1 |
 | NotionBlock component | 177 | 1 |
-| Card components | ~150 | 3 |
+| Card components + ThemeToggle | ~145 | 4 |
+| Design system (app.css + app.html) | ~185 | 2 |
 | Content types | 98 | 1 |
 | Content fetcher services | 268 | 5 |
-| Routes (pages + layouts) | ~450 | 18 |
+| Routes (pages + layouts) | ~550 | 18 |
 | Utilities + config | 27 | 3 |
 | **Tests** | **~480** | **2** |
-| **Total** | **~2,100** | **35** |
+| **Total** | **~2,400** | **38** |
 
-> Tests are ~23% of total LOC. Routes now make up the largest section — all 7 pages fully wired to Notion.
+> Tests are ~20% of total LOC. The design system overhaul added ~300 LOC across app.css, app.html, ThemeToggle, layout, and page routes.

@@ -323,3 +323,29 @@ The site always builds, even with partial or no Notion data:
 | Notion API down | All sections empty (previous deploy stays live on Netlify) |
 | Unsupported block type in page | Block silently skipped, rest of page renders |
 | Empty database | Section renders (future: empty state message) |
+
+---
+
+## 7. Design Token Flow
+
+Design tokens flow from palette definition to rendered utility classes:
+
+```
+Palette hex → OKLCH conversion → CSS custom properties (:root in app.css)
+  → Tailwind @theme inline mapping → utility classes (bg-primary, text-secondary, etc.)
+```
+
+Each color is defined once as an OKLCH value in `:root`. Tailwind's `@theme` block references these custom properties, generating utility classes. Components use only Tailwind utilities — never raw hex or OKLCH values.
+
+## 8. Dark Mode Workflow
+
+```
+Page load → inline <script> in app.html (runs before paint)
+  → checks localStorage for saved preference
+  → falls back to prefers-color-scheme media query
+  → sets .dark class on <html> synchronously (no flash)
+  → CSS custom properties switch via .dark {} block in app.css
+  → all components automatically reflect the active mode
+```
+
+The inline script runs before any rendering, so users never see a light-mode flash on dark-mode pages. Toggling the mode updates `localStorage` and flips the `.dark` class; no page reload is needed.
