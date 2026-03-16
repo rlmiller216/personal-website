@@ -24,7 +24,7 @@
 	const collapsedGap = $derived(fontSize - 6); // letters nearly touching
 
 	// R is always fixed at the top.
-	const R_TOP = 6;
+	const R_TOP = -12;
 
 	// Gap between letters interpolates from spread to collapsed
 	const spreadGap = $derived((viewportHeight * 0.70) / 2);
@@ -97,15 +97,19 @@
 		</span>
 	{/each}
 
-	<!-- Hamburger toggle — opens slide-out nav overlay managed by parent -->
+	<!-- Hamburger toggle — sized to match RLM letter width, same color as letters -->
 	<button
-		class="absolute bottom-6 left-1/2 -translate-x-1/2 p-2 rounded-lg
-			text-hero/70 hover:text-hero transition-colors"
+		class="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-sm
+			text-hero hover:text-hero/80 transition-colors"
+		style="padding: {isLarge ? 6 : 4}px;"
 		onclick={() => menuOpen = !menuOpen}
 		aria-label={menuOpen ? 'Close menu' : 'Open menu'}
 		aria-expanded={menuOpen}
 	>
-		<svg class="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+		<svg
+			style="width: {isLarge ? 52 : 36}px; height: {isLarge ? 52 : 36}px;"
+			fill="none" stroke="currentColor" viewBox="0 0 24 24"
+		>
 			{#if menuOpen}
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
 			{:else}
