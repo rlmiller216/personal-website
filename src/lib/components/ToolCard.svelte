@@ -4,7 +4,7 @@
 	let { tool }: { tool: Tool } = $props();
 </script>
 
-<div class="overflow-hidden rounded-lg shadow-sm transition-shadow hover:shadow-lg">
+<a href={`/open-source/${tool.slug}`} class="block overflow-hidden rounded-lg shadow-sm transition-shadow hover:shadow-lg no-underline text-inherit">
 	<!-- Violet header bar with Bodoni Moda title -->
 	<div class="px-5 py-3 bg-primary">
 		<h3 class="text-lg font-semibold text-primary-foreground"
@@ -23,17 +23,5 @@
 				{/each}
 			</div>
 		{/if}
-		<div class="mt-4 flex gap-4">
-			{#if tool.githubUrl}
-				<a href={tool.githubUrl} class="text-sm font-medium text-primary hover:underline underline-offset-2"
-					style="font-family: 'Raleway', sans-serif;"
-					target="_blank" rel="noopener noreferrer">GitHub</a>
-			{/if}
-			{#if tool.demoUrl}
-				<a href={tool.demoUrl} class="text-sm font-medium text-primary hover:underline underline-offset-2"
-					style="font-family: 'Raleway', sans-serif;"
-					target="_blank" rel="noopener noreferrer">Demo</a>
-			{/if}
-		</div>
 	</div>
-</div>
+</a>

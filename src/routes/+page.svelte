@@ -42,10 +42,8 @@
 		<!-- Feature card: only if first project has an image -->
 		{#if hasFeatureImage}
 			<a
-				href={firstProject.url || '/projects'}
+				href={'/projects/' + firstProject.slug}
 				class="group block relative overflow-hidden rounded-lg mb-8"
-				target={firstProject.url ? '_blank' : undefined}
-				rel={firstProject.url ? 'noopener noreferrer' : undefined}
 			>
 				<!-- No loading="lazy" — feature card is above the fold -->
 				<img
