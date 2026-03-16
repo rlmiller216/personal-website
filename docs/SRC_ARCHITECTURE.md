@@ -192,6 +192,7 @@ Scroll-collapsing RLM monogram sidebar inspired by mca.com.au. Three letters (R,
 - **`prefers-reduced-motion`:** Forces `heroHeight=0` → letters always collapsed, no animation
 - **Gap interpolation:** Single `gap` value interpolated between `spreadGap` and `collapsedGap`, positions = `[R_TOP, R_TOP+gap, R_TOP+gap*2]` — guarantees equal spacing
 - **`$bindable` menuOpen prop:** Parent binds `sidebarMenuOpen` state. Hamburger button toggles it. X icon shows when open. `aria-expanded` and dynamic `aria-label` for accessibility.
+- **Dark mode:** Sidebar, slide-out panel, and scrolled nav use `dark:bg-hero` (Space Indigo) with `dark:text-hero-foreground` for letters/links. Borders switch to `dark:border-white/10`.
 
 #### `ThemeToggle.svelte` (~29 LOC)
 

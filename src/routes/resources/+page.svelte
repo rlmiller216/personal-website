@@ -3,7 +3,20 @@
 
 	let { data } = $props();
 
-	const sections = $derived(Object.entries(data.grouped));
+	/** Display order for resource type sections. Unlisted types appear at the end alphabetically. */
+	const TYPE_ORDER = ['Website', 'Book', 'Podcast', 'Course', 'Newsletter'];
+
+	const sections = $derived(
+		Object.entries(data.grouped).sort(([a], [b]) => {
+			const ia = TYPE_ORDER.indexOf(a);
+			const ib = TYPE_ORDER.indexOf(b);
+			// Both known → sort by defined order; unknown types go to end alphabetically
+			if (ia >= 0 && ib >= 0) return ia - ib;
+			if (ia >= 0) return -1;
+			if (ib >= 0) return 1;
+			return a.localeCompare(b);
+		})
+	);
 
 	/** Pluralize resource type labels for section headers. */
 	const PLURAL_MAP: Record<string, string> = {
@@ -20,13 +33,13 @@
 </script>
 
 <svelte:head>
-	<title>Resource Library — {data.siteName}</title>
+	<title>Toolkit — {data.siteName}</title>
 </svelte:head>
 
 <!-- Page header — Space Indigo, overlaps transparent nav -->
 <div class="relative -mt-16 pt-16 bg-hero">
 	<div class="max-w-6xl mx-auto px-6 py-8 sm:py-10">
-		<h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-hero-foreground tracking-tight leading-tight">Resource <span class="text-highlight">Library</span></h1>
+		<h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-hero-foreground tracking-tight leading-tight"><span class="text-highlight">Toolkit</span></h1>
 	</div>
 </div>
 

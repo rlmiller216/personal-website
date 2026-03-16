@@ -12,7 +12,7 @@
 		{ href: '/', label: 'Home' },
 		{ href: '/projects', label: 'Professional Projects' },
 		{ href: '/open-source', label: 'Open Source' },
-		{ href: '/resources', label: 'Resource Library' },
+		{ href: '/resources', label: 'Toolkit' },
 		{ href: '/about', label: 'About' },
 		{ href: '/contact', label: 'Contact' }
 	];
@@ -71,7 +71,7 @@
 		<nav
 			class="fixed top-0 left-14 lg:left-20 z-40 h-screen w-80
 				flex flex-col gap-3 px-10 pb-16 overflow-y-auto
-				bg-white border-r border-border shadow-xl"
+				bg-white dark:bg-hero border-r border-border dark:border-white/10 shadow-xl"
 			style="padding-top: 0.75rem;"
 			transition:fly={{ x: -400, duration: 300 }}
 		>
@@ -79,8 +79,8 @@
 				<a
 					href={link.href}
 					class="relative py-3 px-4 text-2xl lg:text-3xl font-bold uppercase tracking-wide transition-colors rounded-lg
-						hover:bg-accent
-						{isActive(link.href) ? 'text-primary' : 'text-foreground'}"
+						hover:bg-accent dark:hover:bg-white/10
+						{isActive(link.href) ? 'text-primary dark:text-secondary' : 'text-foreground dark:text-hero-foreground'}"
 					onclick={() => sidebarMenuOpen = false}
 				>
 					{link.label}
@@ -90,9 +90,9 @@
 				</a>
 			{/each}
 			<!-- ThemeToggle — pushed to bottom of panel -->
-			<div class="mt-auto pt-4 border-t border-border flex items-center gap-2 px-4">
-				<ThemeToggle class="text-muted-foreground hover:text-foreground" />
-				<span class="text-sm text-muted-foreground uppercase tracking-wide">Theme</span>
+			<div class="mt-auto pt-4 border-t border-border dark:border-white/10 flex items-center gap-2 px-4">
+				<ThemeToggle class="text-muted-foreground hover:text-foreground dark:text-hero-foreground/60 dark:hover:text-hero-foreground" />
+				<span class="text-sm text-muted-foreground dark:text-hero-foreground/60 uppercase tracking-wide">Theme</span>
 			</div>
 		</nav>
 	{/if}
@@ -103,7 +103,7 @@
 	<header
 		class="fixed top-0 inset-x-0 z-50
 			transition-[background-color,border-color,box-shadow] duration-300
-			{showSolidNav ? 'bg-white border-b border-border shadow-sm' : 'bg-transparent'}
+			{showSolidNav ? 'bg-white dark:bg-hero border-b border-border dark:border-white/10 shadow-sm' : 'bg-transparent'}
 			md:relative md:inset-auto md:z-10"
 	>
 		<nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">

@@ -81,13 +81,13 @@
 </script>
 
 <aside
-	class="hidden md:flex fixed top-0 left-0 h-screen z-50 bg-white"
+	class="hidden md:flex fixed top-0 left-0 h-screen z-50 bg-white dark:bg-hero"
 	style="width: {sidebarWidth}px;"
 >
 	{#each ['R', 'L', 'M'] as letter, i}
 		<span
 			class="absolute font-bold select-none pointer-events-none
-				left-1/2 -translate-x-1/2 text-hero uppercase tracking-wide"
+				left-1/2 -translate-x-1/2 text-hero dark:text-hero-foreground uppercase tracking-wide"
 			style="font-size: {fontSize}px;
 				top: {positions[i]}px;
 				will-change: top;"
@@ -100,7 +100,7 @@
 	<!-- Hamburger toggle — sized to match RLM letter width, same color as letters -->
 	<button
 		class="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-sm
-			text-hero hover:text-hero/80 transition-colors"
+			text-hero dark:text-hero-foreground hover:text-hero/80 dark:hover:text-hero-foreground/80 transition-colors"
 		style="padding: {isLarge ? 6 : 4}px;"
 		onclick={() => menuOpen = !menuOpen}
 		aria-label={menuOpen ? 'Close menu' : 'Open menu'}

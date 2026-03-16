@@ -125,9 +125,9 @@
 	</StickySection>
 {/if}
 
-<!-- Recommended Resources — White band with card grid -->
+<!-- Toolkit — White band with card grid -->
 {#if data.featuredResources.length > 0}
-	<StickySection title="RESOURCE" highlightWord="LIBRARY" href="/resources" variant="muted">
+	<StickySection title="" highlightWord="TOOLKIT" href="/resources" variant="muted">
 		<div class="grid gap-6 sm:grid-cols-2 animate-stagger">
 			{#each data.featuredResources as resource}
 				<ResourceCard {resource} />

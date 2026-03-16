@@ -33,7 +33,7 @@
 				class="group inline-flex items-baseline gap-3 text-3xl md:text-4xl font-bold
 					hover:text-primary transition-colors uppercase tracking-wide"
 			>
-				{title} <span class="text-highlight">{highlightWord}</span>
+				{#if title}{title} {/if}<span class="text-highlight">{highlightWord}</span>
 				<!-- Sharp angular arrow — matches Raleway's geometric character -->
 				<svg
 					class="h-9 w-9 md:h-11 md:w-11 text-primary self-center
