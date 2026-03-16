@@ -176,7 +176,8 @@ describe('mapTool', () => {
 			'GitHub URL': mockUrl('https://github.com/bio/parser'),
 			'Demo URL': mockUrl('https://demo.bioparser.io'),
 			'Tags': mockMultiSelect(['Python', 'Biology', 'Data']),
-			'Featured': mockCheckbox(true)
+			'Featured': mockCheckbox(true),
+			'Image': mockFiles('https://s3.aws.com/bioparser.png')
 		});
 
 		const result = mapTool(page);
@@ -190,6 +191,7 @@ describe('mapTool', () => {
 		expect(result.demoUrl).toBe('https://demo.bioparser.io');
 		expect(result.tags).toEqual(['Python', 'Biology', 'Data']);
 		expect(result.featured).toBe(true);
+		expect(result.imageUrl).toBe('https://s3.aws.com/bioparser.png');
 	});
 
 	it('returns graceful defaults for missing optional properties', () => {
@@ -208,6 +210,7 @@ describe('mapTool', () => {
 		expect(result.demoUrl).toBe('');
 		expect(result.tags).toEqual([]);
 		expect(result.featured).toBe(false);
+		expect(result.imageUrl).toBe('');
 	});
 
 	it('returns empty slug for empty title', () => {

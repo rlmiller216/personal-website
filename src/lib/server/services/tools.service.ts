@@ -16,7 +16,8 @@ import {
 	getSelect,
 	getUrl,
 	getMultiSelect,
-	getCheckbox
+	getCheckbox,
+	getFileUrl
 } from './notion.service';
 
 const MODULE = '[tools]';
@@ -32,7 +33,8 @@ export function mapTool(page: PageObjectResponse): Tool {
 		githubUrl: getUrl(props['GitHub URL']),
 		demoUrl: getUrl(props['Demo URL']),
 		tags: getMultiSelect(props['Tags']),
-		featured: getCheckbox(props['Featured'])
+		featured: getCheckbox(props['Featured']),
+		imageUrl: getFileUrl(props['Image'])
 	};
 }
 

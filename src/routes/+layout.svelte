@@ -159,7 +159,7 @@
 
 		<!-- Mobile menu -->
 		{#if mobileMenuOpen}
-			<div class="md:hidden bg-background/95 backdrop-blur-md border-t border-border px-6 py-4 flex flex-col gap-1">
+			<div class="md:hidden bg-background border-t border-border px-6 py-4 flex flex-col gap-1">
 				{#each navLinks as link}
 					<a
 						href={link.href}

@@ -80,7 +80,8 @@ Notion databases/pages
 
 ### Card Border Patterns
 - ProjectCard: `border-b-4 border-b-secondary` (Lime Yellow bottom)
-- ToolCard/ToolListItem: `border-l-primary` (Ultra Violet left)
+- ToolCard: `border border-border` (subtle border, image-forward card with category badge)
+- ToolListItem: `border-l-primary` (Ultra Violet left, homepage variant)
 - ResourceCard: `border border-border border-l-4 border-l-primary` (thin border + thick Ultra Violet left)
 
 ### Key Patterns
@@ -219,6 +220,7 @@ tests/
 | Demo URL | URL | Live demo |
 | Tags | Multi-select | Python, Data, Biology, etc. |
 | Featured | Checkbox | Show on homepage? |
+| Image | Files | Preview image for card |
 
 ### Resources Database
 | Property | Type | Purpose |
