@@ -14,12 +14,12 @@
 			.map((span) => {
 				let text = escapeHtml(span.text);
 
-				if (span.annotations.code) text = `<code class="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">${text}</code>`;
+				if (span.annotations.code) text = `<code class="bg-primary/10 text-primary px-1.5 py-0.5 rounded text-sm font-mono">${text}</code>`;
 				if (span.annotations.bold) text = `<strong>${text}</strong>`;
 				if (span.annotations.italic) text = `<em>${text}</em>`;
 				if (span.annotations.strikethrough) text = `<s>${text}</s>`;
 				if (span.annotations.underline) text = `<u>${text}</u>`;
-				if (span.href) text = `<a href="${escapeHtml(span.href)}" class="underline decoration-1 underline-offset-2 hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">${text}</a>`;
+				if (span.href) text = `<a href="${escapeHtml(span.href)}" class="text-primary underline decoration-1 underline-offset-2 hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">${text}</a>`;
 
 				return text;
 			})
@@ -100,12 +100,12 @@
 	</details>
 
 {:else if block.type === 'quote'}
-	<blockquote class="border-l-4 border-current/20 pl-4 italic opacity-80">
+	<blockquote class="border-l-4 border-primary pl-4 italic bg-primary/5 py-2 rounded-r-lg">
 		{@html renderRichText(block.richText)}
 	</blockquote>
 
 {:else if block.type === 'callout'}
-	<div class="flex gap-3 p-4 rounded-lg bg-muted/50">
+	<div class="flex gap-3 p-4 rounded-lg bg-secondary/20">
 		{#if block.icon}
 			<span class="text-xl flex-shrink-0">{block.icon}</span>
 		{/if}
@@ -120,7 +120,7 @@
 		<img
 			src={block.url}
 			alt={block.caption.map(s => s.text).join('') || 'Image'}
-			class="rounded-lg max-w-full"
+			class="rounded-lg max-w-full shadow-sm border border-border"
 			loading="lazy"
 		/>
 		{#if block.caption.length > 0 && hasContent(block.caption)}
@@ -132,7 +132,7 @@
 
 {:else if block.type === 'code'}
 	<div class="my-4">
-		<pre class="bg-muted/50 rounded-lg p-4 overflow-x-auto"><code class="text-sm font-mono">{block.richText.map(s => s.text).join('')}</code></pre>
+		<pre class="bg-hero text-hero-foreground rounded-lg p-4 overflow-x-auto"><code class="text-sm font-mono">{block.richText.map(s => s.text).join('')}</code></pre>
 		{#if block.caption.length > 0 && hasContent(block.caption)}
 			<p class="text-sm opacity-60 mt-1">{@html renderRichText(block.caption)}</p>
 		{/if}

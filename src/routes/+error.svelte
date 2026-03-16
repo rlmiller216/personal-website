@@ -7,7 +7,15 @@
 </svelte:head>
 
 <section class="max-w-xl mx-auto px-6 py-24 text-center">
-	<h1 class="text-6xl font-bold mb-4">{page.status}</h1>
+	<p class="text-8xl font-bold text-primary mb-4" style="font-family: 'Bodoni Moda', serif;">
+		{page.status}
+	</p>
 	<p class="text-lg text-muted-foreground mb-8">{page.error?.message || 'Something went wrong'}</p>
-	<a href="/" class="text-sm hover:underline">&larr; Back to home</a>
+	<a
+		href="/"
+		class="inline-block rounded-md bg-primary text-primary-foreground px-6 py-2.5 text-sm font-medium
+			hover:bg-primary/90 transition-colors"
+	>
+		&larr; Back to home
+	</a>
 </section>

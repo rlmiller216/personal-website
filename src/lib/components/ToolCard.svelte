@@ -4,11 +4,11 @@
 	let { tool }: { tool: Tool } = $props();
 </script>
 
-<div class="rounded-lg border border-border p-5 hover:shadow-md transition-shadow">
+<div class="rounded-lg border border-border p-5 hover:-translate-y-1 hover:shadow-lg hover:bg-accent transition-all duration-300 border-t-3 border-t-primary">
 	{#if tool.tags.length > 0}
 		<div class="flex flex-wrap gap-1.5 mb-3">
 			{#each tool.tags as tag}
-				<span class="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">{tag}</span>
+				<span class="text-xs px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground font-medium">{tag}</span>
 			{/each}
 		</div>
 	{/if}
@@ -21,12 +21,12 @@
 
 	<div class="flex gap-4 text-sm">
 		{#if tool.githubUrl}
-			<a href={tool.githubUrl} class="text-foreground hover:underline" target="_blank" rel="noopener noreferrer">
+			<a href={tool.githubUrl} class="text-primary font-medium hover:underline underline-offset-2" target="_blank" rel="noopener noreferrer">
 				GitHub &rarr;
 			</a>
 		{/if}
 		{#if tool.demoUrl}
-			<a href={tool.demoUrl} class="text-foreground hover:underline" target="_blank" rel="noopener noreferrer">
+			<a href={tool.demoUrl} class="text-primary font-medium hover:underline underline-offset-2" target="_blank" rel="noopener noreferrer">
 				Demo &rarr;
 			</a>
 		{/if}

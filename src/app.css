@@ -4,73 +4,80 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ── Light mode: White Smoke base, Ultra Violet primary, Lime Yellow secondary ── */
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --background: oklch(0.97 0.003 90);           /* #F6F5F4 White Smoke */
+  --foreground: oklch(0.14 0 0);                 /* #0D0D0D Onyx */
+  --card: oklch(1 0 0);                          /* #FFFFFF pure white */
+  --card-foreground: oklch(0.14 0 0);            /* Onyx */
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.14 0 0);
+  --primary: oklch(0.47 0.29 285);               /* #6D3BFF Ultra Violet */
+  --primary-foreground: oklch(0.97 0.003 90);    /* White Smoke */
+  --secondary: oklch(0.94 0.22 115);             /* #DFFF5C Lime Yellow */
+  --secondary-foreground: oklch(0.14 0 0);       /* Onyx */
+  --muted: oklch(0.94 0.005 90);                 /* #EDEBE8 warm grey */
+  --muted-foreground: oklch(0.14 0 0 / 55%);    /* Onyx at 55% */
+  --accent: oklch(0.47 0.29 285 / 8%);           /* Ultra Violet at 8% */
+  --accent-foreground: oklch(0.47 0.29 285);     /* Ultra Violet */
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
+  --border: oklch(0.14 0 0 / 10%);              /* Onyx at 10% */
+  --input: oklch(0.14 0 0 / 12%);               /* Onyx at 12% */
+  --ring: oklch(0.47 0.29 285);                  /* Ultra Violet */
+  --chart-1: oklch(0.47 0.29 285);               /* Ultra Violet */
+  --chart-2: oklch(0.94 0.22 115);               /* Lime Yellow */
+  --chart-3: oklch(0.22 0.05 270);               /* Space Indigo */
+  --chart-4: oklch(0.646 0.222 41.116);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.97 0.003 90);
+  --sidebar-foreground: oklch(0.14 0 0);
+  --sidebar-primary: oklch(0.47 0.29 285);
+  --sidebar-primary-foreground: oklch(0.97 0.003 90);
+  --sidebar-accent: oklch(0.47 0.29 285 / 8%);
+  --sidebar-accent-foreground: oklch(0.47 0.29 285);
+  --sidebar-border: oklch(0.14 0 0 / 10%);
+  --sidebar-ring: oklch(0.47 0.29 285);
+  /* Design system: Space Indigo for hero/footer dark sections */
+  --hero: oklch(0.22 0.05 270);                  /* #1D2440 Space Indigo */
+  --hero-foreground: oklch(0.97 0.003 90);       /* White Smoke */
 }
 
+/* ── Dark mode: Space Indigo base, Ultra Violet primary, Lime Yellow accents ── */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: oklch(0.22 0.05 270);            /* Space Indigo */
+  --foreground: oklch(0.97 0.003 90);            /* White Smoke */
+  --card: oklch(0.26 0.05 270);                  /* Space Indigo lightened */
+  --card-foreground: oklch(0.97 0.003 90);
+  --popover: oklch(0.26 0.05 270);
+  --popover-foreground: oklch(0.97 0.003 90);
+  --primary: oklch(0.47 0.29 285);               /* Ultra Violet — same (brand anchor) */
+  --primary-foreground: oklch(0.97 0.003 90);
+  --secondary: oklch(0.94 0.22 115 / 70%);       /* Lime Yellow at 70% */
+  --secondary-foreground: oklch(0.14 0 0);
+  --muted: oklch(0.28 0.05 270);                 /* Space Indigo lighter */
+  --muted-foreground: oklch(0.97 0.003 90 / 60%); /* White Smoke at 60% */
+  --accent: oklch(0.47 0.29 285 / 15%);          /* Ultra Violet at 15% */
+  --accent-foreground: oklch(0.94 0.22 115);     /* Lime Yellow */
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
+  --border: oklch(0.97 0.003 90 / 10%);          /* White Smoke at 10% */
+  --input: oklch(0.97 0.003 90 / 15%);
+  --ring: oklch(0.47 0.29 285);
+  --chart-1: oklch(0.55 0.29 285);
+  --chart-2: oklch(0.94 0.22 115);
+  --chart-3: oklch(0.97 0.003 90);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar: oklch(0.22 0.05 270);
+  --sidebar-foreground: oklch(0.97 0.003 90);
+  --sidebar-primary: oklch(0.55 0.29 285);
+  --sidebar-primary-foreground: oklch(0.97 0.003 90);
+  --sidebar-accent: oklch(0.47 0.29 285 / 15%);
+  --sidebar-accent-foreground: oklch(0.94 0.22 115);
+  --sidebar-border: oklch(0.97 0.003 90 / 10%);
+  --sidebar-ring: oklch(0.47 0.29 285);
+  --hero: oklch(0.18 0.05 270);                  /* Darker Space Indigo for hero in dark mode */
+  --hero-foreground: oklch(0.97 0.003 90);
 }
 
 @theme inline {
@@ -109,6 +116,9 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  /* Custom design tokens */
+  --color-hero: var(--hero);
+  --color-hero-foreground: var(--hero-foreground);
 }
 
 @layer base {
@@ -117,13 +127,48 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Raleway', sans-serif;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Bodoni Moda', serif;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  ::selection {
+    background: oklch(0.47 0.29 285 / 25%);
+    color: oklch(0.97 0.003 90);
   }
 }
 
-/* Showcase stagger animation — used by /design variants */
+/* ── Lime Yellow marker highlight effect ── */
+.text-highlight {
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  background: linear-gradient(
+    to top,
+    oklch(0.94 0.22 115 / 40%) 35%,
+    transparent 35%
+  );
+  padding: 0 0.15em;
+}
+
+/* ── Stagger fade-up animation ── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Slow gradient hue shift for hero backgrounds */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -132,13 +177,26 @@
     animation: fadeUp 450ms ease forwards;
   }
   .animate-stagger > *:nth-child(1) { animation-delay: 0ms; }
-  .animate-stagger > *:nth-child(2) { animation-delay: 100ms; }
-  .animate-stagger > *:nth-child(3) { animation-delay: 200ms; }
-  .animate-stagger > *:nth-child(4) { animation-delay: 300ms; }
+  .animate-stagger > *:nth-child(2) { animation-delay: 80ms; }
+  .animate-stagger > *:nth-child(3) { animation-delay: 160ms; }
+  .animate-stagger > *:nth-child(4) { animation-delay: 240ms; }
+  .animate-stagger > *:nth-child(5) { animation-delay: 320ms; }
+  .animate-stagger > *:nth-child(6) { animation-delay: 400ms; }
+  .animate-stagger > *:nth-child(7) { animation-delay: 480ms; }
+  .animate-stagger > *:nth-child(8) { animation-delay: 560ms; }
+  .animate-stagger > *:nth-child(9) { animation-delay: 640ms; }
+  .animate-stagger > *:nth-child(10) { animation-delay: 720ms; }
+  .animate-stagger > *:nth-child(11) { animation-delay: 800ms; }
+  .animate-stagger > *:nth-child(12) { animation-delay: 880ms; }
+
+  .animate-fade-in {
+    animation: fadeIn 600ms ease forwards;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-stagger > * {
+  .animate-stagger > *,
+  .animate-fade-in {
     opacity: 1;
     animation: none;
   }

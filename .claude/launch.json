@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "/Users/admin/local/nodejs/node-v22.15.0-darwin-arm64/bin/node",
+      "runtimeArgs": ["node_modules/.bin/vite", "dev"],
+      "port": 5173
+    }
+  ]
+}

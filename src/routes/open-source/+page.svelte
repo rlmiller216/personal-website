@@ -8,11 +8,16 @@
 	<title>Open Source — {data.siteName}</title>
 </svelte:head>
 
-<section class="max-w-6xl mx-auto px-6 py-16">
-	<h1 class="text-3xl font-bold mb-8">Open Source</h1>
+<!-- Page header — Space Indigo -->
+<div class="bg-hero">
+	<div class="max-w-6xl mx-auto px-6 py-12">
+		<h1 class="text-4xl font-bold text-hero-foreground">Open Source</h1>
+	</div>
+</div>
 
+<section class="max-w-6xl mx-auto px-6 py-12">
 	{#if data.tools.length > 0}
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 animate-stagger">
 			{#each data.tools as tool}
 				<ToolCard {tool} />
 			{/each}

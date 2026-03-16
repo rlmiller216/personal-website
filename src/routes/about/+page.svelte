@@ -8,9 +8,14 @@
 	<title>About — {data.siteName}</title>
 </svelte:head>
 
-<article class="max-w-3xl mx-auto px-6 py-16">
-	<h1 class="text-3xl font-bold mb-8">About</h1>
+<!-- Page header — Space Indigo -->
+<div class="bg-hero">
+	<div class="max-w-3xl mx-auto px-6 py-12">
+		<h1 class="text-4xl font-bold text-hero-foreground">About</h1>
+	</div>
+</div>
 
+<article class="max-w-3xl mx-auto px-6 py-12">
 	{#if data.blocks.length > 0}
 		<div class="prose max-w-none">
 			<NotionBlocks blocks={data.blocks} />

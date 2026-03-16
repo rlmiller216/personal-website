@@ -8,11 +8,16 @@
 	<title>Projects — {data.siteName}</title>
 </svelte:head>
 
-<section class="max-w-6xl mx-auto px-6 py-16">
-	<h1 class="text-3xl font-bold mb-8">Projects</h1>
+<!-- Page header — Space Indigo -->
+<div class="bg-hero">
+	<div class="max-w-6xl mx-auto px-6 py-12">
+		<h1 class="text-4xl font-bold text-hero-foreground">Projects</h1>
+	</div>
+</div>
 
+<section class="max-w-6xl mx-auto px-6 py-12">
 	{#if data.projects.length > 0}
-		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-stagger">
 			{#each data.projects as project}
 				<ProjectCard {project} />
 			{/each}
