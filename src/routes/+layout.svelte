@@ -86,10 +86,10 @@
 					style="font-family: 'Raleway', sans-serif;"
 					onclick={() => sidebarMenuOpen = false}
 				>
-					{#if isActive(link.href)}
-						<span class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-secondary"></span>
-					{/if}
 					{link.label}
+					{#if isActive(link.href)}
+						<span class="absolute bottom-1.5 left-4 right-4 h-0.5 rounded-full bg-secondary"></span>
+					{/if}
 				</a>
 			{/each}
 		</nav>
@@ -99,7 +99,7 @@
 <div class="min-h-screen flex flex-col md:ml-14 lg:ml-20">
 	<!-- Nav — transparent on hero, solid on scroll -->
 	<header
-		class="fixed top-0 left-0 md:left-14 lg:left-20 right-0 z-50 transition-all duration-300
+		class="fixed top-0 left-0 md:left-14 lg:left-20 right-0 z-50 transition-[background-color,border-color,box-shadow] duration-300
 			{showSolidNav ? 'bg-white border-b border-border shadow-sm' : 'bg-transparent'}"
 	>
 		<nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
