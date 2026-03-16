@@ -21,7 +21,7 @@
 </script>
 
 <!-- Hero — full-width Space Indigo -->
-<section data-hero class="relative -mt-16 pt-16 md:mt-0 md:pt-0 bg-hero overflow-hidden">
+<section data-hero class="relative -mt-16 pt-16 bg-hero overflow-hidden">
 	<div class="max-w-6xl mx-auto px-6 py-24 sm:py-32 lg:py-40 text-center animate-stagger">
 		<h1 class="mx-auto max-w-3xl text-4xl sm:text-5xl lg:text-7xl font-bold text-hero-foreground tracking-tight leading-[1.1] mb-6">
 			{leadWords}<br />

@@ -60,7 +60,7 @@ Notion databases/pages
 ### Key Patterns
 - OKLCH design tokens in `app.css` with light/dark mode (`--hero`, `--hero-foreground` for Space Indigo sections)
 - **Scroll-collapsing RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top (-12px), L and M animate upward on scroll to form a tight monogram. Collapse range extends 1.8× beyond hero height for a slow, cinematic feel. Responsive two-tier sizing: 56px/48px font at md, 80px/72px font at lg. Hidden on mobile.
-- **Non-fixed desktop nav**: nav scrolls away naturally on desktop (`md:relative`) so sticky section headers own the top of the viewport. Mobile nav stays fixed. `isDesktop` inline init via `matchMedia` prevents white-text-on-white-bg FOUC.
+- **Non-fixed desktop nav**: nav scrolls away naturally on desktop (`md:relative md:z-10`) so sticky section headers own the top of the viewport. Transparent on homepage hero (hero extends behind nav via `-mt-16 pt-16`), solid on scroll or subpages. Mobile nav stays fixed.
 - **MCA-style sticky section headers** on homepage: each section's heading sticks at `top-16` (mobile, below fixed nav) or `top-0` (desktop). Title is a link with bold angular Ultra Violet arrow. No shadow on sticky headers.
 - **Angular icon convention**: all custom SVGs use `stroke-linecap="square"` + `stroke-linejoin="miter"` to match Raleway's geometric character. Applies to hamburger, section arrows, and close icons.
 - **Sidebar hamburger menu**: large angular icon (52px lg, 36px md) matching RLM letter color and width. Opens slide-out nav (w-80) with bold uppercase Raleway links, top-aligned with R. Panel is `bg-white` (matches sidebar). fly/fade Svelte transitions, Escape dismisses, mutual exclusion with mobile menu.

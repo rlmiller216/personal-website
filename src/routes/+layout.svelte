@@ -20,10 +20,6 @@
 	let mobileMenuOpen = $state(false);
 	let sidebarMenuOpen = $state(false);
 	let scrolled = $state(false);
-	// Inline init prevents FOUC — correct value on first client render
-	let isDesktop = $state(
-		typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
-	);
 
 	// Mutual exclusion — prevent both menus open during resize
 	$effect(() => {
@@ -34,23 +30,12 @@
 		const onScroll = () => { scrolled = window.scrollY > 50; };
 		onScroll();
 		window.addEventListener('scroll', onScroll, { passive: true });
-
-		// Keep isDesktop reactive for viewport resize across breakpoints
-		const mql = window.matchMedia('(min-width: 768px)');
-		isDesktop = mql.matches;
-		const onMedia = (e: MediaQueryListEvent) => { isDesktop = e.matches; };
-		mql.addEventListener('change', onMedia);
-
-		return () => {
-			window.removeEventListener('scroll', onScroll);
-			mql.removeEventListener('change', onMedia);
-		};
+		return () => window.removeEventListener('scroll', onScroll);
 	});
 
-	// Mobile: transparent on homepage hero, solid on scroll/subpages.
-	// Desktop: always solid (nav is md:relative on white bg, isDesktop forces true).
+	// Transparent on homepage hero, solid on scroll or subpages
 	const isHome = $derived(page.url.pathname === '/');
-	const showSolidNav = $derived(scrolled || !isHome || isDesktop);
+	const showSolidNav = $derived(scrolled || !isHome);
 
 	function isActive(href: string): boolean {
 		if (href === '/') return page.url.pathname === '/';
@@ -121,8 +106,7 @@
 		class="fixed top-0 inset-x-0 z-50
 			transition-[background-color,border-color,box-shadow] duration-300
 			{showSolidNav ? 'bg-white border-b border-border shadow-sm' : 'bg-transparent'}
-			md:relative md:inset-auto md:z-auto
-			md:bg-white md:border-b md:border-border md:shadow-sm md:transition-none"
+			md:relative md:inset-auto md:z-10"
 	>
 		<nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
 			<a
