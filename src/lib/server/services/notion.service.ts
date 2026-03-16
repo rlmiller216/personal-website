@@ -40,43 +40,43 @@ function getClient(): Client | null {
 
 type PageProperty = PageObjectResponse['properties'][string];
 
-export function getTitle(property: PageProperty): string {
-	if (property.type !== 'title') return '';
+export function getTitle(property: PageProperty | undefined): string {
+	if (!property || property.type !== 'title') return '';
 	return property.title.map((t) => t.plain_text).join('');
 }
 
-export function getRichText(property: PageProperty): string {
-	if (property.type !== 'rich_text') return '';
+export function getRichText(property: PageProperty | undefined): string {
+	if (!property || property.type !== 'rich_text') return '';
 	return property.rich_text.map((t) => t.plain_text).join('');
 }
 
-export function getSelect(property: PageProperty): string {
-	if (property.type !== 'select') return '';
+export function getSelect(property: PageProperty | undefined): string {
+	if (!property || property.type !== 'select') return '';
 	return property.select?.name ?? '';
 }
 
-export function getMultiSelect(property: PageProperty): string[] {
-	if (property.type !== 'multi_select') return [];
+export function getMultiSelect(property: PageProperty | undefined): string[] {
+	if (!property || property.type !== 'multi_select') return [];
 	return property.multi_select.map((s) => s.name);
 }
 
-export function getUrl(property: PageProperty): string {
-	if (property.type !== 'url') return '';
+export function getUrl(property: PageProperty | undefined): string {
+	if (!property || property.type !== 'url') return '';
 	return property.url ?? '';
 }
 
-export function getCheckbox(property: PageProperty): boolean {
-	if (property.type !== 'checkbox') return false;
+export function getCheckbox(property: PageProperty | undefined): boolean {
+	if (!property || property.type !== 'checkbox') return false;
 	return property.checkbox;
 }
 
-export function getNumber(property: PageProperty): number {
-	if (property.type !== 'number') return 0;
+export function getNumber(property: PageProperty | undefined): number {
+	if (!property || property.type !== 'number') return 0;
 	return property.number ?? 0;
 }
 
-export function getFileUrl(property: PageProperty): string {
-	if (property.type !== 'files') return '';
+export function getFileUrl(property: PageProperty | undefined): string {
+	if (!property || property.type !== 'files') return '';
 	const file = property.files[0];
 	if (!file) return '';
 	if (file.type === 'file') return file.file.url;
