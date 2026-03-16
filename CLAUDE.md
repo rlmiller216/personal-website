@@ -169,8 +169,10 @@ tests/
     notion-block-utils.test.ts → Shared block utilities (extractRichText, groupListItems)
     mappers.test.ts         → Tests for mapProject, mapTool, mapResource
     slug-collisions.test.ts → Tests for warnSlugCollisions
-    embed-config.test.ts    → Embed provider detection (YouTube, Miro, etc.)
+    embed-config.test.ts    → Embed provider detection (YouTube, Miro, Mol*, etc.)
     code-highlight.test.ts  → Shiki highlighting (language mapping, fallbacks)
+  types/
+    content.test.ts         → slugify() and type interface tests
   components/
     notion-render-utils.test.ts → XSS-safe rich text rendering
 ```
@@ -247,7 +249,6 @@ NOTION_PROJECTS_DS_ID=...
 NOTION_TOOLS_DS_ID=...
 NOTION_RESOURCES_DS_ID=...
 NOTION_ABOUT_PAGE_ID=...
-# No NOTION_INTERESTS_PAGE_ID — interests page removed (2026-03-16)
 
 # Site metadata — prefixed RM_ because Netlify reserves SITE_NAME
 RM_SITE_NAME="RLM"
@@ -273,7 +274,7 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 118 tests across 9 files: `notion.service.test.ts` (28) + `notion-blocks.test.ts` (26) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (5) + `embed-config.test.ts` (10) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12)
+- 119 tests across 9 files: `notion.service.test.ts` (28) + `notion-blocks.test.ts` (26) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (5) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs
@@ -386,5 +387,5 @@ Session artifacts are stored in `~/memory/sessions/`.
 - **Contact form:** Formspree endpoint `xbdzaneq`
 - **Redeploy:** Push to GitHub (auto-deploys), or "Trigger deploy" in Netlify dashboard for content refreshes
 - **⚠️ No scheduled build hooks** — free tier only allows ~20 deploys/month (300 credits, ~15/deploy)
-- **Hardcoded social links:** GitHub (`rlmiller216`) and LinkedIn (`rlmiller216`) are in `+layout.svelte` footer — not env vars
+- **Hardcoded social links:** GitHub (`rlmiller216`) and LinkedIn (`rebeccalauriemiller`) are in `+layout.svelte` footer — not env vars
 
