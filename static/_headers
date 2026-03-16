@@ -1,0 +1,3 @@
+# Allow Mol* viewer (molstar.org) to fetch snapshot files
+/molstar/*
+  Access-Control-Allow-Origin: *
