@@ -21,7 +21,10 @@
 	{#if sections.length > 0}
 		{#each sections as [type, resources]}
 			<div class="mb-12">
-				<h2 class="text-xl font-bold border-l-3 border-primary pl-4 mb-5">{type} ({resources.length})</h2>
+				<h2 class="text-2xl md:text-3xl font-bold mb-5"
+				style="font-family: 'Raleway', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">
+				{type} <span class="text-muted-foreground text-lg font-normal">({resources.length})</span>
+			</h2>
 				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-stagger">
 					{#each resources as resource}
 						<ResourceCard {resource} />

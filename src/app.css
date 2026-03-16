@@ -141,16 +141,12 @@
   }
 }
 
-/* ── Lime Yellow marker highlight effect ── */
+/* ── Lime Yellow thin underline highlight ── */
 .text-highlight {
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-  background: linear-gradient(
-    to top,
-    oklch(0.94 0.22 115 / 40%) 35%,
-    transparent 35%
-  );
-  padding: 0 0.15em;
+  text-decoration: underline;
+  text-decoration-color: oklch(0.94 0.22 115);
+  text-underline-offset: 6px;
+  text-decoration-thickness: 3px;
 }
 
 /* ── Stagger fade-up animation ── */

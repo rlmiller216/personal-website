@@ -6,8 +6,8 @@
 
 <a
 	href={resource.url || '#'}
-	class="flex gap-4 rounded-lg border border-border border-l-3 border-l-primary p-4
-		hover:-translate-y-0.5 hover:shadow-md transition-all duration-300"
+	class="flex items-start gap-4 rounded-lg p-4 transition-shadow hover:shadow-md bg-card"
+	style="border: 1px solid oklch(0.14 0 0 / 8%); border-left: 4px solid oklch(0.47 0.29 285);"
 	target={resource.url ? '_blank' : undefined}
 	rel={resource.url ? 'noopener noreferrer' : undefined}
 >
@@ -15,24 +15,25 @@
 		<img
 			src={resource.imageUrl}
 			alt={resource.title}
-			class="w-12 h-16 object-cover rounded shrink-0"
+			class="h-20 w-16 shrink-0 rounded object-cover"
 			loading="lazy"
 		/>
 	{:else}
-		<div class="w-12 h-16 bg-primary/10 rounded shrink-0 flex items-center justify-center text-xs text-primary font-bold">
+		<div class="w-16 h-20 bg-primary/10 rounded shrink-0 flex items-center justify-center text-xs text-primary font-bold">
 			{resource.type?.charAt(0) || '?'}
 		</div>
 	{/if}
-	<div class="min-w-0">
+	<div class="flex flex-1 flex-col">
 		{#if resource.type}
-			<span class="text-xs font-medium text-primary uppercase tracking-wide">{resource.type}</span>
+			<span class="mb-1 w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider bg-secondary text-secondary-foreground"
+				style="font-family: 'Raleway', sans-serif;">{resource.type}</span>
 		{/if}
-		<h3 class="font-semibold text-sm leading-tight">{resource.title}</h3>
+		<h3 class="text-base font-semibold" style="font-family: 'Raleway', sans-serif;">{resource.title}</h3>
 		{#if resource.author}
-			<p class="text-xs text-muted-foreground">by {resource.author}</p>
+			<p class="text-xs text-muted-foreground" style="font-family: 'Raleway', sans-serif;">{resource.author}</p>
 		{/if}
 		{#if resource.whyILoveIt}
-			<p class="text-xs text-muted-foreground italic mt-1 line-clamp-2 bg-secondary/15 px-1.5 py-0.5 rounded">"{resource.whyILoveIt}"</p>
+			<p class="mt-1.5 text-sm italic text-muted-foreground" style="font-family: 'Raleway', sans-serif;">&ldquo;{resource.whyILoveIt}&rdquo;</p>
 		{/if}
 	</div>
 </a>

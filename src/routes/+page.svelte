@@ -5,80 +5,96 @@
 	import ResourceCard from '$lib/components/ResourceCard.svelte';
 
 	let { data } = $props();
+
+	/** Split headline so last 2 words get a single continuous lime underline */
+	const headlineWords = $derived(data.heroHeadline.split(' '));
+	const leadWords = $derived(headlineWords.slice(0, -2).join(' '));
+	const highlightWords = $derived(headlineWords.slice(-2).join(' '));
 </script>
 
-<!-- Hero — full-width Space Indigo with gradient fade -->
+<!-- Hero — full-width Space Indigo -->
 <section class="relative -mt-16 pt-16 bg-hero overflow-hidden">
-	<div class="max-w-6xl mx-auto px-6 py-24 sm:py-32 lg:py-40 animate-stagger">
-		<h1 class="text-4xl sm:text-5xl lg:text-7xl font-bold text-hero-foreground tracking-tight leading-[1.1] mb-6">
-			{#each data.heroHeadline.split(' ') as word, i}
-				{#if i >= data.heroHeadline.split(' ').length - 2}
-					<span class="text-highlight">{word}</span>{' '}
-				{:else}
-					{word}{' '}
-				{/if}
-			{/each}
+	<div class="max-w-6xl mx-auto px-6 py-24 sm:py-32 lg:py-40 text-center animate-stagger">
+		<h1 class="mx-auto max-w-3xl text-4xl sm:text-5xl lg:text-7xl font-bold text-hero-foreground tracking-tight leading-[1.1] mb-6">
+			{leadWords}<br />
+			<span class="text-highlight">{highlightWords}</span>
 		</h1>
 		{#if data.heroIntro}
-			<p class="text-lg sm:text-xl text-hero-foreground/70 max-w-2xl leading-relaxed">
+			<p class="mx-auto text-lg sm:text-xl text-hero-foreground/70 max-w-xl leading-relaxed"
+				style="font-family: 'Raleway', sans-serif;">
 				{data.heroIntro}
 			</p>
 		{/if}
 	</div>
-	<!-- Gradient fade to background -->
-	<div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent"></div>
+	<!-- Gradient fade to white band -->
+	<div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent"></div>
 </section>
 
-<!-- Featured Projects -->
+<!-- Featured Projects — White band -->
 {#if data.featuredProjects.length > 0}
-	<section class="max-w-6xl mx-auto px-6 py-16">
-		<div class="flex items-center justify-between mb-8">
-			<h2 class="text-2xl font-bold border-l-3 border-primary pl-4">Projects</h2>
-			<a href="/projects" class="group flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-				View all
-				<ArrowRight class="w-4 h-4 transition-transform group-hover:translate-x-1" />
-			</a>
-		</div>
-		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-stagger">
-			{#each data.featuredProjects as project}
-				<ProjectCard {project} />
-			{/each}
+	<section class="w-full py-20" style="background: #FFFFFF;">
+		<div class="max-w-6xl mx-auto px-6">
+			<div class="mb-10 flex items-baseline justify-between">
+				<h2 class="text-3xl md:text-4xl font-bold"
+					style="font-family: 'Raleway', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">
+					FEATURED <span class="text-highlight">PROJECTS</span>
+				</h2>
+				<a href="/projects" class="group flex items-center gap-1 text-sm font-medium text-primary shrink-0"
+					style="font-family: 'Raleway', sans-serif;">
+					View all <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+				</a>
+			</div>
+			<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-stagger">
+				{#each data.featuredProjects as project}
+					<ProjectCard {project} />
+				{/each}
+			</div>
 		</div>
 	</section>
 {/if}
 
-<!-- Featured Tools -->
+<!-- Open Source — Smoke band -->
 {#if data.featuredTools.length > 0}
-	<section class="max-w-6xl mx-auto px-6 pb-16">
-		<div class="flex items-center justify-between mb-8">
-			<h2 class="text-2xl font-bold border-l-3 border-primary pl-4">Open Source</h2>
-			<a href="/open-source" class="group flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-				View all
-				<ArrowRight class="w-4 h-4 transition-transform group-hover:translate-x-1" />
-			</a>
-		</div>
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 animate-stagger">
-			{#each data.featuredTools as tool}
-				<ToolCard {tool} />
-			{/each}
+	<section class="w-full py-20 bg-background">
+		<div class="max-w-6xl mx-auto px-6">
+			<div class="mb-10 flex items-baseline justify-between">
+				<h2 class="text-3xl md:text-4xl font-bold"
+					style="font-family: 'Raleway', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">
+					OPEN <span class="text-highlight">SOURCE</span>
+				</h2>
+				<a href="/open-source" class="group flex items-center gap-1 text-sm font-medium text-primary shrink-0"
+					style="font-family: 'Raleway', sans-serif;">
+					View all <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+				</a>
+			</div>
+			<div class="grid gap-6 sm:grid-cols-2 animate-stagger">
+				{#each data.featuredTools as tool}
+					<ToolCard {tool} />
+				{/each}
+			</div>
 		</div>
 	</section>
 {/if}
 
-<!-- Featured Resources -->
+<!-- Recommended Resources — White band -->
 {#if data.featuredResources.length > 0}
-	<section class="max-w-6xl mx-auto px-6 pb-16">
-		<div class="flex items-center justify-between mb-8">
-			<h2 class="text-2xl font-bold border-l-3 border-primary pl-4">Resources I Love</h2>
-			<a href="/resources" class="group flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-				View all
-				<ArrowRight class="w-4 h-4 transition-transform group-hover:translate-x-1" />
-			</a>
-		</div>
-		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-stagger">
-			{#each data.featuredResources as resource}
-				<ResourceCard {resource} />
-			{/each}
+	<section class="w-full py-20" style="background: #FFFFFF;">
+		<div class="max-w-6xl mx-auto px-6">
+			<div class="mb-10 flex items-baseline justify-between">
+				<h2 class="text-3xl md:text-4xl font-bold"
+					style="font-family: 'Raleway', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">
+					RECOMMENDED <span class="text-highlight">RESOURCES</span>
+				</h2>
+				<a href="/resources" class="group flex items-center gap-1 text-sm font-medium text-primary shrink-0"
+					style="font-family: 'Raleway', sans-serif;">
+					View all <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+				</a>
+			</div>
+			<div class="grid gap-5 sm:grid-cols-2 animate-stagger">
+				{#each data.featuredResources as resource}
+					<ResourceCard {resource} />
+				{/each}
+			</div>
 		</div>
 	</section>
 {/if}

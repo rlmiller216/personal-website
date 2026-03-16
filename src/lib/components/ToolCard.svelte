@@ -4,31 +4,36 @@
 	let { tool }: { tool: Tool } = $props();
 </script>
 
-<div class="rounded-lg border border-border p-5 hover:-translate-y-1 hover:shadow-lg hover:bg-accent transition-all duration-300 border-t-3 border-t-primary">
-	{#if tool.tags.length > 0}
-		<div class="flex flex-wrap gap-1.5 mb-3">
-			{#each tool.tags as tag}
-				<span class="text-xs px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground font-medium">{tag}</span>
-			{/each}
+<div class="overflow-hidden rounded-lg shadow-sm transition-shadow hover:shadow-lg">
+	<!-- Violet header bar with Bodoni Moda title -->
+	<div class="px-5 py-3 bg-primary">
+		<h3 class="text-lg font-semibold text-primary-foreground"
+			style="font-family: 'Bodoni Moda', serif;">{tool.title}</h3>
+	</div>
+	<!-- White body -->
+	<div class="p-5 bg-card">
+		{#if tool.description}
+			<p class="text-sm text-muted-foreground" style="font-family: 'Raleway', sans-serif;">{tool.description}</p>
+		{/if}
+		{#if tool.tags.length > 0}
+			<div class="mt-4 flex flex-wrap gap-2">
+				{#each tool.tags as tag}
+					<span class="rounded-full px-2.5 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground"
+						style="font-family: 'Raleway', sans-serif;">{tag}</span>
+				{/each}
+			</div>
+		{/if}
+		<div class="mt-4 flex gap-4">
+			{#if tool.githubUrl}
+				<a href={tool.githubUrl} class="text-sm font-medium text-primary hover:underline underline-offset-2"
+					style="font-family: 'Raleway', sans-serif;"
+					target="_blank" rel="noopener noreferrer">GitHub</a>
+			{/if}
+			{#if tool.demoUrl}
+				<a href={tool.demoUrl} class="text-sm font-medium text-primary hover:underline underline-offset-2"
+					style="font-family: 'Raleway', sans-serif;"
+					target="_blank" rel="noopener noreferrer">Demo</a>
+			{/if}
 		</div>
-	{/if}
-
-	<h3 class="font-semibold mb-1">{tool.title}</h3>
-
-	{#if tool.description}
-		<p class="text-sm text-muted-foreground line-clamp-3 mb-3">{tool.description}</p>
-	{/if}
-
-	<div class="flex gap-4 text-sm">
-		{#if tool.githubUrl}
-			<a href={tool.githubUrl} class="text-primary font-medium hover:underline underline-offset-2" target="_blank" rel="noopener noreferrer">
-				GitHub &rarr;
-			</a>
-		{/if}
-		{#if tool.demoUrl}
-			<a href={tool.demoUrl} class="text-primary font-medium hover:underline underline-offset-2" target="_blank" rel="noopener noreferrer">
-				Demo &rarr;
-			</a>
-		{/if}
 	</div>
 </div>

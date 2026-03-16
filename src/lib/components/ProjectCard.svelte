@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ArrowRight } from '@lucide/svelte';
 	import type { Project } from '$lib/types/content';
 
 	let { project }: { project: Project } = $props();
@@ -6,41 +7,38 @@
 
 <a
 	href={project.url || '#'}
-	class="group block rounded-lg border border-border overflow-hidden
-		hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
+	class="group flex flex-col overflow-hidden rounded-lg shadow-sm transition-all
+		hover:shadow-lg hover:-translate-y-1"
+	style="border-bottom: 4px solid oklch(0.94 0.22 115);"
 	target={project.url ? '_blank' : undefined}
 	rel={project.url ? 'noopener noreferrer' : undefined}
 >
-	<!-- Image with Ultra Violet hover overlay -->
-	<div class="relative aspect-[16/10] overflow-hidden bg-muted">
-		{#if project.imageUrl}
-			<img
-				src={project.imageUrl}
-				alt={project.title}
-				class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-				loading="lazy"
-			/>
-		{:else}
-			<div class="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
-				No image
-			</div>
-		{/if}
-		<div class="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-	</div>
-
-	<!-- Content -->
-	<div class="p-4">
-		<div class="flex items-center gap-2 mb-1">
-			<h3 class="font-semibold">{project.title}</h3>
-			{#if project.sector}
-				<span class="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">{project.sector}</span>
-			{/if}
+	{#if project.imageUrl}
+		<img
+			src={project.imageUrl}
+			alt={project.title}
+			class="h-48 w-full object-cover"
+			loading="lazy"
+		/>
+	{:else}
+		<div class="h-48 w-full flex items-center justify-center bg-muted text-muted-foreground text-sm">
+			No image
 		</div>
+	{/if}
+	<div class="flex flex-1 flex-col p-5 bg-card">
+		{#if project.sector}
+			<span class="mb-2 w-fit rounded-full px-3 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground"
+				style="font-family: 'Raleway', sans-serif;">{project.sector}</span>
+		{/if}
+		<h3 class="text-lg font-semibold" style="font-family: 'Raleway', sans-serif;">{project.title}</h3>
+		{#if project.description}
+			<p class="mt-1 flex-1 text-sm text-muted-foreground" style="font-family: 'Raleway', sans-serif;">{project.description}</p>
+		{/if}
 		{#if project.role}
-			<p class="text-sm text-muted-foreground">{project.role}</p>
+			<span class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary"
+				style="font-family: 'Raleway', sans-serif;">
+				{project.role} <ArrowRight class="h-3.5 w-3.5" />
+			</span>
 		{/if}
 	</div>
-
-	<!-- Lime Yellow bottom accent — scales in on hover -->
-	<div class="h-0.5 bg-secondary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
 </a>
