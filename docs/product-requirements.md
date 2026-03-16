@@ -18,7 +18,7 @@
 - [x] **Footer redesign** — updated layout and styling with Raleway RLM branding
 - [ ] **Notion as CMS** — all content fetched from Notion API at build time
 - [ ] **Static site generation** — adapter-static produces pure HTML
-- [ ] **Netlify deployment** — free hosting with build hooks
+- [ ] **Netlify deployment** — free hosting, auto-deploys on push
 - [ ] **SEO meta tags** — title, description, Open Graph on all pages
 - [ ] **Accessible** — keyboard navigation, semantic HTML, WCAG AA contrast
 - [ ] **Error handling** — friendly 404 page + runtime error page
@@ -29,7 +29,7 @@
 - [ ] **Favicon** — R monogram SVG
 - [ ] **robots.txt** — search engine directives
 - [ ] **Sitemap** — auto-generated XML sitemap
-- [ ] **Hourly rebuilds** — Netlify build hook on schedule for fresh Notion content
+- [x] ~~**Hourly rebuilds**~~ — Not viable on free tier (300 credits/month, ~15/deploy). Using push-triggered + manual dashboard deploys instead
 - [ ] **Featured items on homepage** — checkbox-driven from Notion databases
 - [x] **Design system with custom color palette** — cohesive typography, color, spacing via CSS variables
 - [x] **Google Fonts integration (Bodoni Moda + Raleway)** — distinctive typography pairing

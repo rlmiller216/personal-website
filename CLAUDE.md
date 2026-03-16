@@ -21,7 +21,7 @@ npx svelte-check     # type checking
 | Framework | SvelteKit + adapter-static | Static output, component-based DX, Svelte 5 runes |
 | Styling | Tailwind CSS 4 + shadcn-svelte | CSS-based config, accessible components out of the box |
 | CMS | Notion API (@notionhq/client) | Rebecca already uses Notion daily. Edit there → site rebuilds |
-| Hosting | Netlify (free tier) | Static hosting, hourly build hooks for fresh Notion content |
+| Hosting | Netlify (free tier) | Static hosting, auto-deploys on push to `main` |
 | Contact Form | Formspree | adapter-static can't do server-side form handling |
 | Typography | Bodoni Moda + Raleway (Google Fonts) | Didone serif headings + geometric sans body |
 | Icons | Lucide | Standard per Development Bible |
@@ -310,7 +310,10 @@ Errors are written for humans:
 ## Known Limitations & Mitigations
 
 ### Notion Image URLs Expire (~1 hour)
-Signed S3 URLs expire. Hourly Netlify build hook rebuilds keep them fresh. If we add longer cache times later, we'll download images to `static/` at build time.
+Signed S3 URLs expire. Each git push triggers a rebuild with fresh URLs. For content-only updates (no code change), use the Netlify dashboard "Trigger deploy" button. If staleness becomes a problem, future work: download images to `static/` at build time.
+
+### Netlify Free Tier Limits (300 credits/month)
+Each production deploy costs ~15 credits. The free tier allows ~20 deploys/month. **Do not enable scheduled build hooks** — even a 6-hourly hook would consume 2,700 credits/month. Use push-triggered deploys only, plus manual "Trigger deploy" from the Netlify dashboard for content refreshes.
 
 ### Tailwind CSS 4
 Uses CSS-based configuration (`@import "tailwindcss"`) instead of v3's JS config. Follow whatever `npx sv add tailwindcss` generates.
@@ -342,7 +345,7 @@ Session artifacts are stored in `~/memory/sessions/`.
 ## Content Workflow
 
 1. Rebecca edits content in Notion (databases + pages)
-2. Netlify build hook triggers (hourly, or manual via Netlify dashboard)
+2. Push to GitHub auto-triggers Netlify build, or manually trigger via Netlify dashboard
 3. SvelteKit fetches all content from Notion API at build time
 4. adapter-static generates pure HTML/CSS/JS
 5. Netlify serves the static files
@@ -356,6 +359,7 @@ Session artifacts are stored in `~/memory/sessions/`.
 - **Hosting:** Netlify (free tier), auto-deploys on push to `main`
 - **Build command:** `npm run build` → publish dir: `build`
 - **Contact form:** Formspree endpoint `xbdzaneq`
-- **Redeploy:** Push to GitHub, or trigger manually in Netlify dashboard
+- **Redeploy:** Push to GitHub (auto-deploys), or "Trigger deploy" in Netlify dashboard for content refreshes
+- **⚠️ No scheduled build hooks** — free tier only allows ~20 deploys/month (300 credits, ~15/deploy)
 - **Hardcoded social links:** GitHub (`rlmiller216`) and LinkedIn (`rlmiller216`) are in `+layout.svelte` footer — not env vars
 

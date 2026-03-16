@@ -15,8 +15,8 @@ The primary workflow. Rebecca edits content in Notion; the website rebuilds to r
   Edits a project    ──▶   Database updated     ──▶   (no immediate effect)
   in Notion UI              (Properties saved)
 
-                                                       Hourly build hook fires
-                                                       OR git push triggers build
+                                                       Git push triggers build
+                                                       OR manual "Trigger deploy"
                                                               │
                                                               ▼
                                                        npm run build
@@ -49,8 +49,9 @@ The primary workflow. Rebecca edits content in Notion; the website rebuilds to r
 | Trigger | Time to Live |
 |---|---|
 | Git push | ~1-2 minutes (Netlify build + deploy) |
-| Hourly cron | Up to 60 minutes (worst case) |
 | Manual "Trigger deploy" | ~1-2 minutes |
+
+> **Note:** No scheduled build hooks. Netlify free tier allows ~20 deploys/month (300 credits). See SYSTEM_ARCHITECTURE.md §5.6.
 
 ---
 

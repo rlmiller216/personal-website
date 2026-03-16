@@ -39,7 +39,7 @@ A **build-time static site** that pulls content from Notion databases and pages 
 | Language | TypeScript (strict) | Type-safe codebase |
 | UI Components | shadcn-svelte | Accessible, styled primitives |
 | Styling | Tailwind CSS 4 | Utility-first CSS |
-| Hosting | Netlify (free tier) | CDN, deploys, build hooks |
+| Hosting | Netlify (free tier) | CDN, auto-deploys on push (no scheduled hooks — see §5.6) |
 | Forms | Formspree | Contact form (no server needed) |
 | Version Control | Git + GitHub (private) | Source code management |
 | Testing | Vitest | Unit tests for services |
@@ -184,7 +184,7 @@ All configuration is in `.env` (never committed). `.env.example` documents the c
 
 Notion-hosted images (type `"file"`) use signed S3 URLs that expire in ~1 hour. External URLs (type `"external"`) do not expire.
 
-**Mitigation:** Hourly Netlify build hook. If longer cache is needed, future work: download images to `static/` at build time.
+**Mitigation:** Each git push triggers a rebuild with fresh URLs. For content-only refreshes, use the Netlify dashboard "Trigger deploy" button. If staleness becomes a problem, future work: download images to `static/` at build time.
 
 ### 5.2 Notion SDK v5 Breaking Changes
 
@@ -202,11 +202,17 @@ Every build fetches all content from Notion. Build time grows linearly with cont
 
 Content changes in Notion don't appear until the next build. Visitors see stale content between builds.
 
-**Mitigation:** Hourly scheduled Netlify build hook. Manual rebuild via Netlify dashboard for urgent changes.
+**Mitigation:** Push to GitHub triggers a rebuild. For urgent content changes without a code push, use the Netlify dashboard "Trigger deploy" button.
 
 ### 5.5 Rate Limits
 
 Notion API rate limit: 3 requests/second per integration. Build-time-only access keeps us well under this for current content volume.
+
+### 5.6 Netlify Free Tier Deploy Limits
+
+Netlify free tier: 300 credits/month. Each production deploy costs ~15 credits, allowing ~20 deploys/month. Scheduled build hooks (e.g., hourly) are not viable — an hourly hook would consume 10,800 credits/month.
+
+**Mitigation:** Push-triggered deploys only. For content refreshes without code changes, use the Netlify dashboard "Trigger deploy" button. Budget deploys carefully during active development.
 
 ---
 
@@ -256,10 +262,9 @@ build/
 | Trigger | Method | Frequency |
 |---|---|---|
 | Git push | Automatic (Netlify watches repo) | On every push |
-| Scheduled | Netlify build hook (cron) | Hourly |
-| Manual | Netlify dashboard "Trigger deploy" | On demand |
+| Manual | Netlify dashboard "Trigger deploy" | On demand (for content refreshes) |
 
-Hourly rebuilds keep Notion image URLs fresh and content current without manual intervention.
+**⚠️ No scheduled build hooks.** Netlify free tier provides 300 credits/month (~20 deploys at ~15 credits each). A scheduled hook would exhaust the quota in hours. Push-triggered deploys + manual dashboard triggers are sufficient.
 
 ---
 
