@@ -17,7 +17,7 @@ export interface Project {
 	slug: string;
 	title: string;
 	description: string;
-	sector: string;
+	sector: string[];
 	status: string;
 	role: string;
 	imageUrl: string;

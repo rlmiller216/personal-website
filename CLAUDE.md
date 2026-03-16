@@ -68,6 +68,8 @@ Notion databases/pages
 | `#0D0D0D` | Onyx | Body text, dark mode base |
 | `#DFFF5C` | Lime Yellow | Secondary — highlights, CTAs, energy |
 | `#1D2440` | Space Indigo | Dark background — hero, footer, dark mode |
+| `#E8E0F3` | Pill Accent | Solid light purple tier-1 pill background (default) |
+| `#F2EDF7` | Pill Accent Light | Lighter variant used on `.bg-card` (white) backgrounds |
 
 ### Typography
 - **Headings:** Bodoni Moda (Didone serif, variable optical size). Bumped to font-weight 700 on mobile (< 768px) — hairline strokes vanish on small/high-DPI screens.
@@ -80,14 +82,21 @@ Notion databases/pages
 
 ### Card Border Patterns
 - ProjectCard: `border-b-4 border-b-secondary` (Lime Yellow bottom)
-- ToolCard: `border border-border` (subtle border, image-forward card with category badge)
-- ToolListItem: `border-l-primary` (Ultra Violet left, homepage variant)
-- ResourceCard: `border border-border border-l-4 border-l-primary` (thin border + thick Ultra Violet left)
+- ToolCard: `border border-border` (subtle border, image-forward card with category badge, used on /open-source subpage)
+- ToolListItem: `border-l-4 border-l-primary` (Ultra Violet left, homepage Open Source cards)
+- ResourceCard: `border border-border border-b-4 border-b-secondary` (Lime Yellow bottom, matches ProjectCard)
+
+### Two-Tier Pill System
+- **Tier-1** (category/sector/type): `font-semibold uppercase tracking-wider text-pill-accent-foreground bg-pill-accent` — solid light purple background via `--pill-accent` CSS variable
+- **Tier-2** (tags): `font-medium bg-secondary text-secondary-foreground` — Lime Yellow
+- **Contextual pill color**: `--pill-accent` defaults to `#E8E0F3` (oklch 0.919 0.027 305), overridden to lighter `#F2EDF7` inside `.bg-card` elements
+- **Homepage pill size**: `rounded-full px-2 py-px text-[0.65rem] gap-1` (standardized across all cards)
+- **Detail page pill size**: `rounded-full px-2.5 py-0.5 text-xs gap-2` (slightly larger for readability)
 
 ### Key Patterns
 - `overflow-x: hidden` on `html` — prevents horizontal bounce on mobile from elements slightly exceeding viewport width
 - OKLCH design tokens in `app.css` with light/dark mode (`--hero`, `--hero-foreground` for Space Indigo sections)
-- **Floating RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top (-12px), L and M drift toward it on scroll via exponential decay interpolation in a RAF loop. Each letter has a different damping rate (R=8, L=5, M=3) creating a cascading wave where R arrives first and M trails behind. Collapse range extends 1.8× beyond hero height for a slow, cinematic feel. Responsive two-tier sizing: 56px/48px font at md, 80px/72px font at lg. Hidden on mobile.
+- **Floating RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top (0px md, -12px lg), L and M drift toward it on scroll via exponential decay interpolation in a RAF loop. Each letter has a different damping rate (R=8, L=5, M=3) creating a cascading wave where R arrives first and M trails behind. Collapse range extends 1.8× beyond hero height for a slow, cinematic feel. Responsive two-tier sizing: 68px/60px font at md, 80px/72px font at lg. Hidden on mobile.
 - **Non-fixed desktop nav**: nav scrolls away naturally on desktop (`md:relative md:z-10`) so sticky section headers own the top of the viewport. Transparent at top of every page (all headers extend behind nav via `-mt-16 pt-16`), solid on scroll. Mobile nav stays fixed.
 - **MCA-style sticky section headers** on homepage: each section's heading sticks at `top-16` (mobile, below fixed nav) or `top-0` (desktop). Title is a link with bold angular Ultra Violet arrow. No shadow on sticky headers.
 - **Angular icon convention**: all custom SVGs use `stroke-linecap="square"` + `stroke-linejoin="miter"` to match Raleway's geometric character. Applies to hamburger, section arrows, and close icons.
@@ -97,11 +106,11 @@ Notion databases/pages
 - Lime Yellow `.text-highlight` marker underline effect on last word of every page heading
 - Stagger fade-up animations (up to 12 children), gated behind `prefers-reduced-motion`
 - Cards always link to internal detail pages; external URLs shown as CTA buttons on detail pages
-- **Hero headline typography**: 3-part typographic split (lead / bridge / highlight). BRIDGE_WORDS (`for`, `the`, `of`, `and`, etc.) render smaller and faded as visual connectors between lead word and highlight. `lg:text-[5.5rem]` with `leading-[1]` for tight line spacing. Asymmetric padding shifts content upward (`pt-20 pb-28` → `lg:pt-32 lg:pb-48`).
-- **Card layout order**: All cards follow Title → Role/Position → Description → Tags (at bottom). Tags use `flex-wrap` with rounded pills.
-- Card hovers: translate-up + shadow (ProjectCard: Lime Yellow bottom, ToolCard: shadow-lg, ResourceCard: Ultra Violet left)
+- **Hero headline typography**: 3-part typographic split (lead / bridge / highlight). BRIDGE_WORDS (`for`, `the`, `of`, `and`, etc.) render smaller and faded as visual connectors between lead word and highlight. `text-4xl sm:text-5xl md:text-6xl lg:text-[5.5rem]` with `leading-[1]` for tight line spacing. Asymmetric padding shifts content upward (`pt-20 pb-28` → `lg:pt-32 lg:pb-48`).
+- **Card layout order**: All homepage cards follow Title → Description → Tags (at bottom). Role/position NOT shown on homepage cards (too busy). Detail pages show role in Lime Yellow below sector/tags.
+- Card hovers: translate-up + shadow + purple title highlight + arrow reveal (all card types)
 - **Feature card** for first project on homepage: full-width image with Space Indigo gradient overlay, hover scale. Falls back to standard grid if project has no image.
-- **Varied card layouts per section**: Projects use feature card + grid, Open Source uses list items with Ultra Violet left border, Toolkit uses existing card grid.
+- **Varied card layouts per section**: Projects use feature card + grid (Lime Yellow bottom), Open Source uses image cards with Ultra Violet left border, Toolkit uses ResourceCard grid (Lime Yellow bottom).
 - Homepage section banding: muted → white → muted (first section gets warm beige)
 - Footer: Space Indigo background, Bodoni Moda "Rebecca L Miller, PhD" branding, "Science for Good" tagline
 
@@ -120,7 +129,7 @@ src/
       ui/                   → shadcn-svelte (auto-generated, don't edit)
       ProjectCard.svelte    → Project display card
       ToolCard.svelte       → Open source tool card (used on /open-source subpage)
-      ToolListItem.svelte   → Tool list-item layout for homepage (Ultra Violet left border, hover arrow)
+      ToolListItem.svelte   → Tool image card for homepage (Ultra Violet left border, hover arrow)
       ResourceCard.svelte   → Resource card
       StickySection.svelte  → Sticky section header wrapper (homepage, linked title + angular arrow)
       ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage, accepts class prop)
@@ -134,7 +143,7 @@ src/
       notion-render-utils.ts→ renderRichTextToSafeHtml(), escapeHtml(), hasContent()
     server/
       services/
-        notion.service.ts   → Notion client + generic fetcher + property extractors + createCachedFetcher + warnSlugCollisions
+        notion.service.ts   → Notion client + generic fetcher + property extractors (incl. getSelectOrMulti) + createCachedFetcher + warnSlugCollisions
         page-content.ts     → getPageContent() — combines getPageBlocks() + transformBlocks()
         projects.service.ts → Project mapper + queries (uses createCachedFetcher)
         tools.service.ts    → Tool mapper + queries (uses createCachedFetcher)
@@ -206,7 +215,7 @@ tests/
 |----------|------|---------|
 | Title | Title | Project name |
 | Description | Rich text | What it does |
-| Sector | Select | Food Tech, Climate Tech, AI for Science, etc. |
+| Sector | Select/Multi-select | Product, Paper, Patent, Prototype (read via `getSelectOrMulti()`) |
 | Status | Select | Active, Completed, Archived |
 | Role | Text | Your role |
 | Image | Files | Cover image |

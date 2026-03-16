@@ -27,19 +27,16 @@
 			{project.title}
 			<ArrowRight class="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
 		</h3>
-		{#if project.role}
-			<span class="mt-1 text-sm font-medium text-primary">{project.role}</span>
-		{/if}
 		{#if project.description}
 			<p class="mt-1 flex-1 text-sm text-muted-foreground">{project.description}</p>
 		{/if}
-		{#if project.sector || project.tags.length > 0}
-			<div class="mt-3 flex flex-wrap gap-1.5">
-				{#if project.sector}
-					<span class="rounded-full px-3 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">{project.sector}</span>
-				{/if}
+		{#if project.sector.length > 0 || project.tags.length > 0}
+			<div class="mt-3 flex flex-wrap gap-1">
+				{#each project.sector as s}
+					<span class="rounded-full px-2 py-px text-[0.65rem] font-semibold uppercase tracking-wider text-pill-accent-foreground bg-pill-accent">{s}</span>
+				{/each}
 				{#each project.tags as tag}
-					<span class="rounded-full px-2.5 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">{tag}</span>
+					<span class="rounded-full px-2 py-px text-[0.65rem] font-medium bg-secondary text-secondary-foreground">{tag}</span>
 				{/each}
 			</div>
 		{/if}

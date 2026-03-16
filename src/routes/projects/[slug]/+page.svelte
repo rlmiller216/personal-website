@@ -24,19 +24,19 @@
 </svelte:head>
 
 <DetailHeader backHref="/projects" backLabel="All Projects" title={project.title}>
-  {#if project.sector}
-    <span class="rounded-full px-3 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">
-      {project.sector}
+  {#each project.sector as s}
+    <span class="rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-pill-accent-foreground bg-pill-accent">
+      {s}
     </span>
-  {/if}
-  {#if project.status}
-    <span class="rounded-full px-3 py-0.5 text-xs font-medium bg-hero-foreground/10 text-hero-foreground/80">
-      {project.status}
+  {/each}
+  {#each project.tags as tag}
+    <span class="rounded-full px-2.5 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">
+      {tag}
     </span>
-  {/if}
+  {/each}
   {#if project.role}
-    <span class="text-sm text-hero-foreground/60">
-      Role: {project.role}
+    <span class="text-base font-semibold text-secondary">
+      {project.role}
     </span>
   {/if}
 </DetailHeader>

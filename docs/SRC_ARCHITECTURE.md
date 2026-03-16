@@ -25,11 +25,11 @@ src/
 │   ├── components/
 │   │   ├── ProjectCard.svelte            # Project card: hover translate-up, Ultra Violet overlay (~45 LOC)
 │   │   ├── ToolCard.svelte               # Tool card: image-forward, category badge, hover shadow (~40 LOC, used on /open-source)
-│   │   ├── ToolListItem.svelte           # Tool list-item: Ultra Violet left border, hover arrow (~40 LOC, homepage)
-│   │   ├── ResourceCard.svelte           # Resource card: Ultra Violet left border, styled quotes (~35 LOC)
+│   │   ├── ToolListItem.svelte           # Tool image card: Ultra Violet left border, hover arrow (~45 LOC, homepage)
+│   │   ├── ResourceCard.svelte           # Resource card: Lime Yellow bottom border, hover arrow (~45 LOC)
 │   │   ├── StickySection.svelte          # Sticky section header: IntersectionObserver shadow, "View all →" (~70 LOC)
 │   │   ├── ThemeToggle.svelte            # Dark mode toggle: Sun/Moon icons, localStorage, class prop (~29 LOC)
-│   │   ├── LetterSidebar.svelte          # Floating RLM sidebar (RAF-driven scroll physics) + hamburger toggle (~145 LOC)
+│   │   ├── LetterSidebar.svelte          # Floating RLM sidebar (RAF-driven scroll physics) + hamburger toggle (~170 LOC)
 │   │   ├── NotionBlocks.svelte           # Iterates ContentBlock[] → renders each via NotionBlock
 │   │   ├── NotionBlock.svelte            # Block type dispatcher → routes to sub-components (~33 LOC)
 │   │   ├── NotionTextBlock.svelte        # Text blocks: paragraphs, headings, lists, toggles, quotes, callouts (~87 LOC)
@@ -84,7 +84,7 @@ Pure TypeScript interfaces with zero dependencies. Defines the contract between 
 
 | Interface | Fields | Used By |
 |---|---|---|
-| `Project` | title, description, sector, status, role, imageUrl, url, featured, order, tags | projects.service.ts, ProjectCard.svelte |
+| `Project` | title, description, sector (string[]), status, role, imageUrl, url, featured, order, tags | projects.service.ts, ProjectCard.svelte |
 | `Tool` | title, description, category, githubUrl, demoUrl, tags, featured, imageUrl, order | tools.service.ts, ToolCard.svelte, ToolListItem.svelte |
 | `Resource` | title, description, type, category, author, url, whyILoveIt, imageUrl | resources.service.ts, ResourceCard.svelte |
 | `ContentBlock` | id, type, richText, children, url, caption, language, checked, icon | notion-blocks.ts, NotionBlock.svelte |
@@ -105,6 +105,7 @@ The single source of truth for all Notion API interactions.
 | `getRichText` | `(property) → string` | Extract rich text as plain string |
 | `getSelect` | `(property) → string` | Extract select option name |
 | `getMultiSelect` | `(property) → string[]` | Extract multi-select option names |
+| `getSelectOrMulti` | `(property) → string[]` | Extract from select or multi_select as string[] |
 | `getUrl` | `(property) → string` | Extract URL value |
 | `getCheckbox` | `(property) → boolean` | Extract checkbox state |
 | `getNumber` | `(property) → number` | Extract number value |
@@ -190,7 +191,7 @@ Floating RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in
 - **Exponential decay scroll physics:** Letters drift toward scroll-derived targets at different rates (R=8, L=5, M=3) via `requestAnimationFrame` loop. Higher rate = snappier response. Creates a cascading wave where R arrives first and M trails behind.
 - **Reactive architecture:** `targets`/`current` are plain arrays (no `$state`) — RAF reads them without creating Svelte dependencies. `displayPositions` is `$state` to drive template updates. `reducedMotion` is `$state` so RAF loop restarts if OS setting changes.
 - **Effect ordering:** Target sync effect declared before RAF effect — Svelte 5 runs effects in declaration order within a flush.
-- **Responsive two-tier sizing:** md (768px+) uses 56px sidebar / 48px font; lg (1024px+) uses 80px sidebar / 72px font
+- **Responsive two-tier sizing:** md (768px+) uses 68px sidebar / 60px font; lg (1024px+) uses 80px sidebar / 72px font. R_TOP is 0px at md, -12px at lg.
 - **Cross-component coupling:** Reads `[data-hero]` attribute from `+page.svelte` to determine scroll range. No hero → always collapsed.
 - **`prefers-reduced-motion`:** Forces `heroHeight=0` → letters always collapsed, snap to targets on every scroll (no RAF)
 - **Gap interpolation:** Single `gap` value interpolated between `spreadGap` and `collapsedGap`, target positions = `[R_TOP, R_TOP+gap, R_TOP+gap*2]` — guarantees equal spacing

@@ -5,39 +5,42 @@
 	let { tool }: { tool: Tool } = $props();
 </script>
 
-<!-- List-item layout for tools — Ultra Violet left border, hover highlight, reveal arrow -->
+<!-- Card layout for tools on homepage — matches ProjectCard style with Ultra Violet left border -->
 <a
 	href={`/open-source/${tool.slug}`}
-	class="group flex items-start gap-6 p-6 rounded-lg bg-background
-		transition-colors duration-300 hover:bg-accent border-l-[3px] border-l-primary"
+	class="group flex flex-col overflow-hidden rounded-lg shadow-sm transition-all
+		hover:shadow-lg hover:-translate-y-1 border border-border border-l-4 border-l-primary
+		bg-background dark:bg-card"
 >
-	<div class="flex-1 min-w-0">
-		<h3
-			class="text-xl font-semibold font-body group-hover:text-primary transition-colors"
-		>
+	{#if tool.imageUrl}
+		<img
+			src={tool.imageUrl}
+			alt={tool.title}
+			class="h-48 w-full object-cover"
+			loading="lazy"
+		/>
+	{:else}
+		<div class="h-48 w-full flex items-center justify-center bg-muted/40">
+			<span class="text-4xl text-muted-foreground/40">&#60;/&#62;</span>
+		</div>
+	{/if}
+	<div class="flex flex-1 flex-col p-5">
+		<h3 class="text-lg font-semibold font-body inline-flex items-center gap-1.5 group-hover:text-primary transition-colors">
 			{tool.title}
+			<ArrowRight class="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
 		</h3>
 		{#if tool.description}
-			<p
-				class="mt-1 text-base text-muted-foreground line-clamp-3"
-			>
-				{tool.description}
-			</p>
+			<p class="mt-1 flex-1 text-sm text-muted-foreground line-clamp-3">{tool.description}</p>
 		{/if}
-		{#if tool.tags.length > 0}
-			<div class="mt-2 flex flex-wrap gap-2">
+		{#if tool.tags.length > 0 || tool.category}
+			<div class="mt-3 flex flex-wrap gap-1">
+				{#if tool.category}
+					<span class="rounded-full px-2 py-px text-[0.65rem] font-semibold uppercase tracking-wider text-pill-accent-foreground bg-pill-accent">{tool.category}</span>
+				{/if}
 				{#each tool.tags.slice(0, 4) as tag}
-					<span
-						class="rounded-full px-2.5 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground"
-					>
-						{tag}
-					</span>
+					<span class="rounded-full px-2 py-px text-[0.65rem] font-medium bg-secondary text-secondary-foreground">{tag}</span>
 				{/each}
 			</div>
 		{/if}
 	</div>
-	<ArrowRight
-		class="shrink-0 h-6 w-6 text-muted-foreground opacity-0 group-hover:opacity-100
-			transition-opacity self-center"
-	/>
 </a>

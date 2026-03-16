@@ -112,7 +112,7 @@ describe('mapProject', () => {
 		expect(result.title).toBe('Gene Editing Platform');
 		expect(result.slug).toBe('gene-editing-platform');
 		expect(result.description).toBe('CRISPR-based tool');
-		expect(result.sector).toBe('AI for Science');
+		expect(result.sector).toEqual(['AI for Science']);
 		expect(result.status).toBe('Active');
 		expect(result.role).toBe('Lead Scientist');
 		expect(result.imageUrl).toBe('https://s3.aws.com/cover.png');
@@ -133,7 +133,7 @@ describe('mapProject', () => {
 		expect(result.title).toBe('Minimal Project');
 		expect(result.slug).toBe('minimal-project');
 		expect(result.description).toBe('');
-		expect(result.sector).toBe('');
+		expect(result.sector).toEqual([]);
 		expect(result.status).toBe('');
 		expect(result.role).toBe('');
 		expect(result.imageUrl).toBe('');

@@ -41,7 +41,7 @@
 <!-- Hero — full-width Space Indigo -->
 <section data-hero class="relative -mt-16 pt-16 bg-hero overflow-hidden">
 	<div class="max-w-6xl mx-auto px-6 pt-20 pb-28 sm:pt-24 sm:pb-36 lg:pt-32 lg:pb-48 text-center animate-stagger">
-		<h1 class="mx-auto max-w-3xl text-4xl sm:text-5xl lg:text-[5.5rem] font-bold text-hero-foreground leading-[1] mb-6">
+		<h1 class="mx-auto max-w-3xl text-4xl sm:text-5xl md:text-6xl lg:text-[5.5rem] font-bold text-hero-foreground leading-[1] mb-6">
 			{#if bridgeWords}
 				<span class="block tracking-[0.04em]">{leadWords}</span>
 				<span class="block text-[0.65em] opacity-50 font-normal tracking-[0.05em] -mt-[0.05em] -mb-[0.1em]">{bridgeWords}</span>
@@ -83,19 +83,16 @@
 					<h3 class="text-xl sm:text-2xl font-bold font-body">
 						{firstProject.title}
 					</h3>
-					{#if firstProject.role}
-						<p class="mt-1 text-sm font-medium text-secondary">{firstProject.role}</p>
-					{/if}
 					{#if firstProject.description}
 						<p class="mt-1 text-sm text-white/80 max-w-lg">{firstProject.description}</p>
 					{/if}
-					{#if firstProject.sector || firstProject.tags.length > 0}
-						<div class="mt-2 flex flex-wrap gap-1.5">
-							{#if firstProject.sector}
-								<span class="rounded-full px-3 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">{firstProject.sector}</span>
-							{/if}
+					{#if firstProject.sector.length > 0 || firstProject.tags.length > 0}
+						<div class="mt-2 flex flex-wrap gap-1">
+							{#each firstProject.sector as s}
+								<span class="rounded-full px-2 py-px text-[0.65rem] font-semibold uppercase tracking-wider text-pill-accent-foreground bg-pill-accent">{s}</span>
+							{/each}
 							{#each firstProject.tags as tag}
-								<span class="rounded-full px-2.5 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">{tag}</span>
+								<span class="rounded-full px-2 py-px text-[0.65rem] font-medium bg-secondary text-secondary-foreground">{tag}</span>
 							{/each}
 						</div>
 					{/if}

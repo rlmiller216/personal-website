@@ -42,6 +42,9 @@
   /* Design system: Space Indigo for hero/footer dark sections */
   --hero: oklch(0.22 0.05 270);                  /* #1D2440 Space Indigo */
   --hero-foreground: oklch(0.97 0.003 90);       /* White Smoke */
+  /* Solid pill background — looks identical on light and dark backgrounds */
+  --pill-accent: oklch(0.919 0.027 305);          /* #E8E0F3 solid light purple (default) */
+  --pill-accent-foreground: oklch(0.47 0.29 285); /* Ultra Violet text */
 }
 
 /* ── Dark mode: Space Indigo base, Ultra Violet primary, Lime Yellow accents ── */
@@ -79,6 +82,13 @@
   --sidebar-ring: oklch(0.47 0.29 285);
   --hero: oklch(0.18 0.05 270);                  /* Darker Space Indigo for hero in dark mode */
   --hero-foreground: oklch(0.97 0.003 90);
+  --pill-accent: oklch(0.919 0.027 305);          /* #E8E0F3 same default in dark mode */
+  --pill-accent-foreground: oklch(0.47 0.29 285);
+}
+
+/* Lighter pill on white card backgrounds */
+.bg-card {
+  --pill-accent: oklch(0.953 0.014 308);          /* #F2EDF7 — softer on white */
 }
 
 @theme inline {
@@ -120,6 +130,8 @@
   /* Custom design tokens */
   --color-hero: var(--hero);
   --color-hero-foreground: var(--hero-foreground);
+  --color-pill-accent: var(--pill-accent);
+  --color-pill-accent-foreground: var(--pill-accent-foreground);
 }
 
 /* ── Font utilities — replace inline style="font-family:..." attributes ── */

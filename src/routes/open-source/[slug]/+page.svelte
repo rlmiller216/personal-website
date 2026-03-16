@@ -22,7 +22,7 @@
 
 <DetailHeader backHref="/open-source" backLabel="All Open Source" title={tool.title}>
   {#if tool.category}
-    <span class="rounded-full px-3 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">
+    <span class="rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-pill-accent-foreground bg-pill-accent">
       {tool.category}
     </span>
   {/if}
@@ -32,7 +32,7 @@
   {#if tool.tags.length > 0}
     <div class="flex flex-wrap gap-2 mb-8">
       {#each tool.tags as tag}
-        <span class="rounded-full px-3 py-0.5 text-xs font-medium bg-primary/10 text-primary">
+        <span class="rounded-full px-2.5 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">
           {tag}
         </span>
       {/each}

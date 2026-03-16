@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ArrowRight } from '@lucide/svelte';
 	import type { Resource } from '$lib/types/content';
 
 	let { resource }: { resource: Resource } = $props();
@@ -6,7 +7,7 @@
 
 <a
 	href={`/resources/${resource.slug}`}
-	class="flex items-start gap-5 rounded-lg p-5 transition-shadow hover:shadow-md bg-card border border-border border-l-4 border-l-primary"
+	class="group flex items-start gap-5 rounded-lg p-5 transition-all hover:shadow-md hover:-translate-y-1 bg-card border border-border border-b-4 border-b-secondary"
 >
 	{#if resource.imageUrl}
 		<img
@@ -21,16 +22,24 @@
 		</div>
 	{/if}
 	<div class="flex flex-1 flex-col">
-		<h3 class="text-lg font-semibold font-body">{resource.title}</h3>
+		<h3 class="text-lg font-semibold font-body inline-flex items-center gap-1.5 group-hover:text-primary transition-colors">
+			{resource.title}
+			<ArrowRight class="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+		</h3>
 		{#if resource.author}
 			<p class="text-sm text-muted-foreground">{resource.author}</p>
 		{/if}
 		{#if resource.whyILoveIt}
 			<p class="mt-2 flex-1 text-base italic text-muted-foreground">&ldquo;{resource.whyILoveIt}&rdquo;</p>
 		{/if}
-		{#if resource.type}
-			<div class="mt-3">
-				<span class="rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider bg-secondary text-secondary-foreground">{resource.type}</span>
+		{#if resource.type || resource.category}
+			<div class="mt-3 flex flex-wrap gap-1">
+				{#if resource.type}
+					<span class="rounded-full px-2 py-px text-[0.65rem] font-semibold uppercase tracking-wider text-pill-accent-foreground bg-pill-accent">{resource.type}</span>
+				{/if}
+				{#if resource.category}
+					<span class="rounded-full px-2 py-px text-[0.65rem] font-medium bg-secondary text-secondary-foreground">{resource.category}</span>
+				{/if}
 			</div>
 		{/if}
 	</div>

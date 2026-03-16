@@ -24,12 +24,12 @@
 
 	// Responsive sizing: scale down at md (768–1023), full at lg (1024+)
 	const isLarge = $derived(viewportWidth >= 1024);
-	const fontSize = $derived(isLarge ? 72 : 48);
-	const sidebarWidth = $derived(isLarge ? 80 : 56);
+	const fontSize = $derived(isLarge ? 72 : 60);
+	const sidebarWidth = $derived(isLarge ? 80 : 68);
 	const collapsedGap = $derived(fontSize - 6); // letters nearly touching
 
 	// R is always fixed at the top.
-	const R_TOP = -12;
+	const R_TOP = $derived(isLarge ? -12 : 0);
 
 	// Gap between letters interpolates from spread to collapsed
 	const spreadGap = $derived((viewportHeight * 0.70) / 2);
@@ -52,11 +52,11 @@
 	]);
 
 	// Non-reactive arrays — RAF reads/writes directly (no Svelte tracking)
-	let targets: number[] = [R_TOP, R_TOP, R_TOP];
-	let current: number[] = [R_TOP, R_TOP, R_TOP];
+	let targets: number[] = [0, 0, 0];
+	let current: number[] = [0, 0, 0];
 
 	// Reactive — drives the template
-	let displayPositions = $state([R_TOP, R_TOP, R_TOP]);
+	let displayPositions = $state([0, 0, 0]);
 
 	// --- Setup effect: listeners, hero measurement, reduced motion ---
 	$effect(() => {

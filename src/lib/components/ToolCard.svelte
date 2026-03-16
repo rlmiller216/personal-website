@@ -33,7 +33,7 @@
 		{#if tool.tags.length > 0 || tool.category}
 			<div class="mt-3 flex flex-wrap gap-1.5">
 				{#if tool.category}
-					<span class="rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10">{tool.category}</span>
+					<span class="rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-pill-accent-foreground bg-pill-accent">{tool.category}</span>
 				{/if}
 				{#each tool.tags as tag}
 					<span class="rounded-full px-2.5 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">{tag}</span>

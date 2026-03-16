@@ -60,6 +60,19 @@ export function getMultiSelect(property: PageProperty | undefined): string[] {
 	return property.multi_select.map((s) => s.name);
 }
 
+/** Extract from either select or multi_select — always returns string[].
+ *  Handles Notion DB schema changes without silent data loss. */
+export function getSelectOrMulti(property: PageProperty | undefined): string[] {
+	if (!property) return [];
+	if (property.type === 'multi_select') {
+		return property.multi_select.map((s) => s.name);
+	}
+	if (property.type === 'select' && property.select?.name) {
+		return [property.select.name];
+	}
+	return [];
+}
+
 export function getUrl(property: PageProperty | undefined): string {
 	if (!property || property.type !== 'url') return '';
 	return property.url ?? '';

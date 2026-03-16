@@ -80,7 +80,7 @@
 					href={link.href}
 					class="relative py-3 px-4 text-2xl lg:text-3xl font-bold uppercase tracking-wide transition-colors rounded-lg
 						hover:bg-accent dark:hover:bg-white/10
-						{isActive(link.href) ? 'text-primary dark:text-secondary' : 'text-foreground dark:text-hero-foreground'}"
+						{isActive(link.href) ? 'text-primary dark:text-secondary' : 'text-hero dark:text-hero-foreground'}"
 					onclick={() => sidebarMenuOpen = false}
 				>
 					{link.label}
