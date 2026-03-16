@@ -65,6 +65,9 @@ Notion databases/pages
 - Lime Yellow `.text-highlight` marker underline effect
 - Stagger fade-up animations (up to 12 children), gated behind `prefers-reduced-motion`
 - Card hovers: translate-up + accent borders (Lime Yellow bottom on ProjectCard, Ultra Violet top on ToolCard, Ultra Violet left on ResourceCard)
+- **MCA-style sticky section headers** on homepage: each section's heading sticks below the nav while scrolling through its content, replaced by the next section's header. IntersectionObserver sentinel detects stuck state, adds `shadow-sm`. No padding compression — shadow-only transition.
+- **Feature card** for first project on homepage: full-width image with Space Indigo gradient overlay, hover scale effect. Falls back to standard grid if project has no image.
+- **Varied card layouts per section**: Projects use feature card + grid, Open Source uses list items with Ultra Violet left border, Resources use existing card grid.
 - Footer: Space Indigo background with Ultra Violet accent line, Raleway uppercase RLM branding
 
 ### Accessibility Constraints
@@ -81,8 +84,10 @@ src/
     components/
       ui/                   → shadcn-svelte (auto-generated, don't edit)
       ProjectCard.svelte    → Project display card
-      ToolCard.svelte       → Open source tool card
+      ToolCard.svelte       → Open source tool card (used on /open-source subpage)
+      ToolListItem.svelte   → Tool list-item layout for homepage (Ultra Violet left border, hover arrow)
       ResourceCard.svelte   → Resource card
+      StickySection.svelte  → Sticky section header wrapper (homepage, IntersectionObserver shadow)
       ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage, accepts class prop)
       LetterSidebar.svelte  → Scroll-collapsing RLM monogram sidebar (responsive, scroll-driven)
       NotionBlocks.svelte   → Renders ContentBlock[] as Svelte components

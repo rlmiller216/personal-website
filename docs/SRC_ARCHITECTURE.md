@@ -24,8 +24,10 @@ src/
 │   │
 │   ├── components/
 │   │   ├── ProjectCard.svelte            # Project card: hover translate-up, Ultra Violet overlay (~45 LOC)
-│   │   ├── ToolCard.svelte               # Tool card: Ultra Violet top border, Lime tags (~35 LOC)
+│   │   ├── ToolCard.svelte               # Tool card: Ultra Violet top border, Lime tags (~35 LOC, used on /open-source)
+│   │   ├── ToolListItem.svelte           # Tool list-item: Ultra Violet left border, hover arrow (~40 LOC, homepage)
 │   │   ├── ResourceCard.svelte           # Resource card: Ultra Violet left border, styled quotes (~35 LOC)
+│   │   ├── StickySection.svelte          # Sticky section header: IntersectionObserver shadow, "View all →" (~70 LOC)
 │   │   ├── ThemeToggle.svelte            # Dark mode toggle: Sun/Moon icons, localStorage, class prop (~29 LOC)
 │   │   ├── LetterSidebar.svelte          # Scroll-collapsing RLM monogram sidebar (~92 LOC)
 │   │   ├── NotionBlocks.svelte           # Iterates ContentBlock[] → renders each via NotionBlock
@@ -82,7 +84,7 @@ Pure TypeScript interfaces with zero dependencies. Defines the contract between 
 | Interface | Fields | Used By |
 |---|---|---|
 | `Project` | title, description, sector, status, role, imageUrl, url, featured, order | projects.service.ts, ProjectCard.svelte |
-| `Tool` | title, description, category, githubUrl, demoUrl, tags, featured | tools.service.ts, ToolCard.svelte |
+| `Tool` | title, description, category, githubUrl, demoUrl, tags, featured | tools.service.ts, ToolCard.svelte, ToolListItem.svelte |
 | `Resource` | title, description, type, category, author, url, whyILoveIt, imageUrl | resources.service.ts, ResourceCard.svelte |
 | `ContentBlock` | id, type, richText, children, url, caption, language, checked, icon | notion-blocks.ts, NotionBlock.svelte |
 | `RichTextSpan` | text, annotations, href | ContentBlock.richText[], NotionBlock.svelte |
