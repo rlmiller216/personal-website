@@ -248,6 +248,7 @@ tests/
 - Notion API key format is `ntn_...` (not `secret_...` as older docs suggest)
 - Integration must have **Read content** capability checked (not checked by default on new internal integrations)
 - The `sorts` parameter in `dataSources.query()` must be an **array** of sort objects, not a single object (e.g., `[{ property: 'Order', direction: 'ascending' }]`)
+- **Filter mismatch danger:** Featured queries must include the same Status filter as their `getAll` counterparts. If `getFeaturedX()` returns items excluded by `getAllX()`, the homepage links to detail pages that don't exist → prerender 404. Use compound `{ and: [...] }` filters.
 
 ## Environment Variables
 

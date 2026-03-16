@@ -76,7 +76,7 @@ Five content types, each sourced differently from Notion:
 
 **Projects** (10 properties)
 - Title (title), Description (rich_text), Sector (select), Status (select), Role (rich_text), Image (files), URL (url), Featured (checkbox), Order (number), Tags (multi_select)
-- **Filters:** Status ≠ "Archived" for `getAllProjects()`, Featured = true for `getFeaturedProjects()`
+- **Filters:** Status ≠ "Archived" for `getAllProjects()`, Featured = true AND Status ≠ "Archived" for `getFeaturedProjects()`
 - **Sorts:** Order ascending
 
 **Open Source / Tools** (9 properties)
