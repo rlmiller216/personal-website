@@ -117,7 +117,8 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 				url: embedUrl,
 				caption: extractRichText(block.embed.caption),
 				embedType: embedConfig.provider,
-				embedAspectRatio: embedConfig.aspectRatio
+				embedAspectRatio: embedConfig.aspectRatio,
+				embedMinHeight: embedConfig.minHeight
 			};
 		}
 
@@ -132,7 +133,8 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 					url: videoUrl,
 					caption: extractRichText(block.video.caption),
 					embedType: videoConfig.provider,
-					embedAspectRatio: videoConfig.aspectRatio
+					embedAspectRatio: videoConfig.aspectRatio,
+					embedMinHeight: videoConfig.minHeight
 				};
 			}
 			return {

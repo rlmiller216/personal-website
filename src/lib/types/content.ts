@@ -145,4 +145,6 @@ export interface ContentBlock {
 	embedType?: string;
 	/** CSS aspect-ratio value (e.g., "16/9"). */
 	embedAspectRatio?: string;
+	/** CSS min-height value (e.g., "500px"). */
+	embedMinHeight?: string;
 }
