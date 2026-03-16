@@ -8,10 +8,11 @@
 	<title>Projects — {data.siteName}</title>
 </svelte:head>
 
-<!-- Page header — Space Indigo -->
-<div class="bg-hero">
-	<div class="max-w-6xl mx-auto px-6 py-12">
-		<h1 class="text-4xl font-bold text-hero-foreground">Projects</h1>
+<!-- Page header — Space Indigo, overlaps transparent nav -->
+<div class="relative -mt-16 pt-16 bg-hero">
+	<div class="max-w-6xl mx-auto px-6 py-20 sm:py-24">
+		<h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-hero-foreground tracking-tight leading-tight"
+			style="font-family: 'Bodoni Moda', serif;">Projects</h1>
 	</div>
 </div>
 

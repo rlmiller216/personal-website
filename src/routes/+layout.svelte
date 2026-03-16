@@ -33,9 +33,8 @@
 		return () => window.removeEventListener('scroll', onScroll);
 	});
 
-	// Transparent on homepage hero, solid on scroll or subpages
-	const isHome = $derived(page.url.pathname === '/');
-	const showSolidNav = $derived(scrolled || !isHome);
+	// Transparent at top of every page, solid once user scrolls
+	const showSolidNav = $derived(scrolled);
 
 	function isActive(href: string): boolean {
 		if (href === '/') return page.url.pathname === '/';
