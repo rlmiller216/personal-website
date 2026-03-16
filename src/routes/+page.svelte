@@ -7,10 +7,28 @@
 
 	let { data } = $props();
 
-	/** Split headline so last 2 words get a single continuous lime underline */
+	/**
+	 * Split headline into three typographic parts: lead / bridge / highlight.
+	 * "Science for the Greater Good" → "Science" / "for the" / "Greater Good"
+	 * The bridge ("for the") renders smaller and faded as a visual connector.
+	 */
+	const BRIDGE_WORDS = ['for', 'the', 'of', 'and', 'in', 'to', 'a', 'an'];
 	const headlineWords = $derived(data.heroHeadline.split(' '));
-	const leadWords = $derived(headlineWords.slice(0, -2).join(' '));
-	const highlightWords = $derived(headlineWords.slice(-2).join(' '));
+	const bridgeStart = $derived(headlineWords.findIndex(w => BRIDGE_WORDS.includes(w.toLowerCase())));
+	const highlightStart = $derived(
+		bridgeStart >= 0
+			? headlineWords.findIndex((w, i) => i > bridgeStart && !BRIDGE_WORDS.includes(w.toLowerCase()))
+			: -1
+	);
+	const leadWords = $derived(bridgeStart > 0 ? headlineWords.slice(0, bridgeStart).join(' ') : '');
+	const bridgeWords = $derived(
+		bridgeStart >= 0 && highlightStart > bridgeStart
+			? headlineWords.slice(bridgeStart, highlightStart).join(' ')
+			: ''
+	);
+	const highlightWords = $derived(
+		highlightStart >= 0 ? headlineWords.slice(highlightStart).join(' ') : data.heroHeadline
+	);
 
 	// Feature card logic — must be $derived in script, not {@const} in template
 	const firstProject = $derived(data.featuredProjects[0]);
@@ -22,10 +40,16 @@
 
 <!-- Hero — full-width Space Indigo -->
 <section data-hero class="relative -mt-16 pt-16 bg-hero overflow-hidden">
-	<div class="max-w-6xl mx-auto px-6 py-24 sm:py-32 lg:py-40 text-center animate-stagger">
-		<h1 class="mx-auto max-w-3xl text-4xl sm:text-5xl lg:text-7xl font-bold text-hero-foreground tracking-tight leading-[1.1] mb-6">
-			{leadWords}<br />
-			<span class="text-highlight">{highlightWords}</span>
+	<div class="max-w-6xl mx-auto px-6 pt-20 pb-28 sm:pt-24 sm:pb-36 lg:pt-32 lg:pb-48 text-center animate-stagger">
+		<h1 class="mx-auto max-w-3xl text-4xl sm:text-5xl lg:text-[5.5rem] font-bold text-hero-foreground leading-[1] mb-6">
+			{#if bridgeWords}
+				<span class="block tracking-[0.04em]">{leadWords}</span>
+				<span class="block text-[0.65em] opacity-50 font-normal tracking-[0.05em] -mt-[0.05em] -mb-[0.1em]">{bridgeWords}</span>
+				<span class="text-highlight block tracking-[0.04em]">{highlightWords}</span>
+			{:else}
+				{leadWords}<br />
+				<span class="text-highlight">{highlightWords}</span>
+			{/if}
 		</h1>
 		{#if data.heroIntro}
 			<p class="mx-auto text-lg sm:text-xl text-hero-foreground/70 max-w-xl leading-relaxed">
@@ -56,16 +80,24 @@
 					style="background: linear-gradient(to top, oklch(0.15 0.04 270 / 75%), oklch(0.15 0.04 270 / 20%), transparent);"
 				></div>
 				<div class="absolute bottom-0 left-0 p-6 text-white">
-					{#if firstProject.sector}
-						<span class="mb-2 inline-block rounded-full px-3 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">
-							{firstProject.sector}
-						</span>
-					{/if}
 					<h3 class="text-xl sm:text-2xl font-bold font-body">
 						{firstProject.title}
 					</h3>
+					{#if firstProject.role}
+						<p class="mt-1 text-sm font-medium text-secondary">{firstProject.role}</p>
+					{/if}
 					{#if firstProject.description}
 						<p class="mt-1 text-sm text-white/80 max-w-lg">{firstProject.description}</p>
+					{/if}
+					{#if firstProject.sector || firstProject.tags.length > 0}
+						<div class="mt-2 flex flex-wrap gap-1.5">
+							{#if firstProject.sector}
+								<span class="rounded-full px-3 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">{firstProject.sector}</span>
+							{/if}
+							{#each firstProject.tags as tag}
+								<span class="rounded-full px-2.5 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">{tag}</span>
+							{/each}
+						</div>
 					{/if}
 				</div>
 			</a>

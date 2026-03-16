@@ -8,6 +8,6 @@ import { env } from '$env/dynamic/private';
 export function load() {
 	return {
 		siteName: env.RM_SITE_NAME || 'Rebecca Miller',
-		siteTagline: env.RM_SITE_TAGLINE || 'Scientist committed to the greater good'
+		siteTagline: env.RM_SITE_TAGLINE || 'Science for Good'
 	};
 }

@@ -102,7 +102,8 @@ describe('mapProject', () => {
 			'Image': mockFiles('https://s3.aws.com/cover.png'),
 			'URL': mockUrl('https://example.com/project'),
 			'Featured': mockCheckbox(true),
-			'Order': mockNumber(3)
+			'Order': mockNumber(3),
+			'Tags': mockMultiSelect(['Biotech', 'Food Science'])
 		});
 
 		const result = mapProject(page);
@@ -118,6 +119,7 @@ describe('mapProject', () => {
 		expect(result.url).toBe('https://example.com/project');
 		expect(result.featured).toBe(true);
 		expect(result.order).toBe(3);
+		expect(result.tags).toEqual(['Biotech', 'Food Science']);
 	});
 
 	it('returns graceful defaults for missing optional properties', () => {
@@ -138,6 +140,7 @@ describe('mapProject', () => {
 		expect(result.url).toBe('');
 		expect(result.featured).toBe(false);
 		expect(result.order).toBe(0);
+		expect(result.tags).toEqual([]);
 	});
 
 	it('returns empty slug for empty title', () => {

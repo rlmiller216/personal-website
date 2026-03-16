@@ -55,7 +55,7 @@ src/
     ├── +layout.svelte                    # Root layout: LetterSidebar + slide-out overlay, scroll-aware nav, ThemeToggle, Space Indigo footer (~210 LOC)
     ├── +layout.server.ts                 # Loads site metadata from RM_* env vars
     ├── +layout.ts                        # export const prerender = true (all routes static)
-    ├── +page.svelte                      # Home: Space Indigo hero with data-hero attr, stagger animations (~100 LOC)
+    ├── +page.svelte                      # Home: Space Indigo hero with 3-part headline, feature card + grid, stagger animations (~145 LOC)
     ├── +page.server.ts                   # Fetches featured items from all Notion databases
     ├── +error.svelte                     # Branded error page (404/500)
     ├── about/
@@ -84,7 +84,7 @@ Pure TypeScript interfaces with zero dependencies. Defines the contract between 
 
 | Interface | Fields | Used By |
 |---|---|---|
-| `Project` | title, description, sector, status, role, imageUrl, url, featured, order | projects.service.ts, ProjectCard.svelte |
+| `Project` | title, description, sector, status, role, imageUrl, url, featured, order, tags | projects.service.ts, ProjectCard.svelte |
 | `Tool` | title, description, category, githubUrl, demoUrl, tags, featured, imageUrl, order | tools.service.ts, ToolCard.svelte, ToolListItem.svelte |
 | `Resource` | title, description, type, category, author, url, whyILoveIt, imageUrl | resources.service.ts, ResourceCard.svelte |
 | `ContentBlock` | id, type, richText, children, url, caption, language, checked, icon | notion-blocks.ts, NotionBlock.svelte |

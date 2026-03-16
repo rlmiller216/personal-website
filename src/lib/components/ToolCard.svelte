@@ -23,9 +23,6 @@
 		</div>
 	{/if}
 	<div class="flex flex-1 flex-col p-5">
-		{#if tool.category}
-			<span class="mb-2 w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10">{tool.category}</span>
-		{/if}
 		<h3 class="text-lg font-semibold font-body inline-flex items-center gap-1.5 group-hover:text-primary transition-colors">
 			{tool.title}
 			<ArrowRight class="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
@@ -33,8 +30,11 @@
 		{#if tool.description}
 			<p class="mt-1 flex-1 text-sm text-muted-foreground line-clamp-3">{tool.description}</p>
 		{/if}
-		{#if tool.tags.length > 0}
+		{#if tool.tags.length > 0 || tool.category}
 			<div class="mt-3 flex flex-wrap gap-1.5">
+				{#if tool.category}
+					<span class="rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10">{tool.category}</span>
+				{/if}
 				{#each tool.tags as tag}
 					<span class="rounded-full px-2.5 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">{tag}</span>
 				{/each}

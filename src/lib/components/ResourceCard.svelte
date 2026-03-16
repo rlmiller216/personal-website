@@ -21,15 +21,17 @@
 		</div>
 	{/if}
 	<div class="flex flex-1 flex-col">
-		{#if resource.type}
-			<span class="mb-1.5 w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider bg-secondary text-secondary-foreground">{resource.type}</span>
-		{/if}
 		<h3 class="text-lg font-semibold font-body">{resource.title}</h3>
 		{#if resource.author}
 			<p class="text-sm text-muted-foreground">{resource.author}</p>
 		{/if}
 		{#if resource.whyILoveIt}
-			<p class="mt-2 text-base italic text-muted-foreground">&ldquo;{resource.whyILoveIt}&rdquo;</p>
+			<p class="mt-2 flex-1 text-base italic text-muted-foreground">&ldquo;{resource.whyILoveIt}&rdquo;</p>
+		{/if}
+		{#if resource.type}
+			<div class="mt-3">
+				<span class="rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider bg-secondary text-secondary-foreground">{resource.type}</span>
+			</div>
 		{/if}
 	</div>
 </a>

@@ -96,11 +96,13 @@ Notion databases/pages
 - Lime Yellow `.text-highlight` marker underline effect on last word of every page heading
 - Stagger fade-up animations (up to 12 children), gated behind `prefers-reduced-motion`
 - Cards always link to internal detail pages; external URLs shown as CTA buttons on detail pages
+- **Hero headline typography**: 3-part typographic split (lead / bridge / highlight). BRIDGE_WORDS (`for`, `the`, `of`, `and`, etc.) render smaller and faded as visual connectors between lead word and highlight. `lg:text-[5.5rem]` with `leading-[1]` for tight line spacing. Asymmetric padding shifts content upward (`pt-20 pb-28` → `lg:pt-32 lg:pb-48`).
+- **Card layout order**: All cards follow Title → Role/Position → Description → Tags (at bottom). Tags use `flex-wrap` with rounded pills.
 - Card hovers: translate-up + shadow (ProjectCard: Lime Yellow bottom, ToolCard: shadow-lg, ResourceCard: Ultra Violet left)
 - **Feature card** for first project on homepage: full-width image with Space Indigo gradient overlay, hover scale. Falls back to standard grid if project has no image.
 - **Varied card layouts per section**: Projects use feature card + grid, Open Source uses list items with Ultra Violet left border, Resource Library uses existing card grid.
 - Homepage section banding: muted → white → muted (first section gets warm beige)
-- Footer: Space Indigo background, Bodoni Moda "Rebecca L Miller, PhD" branding
+- Footer: Space Indigo background, Bodoni Moda "Rebecca L Miller, PhD" branding, "Science for Good" tagline
 
 ### Accessibility Constraints
 - **Lime Yellow on light bg: ~1.3:1 -- NEVER use as text.** Background/highlight only.
@@ -209,6 +211,7 @@ tests/
 | URL | URL | Link to project |
 | Featured | Checkbox | Show on homepage? |
 | Order | Number | Display order |
+| Tags | Multi-select | Biotech, Food Science, etc. |
 
 ### Open Source Database
 | Property | Type | Purpose |
@@ -243,6 +246,7 @@ tests/
 - Properties named "URL" must use `userDefined:URL` in Notion MCP tools (conflicts with internal `url` field)
 - Notion API key format is `ntn_...` (not `secret_...` as older docs suggest)
 - Integration must have **Read content** capability checked (not checked by default on new internal integrations)
+- The `sorts` parameter in `dataSources.query()` must be an **array** of sort objects, not a single object (e.g., `[{ property: 'Order', direction: 'ascending' }]`)
 
 ## Environment Variables
 
@@ -256,9 +260,9 @@ NOTION_ABOUT_PAGE_ID=...
 
 # Site metadata — prefixed RM_ because Netlify reserves SITE_NAME
 RM_SITE_NAME="RLM"
-RM_SITE_TAGLINE="Scientist committed to the greater good"
-RM_HERO_HEADLINE="..."
-RM_HERO_INTRO="..."
+RM_SITE_TAGLINE="Science for Good"
+RM_HERO_HEADLINE="Science for the Greater Good"
+RM_HERO_INTRO="Building Tools for a Better World"
 ```
 
 ### Netlify Reserved Names

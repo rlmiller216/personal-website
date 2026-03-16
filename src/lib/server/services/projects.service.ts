@@ -14,6 +14,7 @@ import {
 	getTitle,
 	getRichText,
 	getSelect,
+	getMultiSelect,
 	getUrl,
 	getCheckbox,
 	getNumber,
@@ -35,7 +36,8 @@ export function mapProject(page: PageObjectResponse): Project {
 		imageUrl: getFileUrl(props['Image']),
 		url: getUrl(props['URL']),
 		featured: getCheckbox(props['Featured']),
-		order: getNumber(props['Order'])
+		order: getNumber(props['Order']),
+		tags: getMultiSelect(props['Tags'])
 	};
 }
 

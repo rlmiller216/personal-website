@@ -140,6 +140,8 @@ Each Notion property type has a dedicated extractor that type-checks before acce
 | `getNumber()` | `number` | Number | `0` |
 | `getFileUrl()` | `files` | First file URL | `""` |
 
+> **Gotcha:** The `sorts` parameter in `dataSources.query()` must be an **array** of sort objects (e.g., `[{ property: 'Order', direction: 'ascending' }]`). A single object will fail with a validation error that cascades to prerender failures for dynamic routes.
+
 ---
 
 ## 4. Block Rendering Pipeline

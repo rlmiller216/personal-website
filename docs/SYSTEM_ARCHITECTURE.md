@@ -74,8 +74,8 @@ Five content types, each sourced differently from Notion:
 
 ### 2.2 Database Schemas
 
-**Projects** (9 properties)
-- Title (title), Description (rich_text), Sector (select), Status (select), Role (rich_text), Image (files), URL (url), Featured (checkbox), Order (number)
+**Projects** (10 properties)
+- Title (title), Description (rich_text), Sector (select), Status (select), Role (rich_text), Image (files), URL (url), Featured (checkbox), Order (number), Tags (multi_select)
 - **Filters:** Status ≠ "Archived" for `getAllProjects()`, Featured = true for `getFeaturedProjects()`
 - **Sorts:** Order ascending
 
@@ -143,9 +143,9 @@ All configuration is in `.env` (never committed). `.env.example` documents the c
 | `NOTION_RESOURCES_DS_ID` | UUID | Resources data source ID |
 | `NOTION_ABOUT_PAGE_ID` | UUID | About page ID |
 | `RM_SITE_NAME` | String | Site title (used in layout nav + footer) |
-| `RM_SITE_TAGLINE` | String | Site tagline (used in hero + meta tags) |
-| `RM_HERO_HEADLINE` | String | Homepage hero headline |
-| `RM_HERO_INTRO` | String | Homepage hero intro text |
+| `RM_SITE_TAGLINE` | String | Site tagline (e.g., "Science for Good") |
+| `RM_HERO_HEADLINE` | String | Homepage hero headline (e.g., "Science for the Greater Good") — split into lead/bridge/highlight by BRIDGE_WORDS |
+| `RM_HERO_INTRO` | String | Homepage hero intro text (e.g., "Building Tools for a Better World") |
 
 **Suffix convention:** `_DS_ID` = Notion v5 data source ID (not `_DB_ID`). `_PAGE_ID` = Notion page ID.
 

@@ -24,6 +24,7 @@ export interface Project {
 	url: string;
 	featured: boolean;
 	order: number;
+	tags: string[];
 }
 
 /** An open source tool from the Open Source database. */

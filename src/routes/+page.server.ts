@@ -20,7 +20,7 @@ export async function load() {
 		featuredProjects: projects,
 		featuredTools: tools,
 		featuredResources: allResources.slice(0, MAX_FEATURED_RESOURCES),
-		heroHeadline: env.RM_HERO_HEADLINE || 'Science for the greater good',
+		heroHeadline: env.RM_HERO_HEADLINE || 'Science for the Greater Good',
 		heroIntro: env.RM_HERO_INTRO || ''
 	};
 }
