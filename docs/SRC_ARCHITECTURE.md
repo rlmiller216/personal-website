@@ -8,7 +8,7 @@ Map of everything under `src/`, how it connects, and where to find things.
 
 ```
 src/
-├── app.css                               # Design system: OKLCH color tokens, typography, animations (~165 LOC)
+├── app.css                               # Design system: OKLCH color tokens, typography, animations (~215 LOC)
 ├── app.d.ts                              # SvelteKit type augmentations (App namespace)
 ├── app.html                              # HTML shell + Google Fonts preconnect + dark-mode flash prevention (~20 LOC)
 │
@@ -49,7 +49,6 @@ src/
 │           ├── projects.service.ts       # Project mapper + queries (uses createCachedFetcher)
 │           ├── tools.service.ts          # Tool mapper + queries (uses createCachedFetcher)
 │           ├── resources.service.ts      # Resource mapper + queries (uses createCachedFetcher, groupByType)
-│           ├── interests.service.ts      # Interest page fetcher (child pages → ContentBlock[])
 │           └── about.service.ts          # About page fetcher (uses getPageContent)
 │
 └── routes/
@@ -71,12 +70,6 @@ src/
     ├── resources/
     │   ├── +page.svelte                  # Resources grouped by type
     │   └── +page.server.ts               # Fetches + groups resources
-    ├── interests/
-    │   ├── +page.svelte                  # Interest index (links to each topic)
-    │   ├── +page.server.ts               # Lists all interest slugs/titles
-    │   └── [slug]/
-    │       ├── +page.svelte              # Individual interest page with cross-links
-    │       └── +page.server.ts           # entries() for static generation + content fetch
     └── contact/
         └── +page.svelte                  # Formspree contact form (name/email/message)
 ```
@@ -98,7 +91,7 @@ Pure TypeScript interfaces with zero dependencies. Defines the contract between 
 | `RichTextSpan` | text, annotations, href | ContentBlock.richText[], NotionBlock.svelte |
 | `RichTextAnnotation` | bold, italic, strikethrough, underline, code, color | RichTextSpan.annotations |
 
-### `lib/server/services/` — Notion Data Layer (~940 LOC, 10 files)
+### `lib/server/services/` — Notion Data Layer (~870 LOC, 9 files)
 
 Server-only modules that run at build time. Fetches data from the Notion API and transforms it into typed objects for Svelte routes.
 
@@ -144,7 +137,7 @@ Transforms Notion API `BlockObjectResponse[]` into serializable `ContentBlock[]`
 
 **Helper modules (extracted to keep file focused):**
 - `notion-block-utils.ts` — `extractRichText()`, `extractMediaUrl()`, `createBaseBlock()`, `groupListItems()`
-- `embed-config.ts` — `getEmbedConfig()` detects embed providers and returns aspect ratios
+- `embed-config.ts` — `getEmbedConfig()` detects embed providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and returns aspect ratios
 - `code-highlight.ts` — `highlightCode()` Shiki-based build-time syntax highlighting
 
 **Supported block types:** paragraph, heading_1/2/3, bulleted_list_item, numbered_list_item, to_do, toggle, quote, callout, divider, image, code, bookmark, embed, video, table, audio, file, column_list, synced_block, equation
@@ -164,7 +157,6 @@ Thin mappers over `fetchAndMap<T>()`. Each owns one domain type.
 | `projects.service.ts` | 63 | `getAllProjects()`, `getFeaturedProjects()` |
 | `tools.service.ts` | 53 | `getAllTools()`, `getFeaturedTools()` |
 | `resources.service.ts` | 52 | `getAllResources()`, `groupByType()` |
-| `interests.service.ts` | 67 | `getInterestSlugs()`, `getAllInterests()`, `getInterestBySlug()` |
 | `about.service.ts` | 33 | `getAboutContent()` |
 
 **Shared pattern (database services):**
@@ -180,7 +172,7 @@ export async function getAllX(): Promise<X[]> {
 }
 ```
 
-**Page content services** (about, interests) use a different pattern — they fetch page blocks and transform them:
+**Page content services** (about) use a different pattern — they fetch page blocks and transform them:
 ```
 const rawBlocks = await getPageBlocks(pageId);
 return transformBlocks(rawBlocks);
@@ -239,8 +231,9 @@ All 7 pages are fully wired to Notion data. Each route has a `+page.server.ts` (
 | `/projects` | Project card grid | `getAllProjects()` |
 | `/open-source` | Tool card grid | `getAllTools()` |
 | `/resources` | Resources grouped by type | `getAllResources()` + `groupByType()` |
-| `/interests` | Index of interest topics | `getAllInterests()` (titles only) |
-| `/interests/[slug]` | Individual interest page | `getInterestBySlug()` + `entries()` |
+| `/projects/[slug]` | Project detail page | `getPageContent()` + project metadata |
+| `/open-source/[slug]` | Tool detail page | `getPageContent()` + tool metadata |
+| `/resources/[slug]` | Resource detail page | `getPageContent()` + resource metadata |
 | `/contact` | Formspree form (client-side) | None — static HTML + JS |
 
 ### Design System (`app.css`, `app.html`)
@@ -253,7 +246,7 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
 - Lime Yellow — highlights (`.text-highlight` utility, tags, callouts)
 - Two additional palette colors for supporting roles
 
-**Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Raleway (body, weights 400–700). Loaded via Google Fonts CDN with preconnect hints in `app.html`.
+**Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Raleway (body, weights 400–700). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px) bump Bodoni Moda to font-weight 600 to compensate for hairline strokes that vanish on small/low-DPI screens.
 
 **Animations:** `fadeUp`, `fadeIn`, `gradientShift` keyframes. Stagger animation support for up to 12 children via `--stagger-index` custom property.
 
@@ -334,8 +327,8 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
 | Card components + ThemeToggle + LetterSidebar | ~240 | 5 |
 | Design system (app.css + app.html) | ~185 | 2 |
 | Content types | ~149 | 1 |
-| Content fetcher services | 268 | 5 |
-| Routes (pages + layouts) | ~550 | 18 |
+| Content fetcher services | 201 | 4 |
+| Routes (pages + layouts) | ~550 | 21 |
 | Utilities + config | 27 | 3 |
 | **Tests** | **~950** | **9** |
 | **Total** | **~3,400** | **53** |

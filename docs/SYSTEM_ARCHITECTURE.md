@@ -70,7 +70,6 @@ Five content types, each sourced differently from Notion:
 | Project | Projects database | `dataSources.query()` → mapper | `Project` |
 | Tool | Open Source database | `dataSources.query()` → mapper | `Tool` |
 | Resource | Resources database | `dataSources.query()` → mapper | `Resource` |
-| Interest | Child pages under Interests parent | `blocks.children.list()` → transformer | `InterestEntry` (local) |
 | About | Single Notion page | `blocks.children.list()` → transformer | `ContentBlock[]` |
 
 ### 2.2 Database Schemas
@@ -141,7 +140,6 @@ All configuration is in `.env` (never committed). `.env.example` documents the c
 | `NOTION_PROJECTS_DS_ID` | UUID | Projects data source ID |
 | `NOTION_TOOLS_DS_ID` | UUID | Open Source data source ID |
 | `NOTION_RESOURCES_DS_ID` | UUID | Resources data source ID |
-| `NOTION_INTERESTS_PAGE_ID` | UUID | Interests parent page ID |
 | `NOTION_ABOUT_PAGE_ID` | UUID | About page ID |
 | `RM_SITE_NAME` | String | Site title (used in layout nav + footer) |
 | `RM_SITE_TAGLINE` | String | Site tagline (used in hero + meta tags) |
@@ -227,7 +225,7 @@ adapter: adapter({ pages: 'build', assets: 'build', fallback: '404.html' })
 
 - `prerender = true` in root `+layout.ts` — all routes are static
 - `fallback: '404.html'` — unknown routes serve the 404 page
-- Dynamic routes (`interests/[slug]`) require `entries()` function returning all valid slugs
+- Dynamic routes (`projects/[slug]`, etc.) require `entries()` function returning all valid slugs
 
 ### 6.2 Build Output
 

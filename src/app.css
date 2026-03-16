@@ -141,8 +141,15 @@
   h1, h2, h3, h4 {
     font-family: 'Bodoni Moda', serif;
   }
+  /* Bodoni's hairline strokes vanish on small screens — bump weight on mobile */
+  @media (max-width: 767px) {
+    h1, h2, h3, h4, .font-display {
+      font-weight: 600;
+    }
+  }
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;          /* prevent horizontal bounce on mobile */
   }
   ::selection {
     background: oklch(0.47 0.29 285 / 25%);

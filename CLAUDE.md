@@ -50,7 +50,7 @@ Notion databases/pages
 
 **NotionBlock dispatcher pattern:** `NotionBlock.svelte` is a thin dispatcher (~33 lines) that routes blocks to three sub-components by type: `NotionTextBlock` (paragraphs, headings, lists, toggles, quotes, callouts), `NotionMediaBlock` (images, video, audio, code, embeds, bookmarks, files, equations), and `NotionLayoutBlock` (dividers, tables, column layouts, synced blocks). Circular import (NotionTextBlock → NotionBlock) enables recursive rendering of nested lists/toggles — Svelte 5 handles this via lazy resolution.
 
-**Smart embed detection:** Embed and video blocks are analyzed via `getEmbedConfig()` (in `embed-config.ts`) to detect providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs) and set responsive aspect ratios. YouTube/Vimeo video blocks are automatically converted to embed type to prevent broken `<video>` tags.
+**Smart embed detection:** Embed and video blocks are analyzed via `getEmbedConfig()` (in `embed-config.ts`) to detect providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and set responsive aspect ratios. YouTube/Vimeo video blocks are automatically converted to embed type to prevent broken `<video>` tags. Mol* embeds use a `snapshot-url` parameter to load pre-configured 3D protein visualizations from `.molx` session files in `static/molstar/`.
 
 **Build-time syntax highlighting:** Code blocks are highlighted via Shiki at build time with dual-theme output (github-light/github-dark) using CSS variables. The Shiki highlighter uses a promise-cached singleton pattern (same as `createCachedFetcher`). Notion-to-Shiki language mapping handles display name differences. Unknown languages fall back to plaintext.
 
@@ -70,7 +70,7 @@ Notion databases/pages
 | `#1D2440` | Space Indigo | Dark background — hero, footer, dark mode |
 
 ### Typography
-- **Headings:** Bodoni Moda (Didone serif, variable optical size)
+- **Headings:** Bodoni Moda (Didone serif, variable optical size). Bumped to font-weight 600 on mobile (< 768px) — hairline strokes vanish on small screens.
 - **Body:** Raleway (geometric sans-serif)
 
 ### Font Utilities
@@ -84,6 +84,7 @@ Notion databases/pages
 - ResourceCard: `border border-border border-l-4 border-l-primary` (thin border + thick Ultra Violet left)
 
 ### Key Patterns
+- `overflow-x: hidden` on `html` — prevents horizontal bounce on mobile from elements slightly exceeding viewport width
 - OKLCH design tokens in `app.css` with light/dark mode (`--hero`, `--hero-foreground` for Space Indigo sections)
 - **Scroll-collapsing RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top (-12px), L and M animate upward on scroll to form a tight monogram. Collapse range extends 1.8× beyond hero height for a slow, cinematic feel. Responsive two-tier sizing: 56px/48px font at md, 80px/72px font at lg. Hidden on mobile.
 - **Non-fixed desktop nav**: nav scrolls away naturally on desktop (`md:relative md:z-10`) so sticky section headers own the top of the viewport. Transparent at top of every page (all headers extend behind nav via `-mt-16 pt-16`), solid on scroll. Mobile nav stays fixed.
@@ -160,6 +161,7 @@ static/
   favicon.svg
   robots.txt
   404.html                  → Static 404 fallback (adapter-static)
+  molstar/                  → Mol* 3D viewer session files (.molx)
 tests/
   services/
     notion.service.test.ts
@@ -245,6 +247,7 @@ NOTION_PROJECTS_DS_ID=...
 NOTION_TOOLS_DS_ID=...
 NOTION_RESOURCES_DS_ID=...
 NOTION_ABOUT_PAGE_ID=...
+# No NOTION_INTERESTS_PAGE_ID — interests page removed (2026-03-16)
 
 # Site metadata — prefixed RM_ because Netlify reserves SITE_NAME
 RM_SITE_NAME="RLM"

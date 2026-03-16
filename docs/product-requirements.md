@@ -9,7 +9,7 @@
 - [ ] **Projects page** with card grid from Notion database
 - [ ] **Open Source page** with card grid from Notion database
 - [ ] **Resources page** grouped by type from Notion database
-- [ ] **Interests section** with 5 sub-pages (Poetry, Art, Music, Travel, Food) from Notion
+- [x] ~~**Interests section**~~ — Removed (2026-03-16). Interests content will be added to About page later
 - [ ] **Contact page** with Formspree form
 - [ ] **Responsive design** — mobile, tablet, desktop
 - [x] **Scroll-aware responsive navigation** — desktop nav bar + mobile hamburger menu

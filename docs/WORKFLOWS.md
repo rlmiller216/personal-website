@@ -42,7 +42,6 @@ The primary workflow. Rebecca edits content in Notion; the website rebuilds to r
 | Open Source tools | Open Source database → add/edit rows | `tools.service.ts` fetches and maps |
 | Resources | Resources database → add/edit rows | `resources.service.ts` fetches and maps |
 | About page | About page → edit blocks | `about.service.ts` fetches blocks → transforms |
-| Interest pages | Interest child pages → edit blocks | `interests.service.ts` fetches and transforms each |
 
 ### Latency
 
@@ -256,45 +255,9 @@ RichTextSpan { text: "hello", annotations: { bold: true, code: true }, href: nul
 
 ---
 
-## 5. Interest Page Discovery
+## 5. Error Handling Flow
 
-Interest pages use a unique pattern — they're child pages of a parent page, not database entries.
-
-```
-Notion Page: "Interests" (NOTION_INTERESTS_PAGE_ID)
-├── Child Page: "Poetry"    → /interests/poetry
-├── Child Page: "Art"       → /interests/art
-├── Child Page: "Music"     → /interests/music
-├── Child Page: "Travel"    → /interests/travel
-└── Child Page: "Food"      → /interests/food
-```
-
-### Discovery Flow
-
-```
-1. getChildPages(NOTION_INTERESTS_PAGE_ID)
-   → Fetches all blocks of parent page
-   → Filters for block.type === 'child_page'
-   → Returns [{ id, title }]
-
-2. toSlug(title)
-   → "Poetry" → "poetry"
-   → "Food" → "food"
-
-3. For static generation: getInterestSlugs()
-   → Returns ["poetry", "art", "music", "travel", "food"]
-   → Used by entries() in +page.server.ts
-
-4. For rendering: getInterestBySlug("poetry")
-   → Fetches all interests, finds matching slug
-   → Returns { slug, title, blocks: ContentBlock[] }
-```
-
----
-
-## 6. Error Handling Flow
-
-### 6.1 Error Handling Strategy
+### 5.1 Error Handling Strategy
 
 All errors are caught at the service level. No errors propagate to routes — services return empty results on failure.
 
@@ -312,7 +275,7 @@ Notion API call
                    └── Return safe default: [] or empty typed array
 ```
 
-### 6.2 Module Log Prefixes
+### 5.2 Module Log Prefixes
 
 Every service logs with a consistent prefix for traceability:
 
@@ -322,10 +285,9 @@ Every service logs with a consistent prefix for traceability:
 | projects.service.ts | `[projects]` | `[projects] env.NOTION_PROJECTS_DS_ID not set` |
 | tools.service.ts | `[tools]` | `[tools] env.NOTION_TOOLS_DS_ID not set` |
 | resources.service.ts | `[resources]` | `[resources] env.NOTION_RESOURCES_DS_ID not set` |
-| interests.service.ts | `[interests]` | `[interests] loaded 5 interest pages` |
 | about.service.ts | `[about]` | `[about] failed to load about content — 401 Unauthorized` |
 
-### 6.3 Graceful Degradation
+### 5.3 Graceful Degradation
 
 The site always builds, even with partial or no Notion data:
 
@@ -339,7 +301,7 @@ The site always builds, even with partial or no Notion data:
 
 ---
 
-## 7. Design Token Flow
+## 6. Design Token Flow
 
 Design tokens flow from palette definition to rendered utility classes:
 
@@ -350,7 +312,7 @@ Palette hex → OKLCH conversion → CSS custom properties (:root in app.css)
 
 Each color is defined once as an OKLCH value in `:root`. Tailwind's `@theme` block references these custom properties, generating utility classes. Components use only Tailwind utilities — never raw hex or OKLCH values.
 
-## 8. Dark Mode Workflow
+## 7. Dark Mode Workflow
 
 ```
 Page load → inline <script> in app.html (runs before paint)
