@@ -45,7 +45,7 @@
 
 {:else if block.type === 'column_list'}
 	{#if block.columns && block.columns.length > 0}
-		<div class="my-6 grid grid-cols-1 sm:grid-cols-{block.columns.length} gap-6">
+		<div class="my-6 grid grid-cols-1 gap-6 sm:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))]" style:--cols={block.columns.length}>
 			{#each block.columns as column}
 				<div>
 					{#each column as childBlock}
