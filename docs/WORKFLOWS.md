@@ -144,7 +144,7 @@ Each Notion property type has a dedicated extractor that type-checks before acce
 
 ## 4. Block Rendering Pipeline
 
-For About and Interest pages — transforming Notion page blocks into rendered HTML.
+For About page — transforming Notion page blocks into rendered HTML.
 
 ### 4.1 Full Pipeline
 

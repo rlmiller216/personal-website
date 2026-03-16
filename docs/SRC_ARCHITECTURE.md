@@ -24,7 +24,7 @@ src/
 │   │
 │   ├── components/
 │   │   ├── ProjectCard.svelte            # Project card: hover translate-up, Ultra Violet overlay (~45 LOC)
-│   │   ├── ToolCard.svelte               # Tool card: Ultra Violet top border, Lime tags (~35 LOC, used on /open-source)
+│   │   ├── ToolCard.svelte               # Tool card: image-forward, category badge, hover shadow (~40 LOC, used on /open-source)
 │   │   ├── ToolListItem.svelte           # Tool list-item: Ultra Violet left border, hover arrow (~40 LOC, homepage)
 │   │   ├── ResourceCard.svelte           # Resource card: Ultra Violet left border, styled quotes (~35 LOC)
 │   │   ├── StickySection.svelte          # Sticky section header: IntersectionObserver shadow, "View all →" (~70 LOC)
@@ -85,7 +85,7 @@ Pure TypeScript interfaces with zero dependencies. Defines the contract between 
 | Interface | Fields | Used By |
 |---|---|---|
 | `Project` | title, description, sector, status, role, imageUrl, url, featured, order | projects.service.ts, ProjectCard.svelte |
-| `Tool` | title, description, category, githubUrl, demoUrl, tags, featured | tools.service.ts, ToolCard.svelte, ToolListItem.svelte |
+| `Tool` | title, description, category, githubUrl, demoUrl, tags, featured, imageUrl, order | tools.service.ts, ToolCard.svelte, ToolListItem.svelte |
 | `Resource` | title, description, type, category, author, url, whyILoveIt, imageUrl | resources.service.ts, ResourceCard.svelte |
 | `ContentBlock` | id, type, richText, children, url, caption, language, checked, icon | notion-blocks.ts, NotionBlock.svelte |
 | `RichTextSpan` | text, annotations, href | ContentBlock.richText[], NotionBlock.svelte |
@@ -155,7 +155,7 @@ Thin mappers over `fetchAndMap<T>()`. Each owns one domain type.
 | Service | LOC | Exports |
 |---|---|---|
 | `projects.service.ts` | 63 | `getAllProjects()`, `getFeaturedProjects()` |
-| `tools.service.ts` | 53 | `getAllTools()`, `getFeaturedTools()` |
+| `tools.service.ts` | 75 | `getAllTools()`, `getFeaturedTools()`, `getToolBySlug()` |
 | `resources.service.ts` | 52 | `getAllResources()`, `groupByType()` |
 | `about.service.ts` | 33 | `getAboutContent()` |
 
@@ -284,7 +284,7 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
    ┌──────────▼──────────┐   ┌────────────────────▼────────────────────┐
    │  Page Services      │   │       Svelte Components                 │
    │  about (33)         │   │  NotionBlock (33) → dispatcher          │
-   │  interests (67)     │   │    ├── NotionTextBlock (87)             │
+   │                     │   │    ├── NotionTextBlock (87)             │
    └──────────┬──────────┘   │    ├── NotionMediaBlock (114)           │
               │              │    ├── NotionLayoutBlock (63)            │
               │              │    └── notion-render-utils (46)          │
@@ -333,4 +333,4 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
 | **Tests** | **~950** | **9** |
 | **Total** | **~3,400** | **53** |
 
-> Tests are ~28% of total LOC. The block expansion added ~900 LOC across 18 new/modified files with 118 tests covering 22+ block types.
+> Tests are ~28% of total LOC. The block expansion added ~900 LOC across 18 new/modified files with 119 tests covering 22+ block types.

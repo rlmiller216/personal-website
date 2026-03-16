@@ -79,9 +79,10 @@ Five content types, each sourced differently from Notion:
 - **Filters:** Status ≠ "Archived" for `getAllProjects()`, Featured = true for `getFeaturedProjects()`
 - **Sorts:** Order ascending
 
-**Open Source / Tools** (7 properties)
-- Title (title), Description (rich_text), Category (select), GitHub URL (url), Demo URL (url), Tags (multi_select), Featured (checkbox)
+**Open Source / Tools** (9 properties)
+- Title (title), Description (rich_text), Category (select), GitHub URL (url), Demo URL (url), Tags (multi_select), Featured (checkbox), Files & media (files), Order (number)
 - **Filters:** Featured = true for `getFeaturedTools()`
+- **Sorts:** Order ascending
 
 **Resources** (8 properties)
 - Title (title), Type (select), Category (select), Author (rich_text), URL (url), Why I Love It (rich_text), Image (files)
@@ -91,7 +92,7 @@ Five content types, each sourced differently from Notion:
 
 Database content (Projects, Tools, Resources) maps to **typed objects** rendered by card components.
 
-Page content (About, Interests) maps to **ContentBlock[]** rendered by the NotionBlock component. ContentBlock is a serializable intermediate representation:
+Page content (About) maps to **ContentBlock[]** rendered by the NotionBlock component. ContentBlock is a serializable intermediate representation:
 
 ```
 Notion API Block → ContentBlock → Svelte Component → HTML
@@ -128,7 +129,7 @@ BlockObjectResponse    { id, type,      <NotionBlock>     <p>, <h1>,
 | Path | Source | Pipeline | Output |
 |---|---|---|---|
 | **Database path** | Notion databases (Projects, Tools, Resources) | `dataSources.query()` → property extractors → typed interface | `Project[]`, `Tool[]`, `Resource[]` |
-| **Page path** | Notion pages (About, Interests) | `blocks.children.list()` → `transformBlocks()` → `groupListItems()` | `ContentBlock[]` |
+| **Page path** | Notion pages (About) | `blocks.children.list()` → `transformBlocks()` → `groupListItems()` | `ContentBlock[]` |
 
 ### 3.3 Environment Variables
 

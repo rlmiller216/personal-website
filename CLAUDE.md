@@ -96,11 +96,11 @@ Notion databases/pages
 - Lime Yellow `.text-highlight` marker underline effect on last word of every page heading
 - Stagger fade-up animations (up to 12 children), gated behind `prefers-reduced-motion`
 - Cards always link to internal detail pages; external URLs shown as CTA buttons on detail pages
-- Card hovers: translate-up + accent borders (Lime Yellow bottom on ProjectCard, Ultra Violet left on ToolCard/ResourceCard)
+- Card hovers: translate-up + shadow (ProjectCard: Lime Yellow bottom, ToolCard: shadow-lg, ResourceCard: Ultra Violet left)
 - **Feature card** for first project on homepage: full-width image with Space Indigo gradient overlay, hover scale. Falls back to standard grid if project has no image.
 - **Varied card layouts per section**: Projects use feature card + grid, Open Source uses list items with Ultra Violet left border, Resource Library uses existing card grid.
 - Homepage section banding: muted → white → muted (first section gets warm beige)
-- Footer: Space Indigo background with Ultra Violet accent line, Bodoni Moda "Rebecca L Miller, PhD" branding
+- Footer: Space Indigo background, Bodoni Moda "Rebecca L Miller, PhD" branding
 
 ### Accessibility Constraints
 - **Lime Yellow on light bg: ~1.3:1 -- NEVER use as text.** Background/highlight only.
@@ -221,6 +221,7 @@ tests/
 | Tags | Multi-select | Python, Data, Biology, etc. |
 | Featured | Checkbox | Show on homepage? |
 | Files & media | Files | Preview image for card |
+| Order | Number | Display order |
 
 ### Resources Database
 | Property | Type | Purpose |
