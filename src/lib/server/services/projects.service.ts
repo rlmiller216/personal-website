@@ -75,7 +75,9 @@ export async function getFeaturedProjects(): Promise<Project[]> {
 	return fetchAndMap(env.NOTION_PROJECTS_DS_ID, mapProject, [
 		{ property: 'Order', direction: 'ascending' }
 	], {
-		property: 'Featured',
-		checkbox: { equals: true }
+		and: [
+			{ property: 'Featured', checkbox: { equals: true } },
+			{ property: 'Status', select: { does_not_equal: 'Archived' } }
+		]
 	});
 }
