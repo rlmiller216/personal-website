@@ -81,7 +81,6 @@
 					class="relative py-3 px-4 text-2xl lg:text-3xl font-bold uppercase tracking-wide transition-colors rounded-lg
 						hover:bg-accent
 						{isActive(link.href) ? 'text-primary' : 'text-foreground'}"
-					style="font-family: 'Raleway', sans-serif;"
 					onclick={() => sidebarMenuOpen = false}
 				>
 					{link.label}
@@ -93,7 +92,7 @@
 			<!-- ThemeToggle — pushed to bottom of panel -->
 			<div class="mt-auto pt-4 border-t border-border flex items-center gap-2 px-4">
 				<ThemeToggle class="text-muted-foreground hover:text-foreground" />
-				<span class="text-sm text-muted-foreground uppercase tracking-wide" style="font-family: 'Raleway', sans-serif;">Theme</span>
+				<span class="text-sm text-muted-foreground uppercase tracking-wide">Theme</span>
 			</div>
 		</nav>
 	{/if}
@@ -112,7 +111,6 @@
 				href="/"
 				class="text-2xl font-bold tracking-tight uppercase md:invisible
 					{showSolidNav ? 'text-hero' : 'text-hero-foreground'}"
-				style="font-family: 'Raleway', sans-serif;"
 			>
 				{data.siteName}
 			</a>
@@ -193,7 +191,7 @@
 			<!-- Top row: branding -->
 			<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
 				<div>
-					<p class="text-3xl font-bold tracking-tight opacity-80" style="font-family: 'Bodoni Moda', serif;">
+					<p class="text-3xl font-bold tracking-tight opacity-80 font-display">
 						Rebecca L Miller, PhD
 					</p>
 					<p class="text-sm opacity-70 mt-1">{data.siteTagline}</p>

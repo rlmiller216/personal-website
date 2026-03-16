@@ -28,8 +28,7 @@
 			<span class="text-highlight">{highlightWords}</span>
 		</h1>
 		{#if data.heroIntro}
-			<p class="mx-auto text-lg sm:text-xl text-hero-foreground/70 max-w-xl leading-relaxed"
-				style="font-family: 'Raleway', sans-serif;">
+			<p class="mx-auto text-lg sm:text-xl text-hero-foreground/70 max-w-xl leading-relaxed">
 				{data.heroIntro}
 			</p>
 		{/if}
@@ -62,7 +61,7 @@
 							{firstProject.sector}
 						</span>
 					{/if}
-					<h3 class="text-xl sm:text-2xl font-bold" style="font-family: 'Raleway', sans-serif;">
+					<h3 class="text-xl sm:text-2xl font-bold font-body">
 						{firstProject.title}
 					</h3>
 					{#if firstProject.description}

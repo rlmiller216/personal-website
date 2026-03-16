@@ -122,6 +122,14 @@
   --color-hero-foreground: var(--hero-foreground);
 }
 
+/* ── Font utilities — replace inline style="font-family:..." attributes ── */
+@utility font-display {
+	font-family: 'Bodoni Moda', serif;
+}
+@utility font-body {
+	font-family: 'Raleway', sans-serif;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

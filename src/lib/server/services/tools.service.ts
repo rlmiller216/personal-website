@@ -9,6 +9,8 @@ import type { Tool } from '$lib/types/content';
 import { slugify } from '$lib/types/content';
 import {
 	fetchAndMap,
+	createCachedFetcher,
+	warnSlugCollisions,
 	getTitle,
 	getRichText,
 	getSelect,
@@ -19,7 +21,7 @@ import {
 
 const MODULE = '[tools]';
 
-function mapTool(page: PageObjectResponse): Tool {
+export function mapTool(page: PageObjectResponse): Tool {
 	const props = page.properties;
 	return {
 		id: page.id,
@@ -34,14 +36,7 @@ function mapTool(page: PageObjectResponse): Tool {
 	};
 }
 
-// Promise-based cache — safe under concurrent load() calls from adapter-static.
-let toolCachePromise: Promise<Tool[]> | null = null;
-
-export async function getAllTools(): Promise<Tool[]> {
-	if (toolCachePromise) return toolCachePromise;
-	toolCachePromise = fetchAllTools();
-	return toolCachePromise;
-}
+export const getAllTools = createCachedFetcher(fetchAllTools);
 
 async function fetchAllTools(): Promise<Tool[]> {
 	if (!env.NOTION_TOOLS_DS_ID) {
@@ -51,18 +46,7 @@ async function fetchAllTools(): Promise<Tool[]> {
 
 	const results = await fetchAndMap(env.NOTION_TOOLS_DS_ID, mapTool);
 
-	// Detect slug collisions that would cause detail pages to overwrite each other
-	const slugs = new Set<string>();
-	for (const item of results) {
-		if (!item.slug) {
-			console.warn(`${MODULE} item "${item.title || '(untitled)'}" has empty slug — skipping detail page`);
-			continue;
-		}
-		if (slugs.has(item.slug)) {
-			console.error(`${MODULE} DUPLICATE SLUG "${item.slug}" — detail pages will overwrite. Rename in Notion.`);
-		}
-		slugs.add(item.slug);
-	}
+	warnSlugCollisions(results, MODULE);
 
 	return results;
 }

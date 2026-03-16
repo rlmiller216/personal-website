@@ -9,6 +9,8 @@ import type { Project } from '$lib/types/content';
 import { slugify } from '$lib/types/content';
 import {
 	fetchAndMap,
+	createCachedFetcher,
+	warnSlugCollisions,
 	getTitle,
 	getRichText,
 	getSelect,
@@ -20,7 +22,7 @@ import {
 
 const MODULE = '[projects]';
 
-function mapProject(page: PageObjectResponse): Project {
+export function mapProject(page: PageObjectResponse): Project {
 	const props = page.properties;
 	return {
 		id: page.id,
@@ -37,14 +39,7 @@ function mapProject(page: PageObjectResponse): Project {
 	};
 }
 
-// Promise-based cache — safe under concurrent load() calls from adapter-static.
-let projectCachePromise: Promise<Project[]> | null = null;
-
-export async function getAllProjects(): Promise<Project[]> {
-	if (projectCachePromise) return projectCachePromise;
-	projectCachePromise = fetchAllProjects();
-	return projectCachePromise;
-}
+export const getAllProjects = createCachedFetcher(fetchAllProjects);
 
 async function fetchAllProjects(): Promise<Project[]> {
 	if (!env.NOTION_PROJECTS_DS_ID) {
@@ -59,18 +54,7 @@ async function fetchAllProjects(): Promise<Project[]> {
 		select: { does_not_equal: 'Archived' }
 	});
 
-	// Detect slug collisions that would cause detail pages to overwrite each other
-	const slugs = new Set<string>();
-	for (const item of results) {
-		if (!item.slug) {
-			console.warn(`${MODULE} item "${item.title || '(untitled)'}" has empty slug — skipping detail page`);
-			continue;
-		}
-		if (slugs.has(item.slug)) {
-			console.error(`${MODULE} DUPLICATE SLUG "${item.slug}" — detail pages will overwrite. Rename in Notion.`);
-		}
-		slugs.add(item.slug);
-	}
+	warnSlugCollisions(results, MODULE);
 
 	return results;
 }

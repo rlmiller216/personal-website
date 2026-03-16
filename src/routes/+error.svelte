@@ -7,7 +7,7 @@
 </svelte:head>
 
 <section class="max-w-xl mx-auto px-6 py-24 text-center">
-	<p class="text-8xl font-bold text-primary mb-4" style="font-family: 'Bodoni Moda', serif;">
+	<p class="text-8xl font-bold text-primary mb-4 font-display">
 		{page.status}
 	</p>
 	<p class="text-lg text-muted-foreground mb-8">{page.error?.message || 'Something went wrong'}</p>

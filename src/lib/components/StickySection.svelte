@@ -31,8 +31,7 @@
 			<a
 				href={href}
 				class="group inline-flex items-baseline gap-3 text-3xl md:text-4xl font-bold
-					hover:text-primary transition-colors"
-				style="font-family: 'Raleway', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;"
+					hover:text-primary transition-colors uppercase tracking-wide"
 			>
 				{title} <span class="text-highlight">{highlightWord}</span>
 				<!-- Sharp angular arrow — matches Raleway's geometric character -->

@@ -1,7 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { getAllTools, getToolBySlug } from '$lib/server/services/tools.service';
-import { getPageBlocks } from '$lib/server/services/notion.service';
-import { transformBlocks } from '$lib/server/services/notion-blocks';
+import { getPageContent } from '$lib/server/services/page-content';
 
 const MODULE = '[tool-detail]';
 
@@ -14,8 +13,7 @@ export async function load({ params }) {
 	const tool = await getToolBySlug(params.slug);
 	if (!tool) throw error(404, `Tool "${params.slug}" not found`);
 
-	const rawBlocks = await getPageBlocks(tool.id);
-	const blocks = await transformBlocks(rawBlocks);
+	const blocks = await getPageContent(tool.id);
 	console.log(`${MODULE} "${tool.title}" — ${blocks.length} blocks`);
 
 	return { tool, blocks };

@@ -8,8 +8,7 @@
 
 import { env } from '$env/dynamic/private';
 import type { ContentBlock } from '$lib/types/content';
-import { getPageBlocks } from './notion.service';
-import { transformBlocks } from './notion-blocks';
+import { getPageContent } from './page-content';
 
 const MODULE = '[about]';
 
@@ -20,8 +19,7 @@ export async function getAboutContent(): Promise<ContentBlock[]> {
 	}
 
 	try {
-		const rawBlocks = await getPageBlocks(env.NOTION_ABOUT_PAGE_ID);
-		const blocks = await transformBlocks(rawBlocks);
+		const blocks = await getPageContent(env.NOTION_ABOUT_PAGE_ID);
 		console.log(`${MODULE} loaded ${blocks.length} content blocks`);
 		return blocks;
 	} catch (error) {

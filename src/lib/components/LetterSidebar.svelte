@@ -88,8 +88,7 @@
 		<span
 			class="absolute font-bold select-none pointer-events-none
 				left-1/2 -translate-x-1/2 text-hero uppercase tracking-wide"
-			style="font-family: 'Raleway', sans-serif;
-				font-size: {fontSize}px;
+			style="font-size: {fontSize}px;
 				top: {positions[i]}px;
 				will-change: top;"
 			aria-hidden="true"

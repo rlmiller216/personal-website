@@ -17,7 +17,6 @@
       class="inline-flex items-center gap-2 text-sm text-hero-foreground/70
         hover:text-hero-foreground transition-all duration-200 mb-6
         hover:-translate-x-1"
-      style="font-family: 'Raleway', sans-serif;"
     >
       <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         stroke-width="2.5" stroke-linecap="square" stroke-linejoin="miter">
@@ -28,7 +27,6 @@
 
     <h1
       class="text-4xl sm:text-5xl lg:text-6xl font-bold text-hero-foreground tracking-tight leading-tight"
-      style="font-family: 'Bodoni Moda', serif;"
     >
       {title}
     </h1>

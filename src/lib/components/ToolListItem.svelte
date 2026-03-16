@@ -9,20 +9,17 @@
 <a
 	href={`/open-source/${tool.slug}`}
 	class="group flex items-start gap-5 py-5 rounded-lg
-		transition-colors duration-300 hover:bg-accent"
-	style="border-left: 3px solid oklch(0.47 0.29 285); padding-left: 1rem;"
+		transition-colors duration-300 hover:bg-accent border-l-[3px] border-l-primary pl-4"
 >
 	<div class="flex-1 min-w-0">
 		<h3
-			class="text-lg font-semibold group-hover:text-primary transition-colors"
-			style="font-family: 'Raleway', sans-serif;"
+			class="text-lg font-semibold font-body group-hover:text-primary transition-colors"
 		>
 			{tool.title}
 		</h3>
 		{#if tool.description}
 			<p
-				class="mt-1 text-sm text-muted-foreground"
-				style="font-family: 'Raleway', sans-serif; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"
+				class="mt-1 text-sm text-muted-foreground line-clamp-2"
 			>
 				{tool.description}
 			</p>
@@ -32,7 +29,6 @@
 				{#each tool.tags.slice(0, 4) as tag}
 					<span
 						class="rounded-full px-2.5 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground"
-						style="font-family: 'Raleway', sans-serif;"
 					>
 						{tag}
 					</span>

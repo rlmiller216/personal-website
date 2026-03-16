@@ -40,9 +40,14 @@ Notion databases/pages
 
 **Key pattern:** ONE generic `fetchAndMap<T>()` function instead of 5 near-identical modules. Each service is thin — just a mapper function + call to the generic fetcher.
 
+**Shared service utilities:**
+- `createCachedFetcher<T>()` — generic promise-based cache factory used by all 3 data services. Safe under concurrent adapter-static `load()` calls.
+- `warnSlugCollisions()` — detects empty/duplicate slugs at build time. Used by all 3 data services.
+- `getPageContent()` (in `page-content.ts`) — convenience function combining `getPageBlocks()` + `transformBlocks()`. Used by detail routes and about.service. Lives in a separate file to avoid circular dependency (`notion-blocks.ts` → `notion.service.ts`).
+
 **Notion blocks → Svelte components** (NOT `{@html}` strings). Server transforms API blocks into serializable `ContentBlock[]`, then `<NotionBlocks>` renders them as styled Svelte components. This enables per-block Tailwind styling and eliminates XSS risk.
 
-**Detail pages** use `getPageBlocks()` → `transformBlocks()` pipeline (same as /about) to render Notion page content below structured metadata. `slugify()` in `content.ts` generates URL-safe slugs from titles. Promise-based build cache in each service prevents N+1 API calls when adapter-static pre-renders multiple detail pages that share the same data source query.
+**Detail pages** use `getPageContent()` to render Notion page content below structured metadata. `slugify()` in `content.ts` generates URL-safe slugs from titles.
 
 ## Design System
 
@@ -58,6 +63,16 @@ Notion databases/pages
 ### Typography
 - **Headings:** Bodoni Moda (Didone serif, variable optical size)
 - **Body:** Raleway (geometric sans-serif)
+
+### Font Utilities
+- `font-display` — applies Bodoni Moda. Use on non-heading elements that need the display font (e.g., footer branding `<p>`).
+- `font-body` — applies Raleway. Use on heading elements (`<h1>`–`<h4>`) that need to override the base Bodoni Moda rule.
+- Headings get Bodoni Moda from base CSS (`@layer base`). Body text gets Raleway from `body`. No inline `style="font-family:..."` — use utility classes instead.
+
+### Card Border Patterns
+- ProjectCard: `border-b-4 border-b-secondary` (Lime Yellow bottom)
+- ToolCard/ToolListItem: `border-l-primary` (Ultra Violet left)
+- ResourceCard: `border border-border border-l-4 border-l-primary` (thin border + thick Ultra Violet left)
 
 ### Key Patterns
 - OKLCH design tokens in `app.css` with light/dark mode (`--hero`, `--hero-foreground` for Space Indigo sections)
@@ -101,11 +116,12 @@ src/
       NotionBlock.svelte    → Individual block type dispatcher
     server/
       services/
-        notion.service.ts   → Notion client + generic fetcher + property extractors
-        projects.service.ts → Project mapper + queries
-        tools.service.ts    → Tool mapper + queries
-        resources.service.ts→ Resource mapper + queries
-        about.service.ts    → About page fetcher
+        notion.service.ts   → Notion client + generic fetcher + property extractors + createCachedFetcher + warnSlugCollisions
+        page-content.ts     → getPageContent() — combines getPageBlocks() + transformBlocks()
+        projects.service.ts → Project mapper + queries (uses createCachedFetcher)
+        tools.service.ts    → Tool mapper + queries (uses createCachedFetcher)
+        resources.service.ts→ Resource mapper + queries (uses createCachedFetcher)
+        about.service.ts    → About page fetcher (uses getPageContent)
         notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[]
     types/
       content.ts            → Project, Tool, Resource, ContentBlock interfaces + slugify()
@@ -132,6 +148,8 @@ tests/
   services/
     notion.service.test.ts
     notion-blocks.test.ts
+    mappers.test.ts         → Tests for mapProject, mapTool, mapResource
+    slug-collisions.test.ts → Tests for warnSlugCollisions
 ```
 
 ## Site Structure
@@ -231,10 +249,12 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 44 tests across 2 files: `notion.service.test.ts` (28) + `notion-blocks.test.ts` (16)
+- 70 tests across 5 files: `notion.service.test.ts` (28) + `notion-blocks.test.ts` (16) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (5)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
+- Mapper tests verify all 3 service mappers with complete/missing/empty properties
+- Slug collision tests verify warning/error logging for empty and duplicate slugs
 - Mock Notion SDK responses — no live API calls in tests
-- Run: `npx vitest run`
+- Run: `npm test` or `npx vitest run`
 
 ## Development Rules
 

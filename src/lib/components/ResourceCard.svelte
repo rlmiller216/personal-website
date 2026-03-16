@@ -6,8 +6,7 @@
 
 <a
 	href={`/resources/${resource.slug}`}
-	class="flex items-start gap-4 rounded-lg p-4 transition-shadow hover:shadow-md bg-card"
-	style="border: 1px solid oklch(0.14 0 0 / 8%); border-left: 4px solid oklch(0.47 0.29 285);"
+	class="flex items-start gap-4 rounded-lg p-4 transition-shadow hover:shadow-md bg-card border border-border border-l-4 border-l-primary"
 >
 	{#if resource.imageUrl}
 		<img
@@ -23,15 +22,14 @@
 	{/if}
 	<div class="flex flex-1 flex-col">
 		{#if resource.type}
-			<span class="mb-1 w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider bg-secondary text-secondary-foreground"
-				style="font-family: 'Raleway', sans-serif;">{resource.type}</span>
+			<span class="mb-1 w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider bg-secondary text-secondary-foreground">{resource.type}</span>
 		{/if}
-		<h3 class="text-base font-semibold" style="font-family: 'Raleway', sans-serif;">{resource.title}</h3>
+		<h3 class="text-base font-semibold font-body">{resource.title}</h3>
 		{#if resource.author}
-			<p class="text-xs text-muted-foreground" style="font-family: 'Raleway', sans-serif;">{resource.author}</p>
+			<p class="text-xs text-muted-foreground">{resource.author}</p>
 		{/if}
 		{#if resource.whyILoveIt}
-			<p class="mt-1.5 text-sm italic text-muted-foreground" style="font-family: 'Raleway', sans-serif;">&ldquo;{resource.whyILoveIt}&rdquo;</p>
+			<p class="mt-1.5 text-sm italic text-muted-foreground">&ldquo;{resource.whyILoveIt}&rdquo;</p>
 		{/if}
 	</div>
 </a>

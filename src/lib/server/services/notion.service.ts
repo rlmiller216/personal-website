@@ -220,3 +220,31 @@ export async function getChildPages(
 		return [];
 	}
 }
+
+/** Creates a promise-based cached getter — safe under concurrent adapter-static load() calls. */
+export function createCachedFetcher<T>(fetcher: () => Promise<T[]>): () => Promise<T[]> {
+	let cachePromise: Promise<T[]> | null = null;
+	return () => {
+		if (cachePromise) return cachePromise;
+		cachePromise = fetcher();
+		return cachePromise;
+	};
+}
+
+/** Logs warnings for empty slugs and errors for duplicates. */
+export function warnSlugCollisions(
+	items: Array<{ slug: string; title: string }>,
+	module: string
+): void {
+	const slugs = new Set<string>();
+	for (const item of items) {
+		if (!item.slug) {
+			console.warn(`${module} item "${item.title || '(untitled)'}" has empty slug — skipping detail page`);
+			continue;
+		}
+		if (slugs.has(item.slug)) {
+			console.error(`${module} DUPLICATE SLUG "${item.slug}" — detail pages will overwrite. Rename in Notion.`);
+		}
+		slugs.add(item.slug);
+	}
+}

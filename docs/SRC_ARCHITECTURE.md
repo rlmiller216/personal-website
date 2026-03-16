@@ -36,13 +36,14 @@ src/
 │   │
 │   └── server/
 │       └── services/
-│           ├── notion.service.ts         # Notion API client, property extractors, generic fetcher
+│           ├── notion.service.ts         # Notion API client, property extractors, generic fetcher, createCachedFetcher, warnSlugCollisions
+│           ├── page-content.ts           # getPageContent() — combines getPageBlocks() + transformBlocks()
 │           ├── notion-blocks.ts          # Block transformer: Notion API → ContentBlock[]
-│           ├── projects.service.ts       # Project mapper + queries (getAllProjects, getFeaturedProjects)
-│           ├── tools.service.ts          # Tool mapper + queries (getAllTools, getFeaturedTools)
-│           ├── resources.service.ts      # Resource mapper + queries (getAllResources, groupByType)
+│           ├── projects.service.ts       # Project mapper + queries (uses createCachedFetcher)
+│           ├── tools.service.ts          # Tool mapper + queries (uses createCachedFetcher)
+│           ├── resources.service.ts      # Resource mapper + queries (uses createCachedFetcher, groupByType)
 │           ├── interests.service.ts      # Interest page fetcher (child pages → ContentBlock[])
-│           └── about.service.ts          # About page fetcher (single page → ContentBlock[])
+│           └── about.service.ts          # About page fetcher (uses getPageContent)
 │
 └── routes/
     ├── +layout.svelte                    # Root layout: LetterSidebar + slide-out overlay, scroll-aware nav, ThemeToggle, Space Indigo footer (~210 LOC)

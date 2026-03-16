@@ -9,6 +9,15 @@
 
 <svelte:head>
   <title>{resource.title} — {data.siteName}</title>
+  <meta property="og:title" content="{resource.title} — {data.siteName}" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://rlmiller.netlify.app/resources/{resource.slug}" />
+  {#if resource.whyILoveIt}
+    <meta property="og:description" content={resource.whyILoveIt} />
+  {/if}
+  {#if resource.imageUrl}
+    <meta property="og:image" content={resource.imageUrl} />
+  {/if}
 </svelte:head>
 
 <DetailHeader backHref="/resources" backLabel="All Resources" title={resource.title}>
@@ -18,7 +27,7 @@
     </span>
   {/if}
   {#if resource.author}
-    <span class="text-sm text-hero-foreground/60" style="font-family: 'Raleway', sans-serif;">
+    <span class="text-sm text-hero-foreground/60">
       by {resource.author}
     </span>
   {/if}
@@ -37,10 +46,10 @@
     <blockquote
       class="border-l-4 border-primary bg-primary/5 py-6 px-8 rounded-r-lg mb-8"
     >
-      <p class="text-xl text-foreground/90 italic leading-relaxed" style="font-family: 'Bodoni Moda', serif;">
+      <p class="text-xl text-foreground/90 italic leading-relaxed font-display">
         {resource.whyILoveIt}
       </p>
-      <cite class="mt-3 block text-sm text-muted-foreground not-italic" style="font-family: 'Raleway', sans-serif;">
+      <cite class="mt-3 block text-sm text-muted-foreground not-italic">
         — Why I Love It
       </cite>
     </blockquote>
@@ -60,7 +69,6 @@
         rel="noopener noreferrer"
         class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground
           font-medium rounded-lg transition-all duration-200 hover:opacity-90"
-        style="font-family: 'Raleway', sans-serif;"
       >
         Visit Resource
         <svg class="h-4 w-4 transition-transform duration-200 hover:translate-x-1" viewBox="0 0 24 24"

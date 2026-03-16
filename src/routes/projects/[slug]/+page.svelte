@@ -12,6 +12,15 @@
   {#if project.description}
     <meta name="description" content={project.description} />
   {/if}
+  <meta property="og:title" content="{project.title} — {data.siteName}" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://rlmiller.netlify.app/projects/{project.slug}" />
+  {#if project.description}
+    <meta property="og:description" content={project.description} />
+  {/if}
+  {#if project.imageUrl}
+    <meta property="og:image" content={project.imageUrl} />
+  {/if}
 </svelte:head>
 
 <DetailHeader backHref="/projects" backLabel="All Projects" title={project.title}>
@@ -26,7 +35,7 @@
     </span>
   {/if}
   {#if project.role}
-    <span class="text-sm text-hero-foreground/60" style="font-family: 'Raleway', sans-serif;">
+    <span class="text-sm text-hero-foreground/60">
       Role: {project.role}
     </span>
   {/if}
@@ -42,7 +51,7 @@
   {/if}
 
   {#if project.description}
-    <p class="text-lg text-muted-foreground leading-relaxed mb-8" style="font-family: 'Raleway', sans-serif;">
+    <p class="text-lg text-muted-foreground leading-relaxed mb-8">
       {project.description}
     </p>
   {/if}
@@ -61,7 +70,6 @@
         rel="noopener noreferrer"
         class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground
           font-medium rounded-lg transition-all duration-200 hover:opacity-90"
-        style="font-family: 'Raleway', sans-serif;"
       >
         Visit Project
         <svg class="h-4 w-4 transition-transform duration-200 hover:translate-x-1" viewBox="0 0 24 24"
