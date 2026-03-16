@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import { Github, Linkedin, Mail } from '@lucide/svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import LetterSidebar from '$lib/components/LetterSidebar.svelte';
 
 	let { children, data } = $props();
 
@@ -26,6 +27,11 @@
 		return () => window.removeEventListener('scroll', onScroll);
 	});
 
+	// Only the homepage hero extends behind the nav (-mt-16).
+	// Subpages start below the nav → always need solid background.
+	const isHome = $derived(page.url.pathname === '/');
+	const showSolidNav = $derived(scrolled || !isHome);
+
 	function isActive(href: string): boolean {
 		if (href === '/') return page.url.pathname === '/';
 		return page.url.pathname.startsWith(href);
@@ -41,17 +47,20 @@
 	<meta name="twitter:card" content="summary" />
 </svelte:head>
 
-<div class="min-h-screen flex flex-col">
+<LetterSidebar />
+
+<div class="min-h-screen flex flex-col md:ml-14 lg:ml-20">
 	<!-- Nav — transparent on hero, solid on scroll -->
 	<header
-		class="fixed top-0 left-0 right-0 z-50 transition-all duration-300
-			{scrolled ? 'bg-background/90 backdrop-blur-md border-b border-border shadow-sm' : 'bg-transparent'}"
+		class="fixed top-0 left-0 md:left-14 lg:left-20 right-0 z-50 transition-all duration-300
+			{showSolidNav ? 'bg-white border-b border-border shadow-sm' : 'bg-transparent'}"
 	>
 		<nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
 			<a
 				href="/"
-				class="text-xl font-bold tracking-tight text-primary"
-				style="font-family: 'Bodoni Moda', serif;"
+				class="text-2xl font-bold tracking-tight uppercase md:invisible
+					{showSolidNav ? 'text-hero' : 'text-hero-foreground'}"
+				style="font-family: 'Raleway', sans-serif;"
 			>
 				{data.siteName}
 			</a>
@@ -62,7 +71,9 @@
 					<a
 						href={link.href}
 						class="relative px-3 py-2 text-sm font-medium transition-colors
-							{isActive(link.href) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
+							{isActive(link.href)
+								? (showSolidNav ? 'text-primary' : 'text-hero-foreground')
+								: (showSolidNav ? 'text-muted-foreground hover:text-foreground' : 'text-hero-foreground/70 hover:text-hero-foreground')}"
 					>
 						{link.label}
 						<!-- Lime Yellow underline — active or on hover -->
@@ -73,14 +84,15 @@
 						></span>
 					</a>
 				{/each}
-				<ThemeToggle />
+				<ThemeToggle class={showSolidNav ? 'text-muted-foreground hover:text-foreground' : 'text-hero-foreground/70 hover:text-hero-foreground'} />
 			</div>
 
 			<!-- Mobile: theme toggle + hamburger -->
 			<div class="md:hidden flex items-center gap-1">
-				<ThemeToggle />
+				<ThemeToggle class={showSolidNav ? 'text-muted-foreground hover:text-foreground' : 'text-hero-foreground/70 hover:text-hero-foreground'} />
 				<button
-					class="p-2 text-muted-foreground hover:text-foreground transition-colors"
+					class="p-2 transition-colors
+						{showSolidNav ? 'text-muted-foreground hover:text-foreground' : 'text-hero-foreground/70 hover:text-hero-foreground'}"
 					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
 					aria-label="Toggle menu"
 				>
@@ -129,7 +141,7 @@
 			<!-- Top row: branding -->
 			<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
 				<div>
-					<p class="text-2xl font-bold tracking-tight" style="font-family: 'Bodoni Moda', serif;">
+					<p class="text-3xl font-bold tracking-tight uppercase opacity-80" style="font-family: 'Raleway', sans-serif;">
 						{data.siteName}
 					</p>
 					<p class="text-sm opacity-70 mt-1">{data.siteTagline}</p>
@@ -139,7 +151,7 @@
 					<a href="https://github.com/rlmiller216" class="opacity-70 hover:opacity-100 transition-opacity" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
 						<Github class="w-5 h-5" />
 					</a>
-					<a href="https://linkedin.com/in/rlmiller216" class="opacity-70 hover:opacity-100 transition-opacity" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+					<a href="https://www.linkedin.com/in/rebeccalauriemiller/" class="opacity-70 hover:opacity-100 transition-opacity" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
 						<Linkedin class="w-5 h-5" />
 					</a>
 					<a href="/contact" class="opacity-70 hover:opacity-100 transition-opacity" aria-label="Contact">

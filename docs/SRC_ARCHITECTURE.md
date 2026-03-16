@@ -26,7 +26,8 @@ src/
 │   │   ├── ProjectCard.svelte            # Project card: hover translate-up, Ultra Violet overlay (~45 LOC)
 │   │   ├── ToolCard.svelte               # Tool card: Ultra Violet top border, Lime tags (~35 LOC)
 │   │   ├── ResourceCard.svelte           # Resource card: Ultra Violet left border, styled quotes (~35 LOC)
-│   │   ├── ThemeToggle.svelte            # Dark mode toggle: Sun/Moon icons, localStorage (~28 LOC)
+│   │   ├── ThemeToggle.svelte            # Dark mode toggle: Sun/Moon icons, localStorage, class prop (~29 LOC)
+│   │   ├── LetterSidebar.svelte          # Scroll-collapsing RLM monogram sidebar (~92 LOC)
 │   │   ├── NotionBlocks.svelte           # Iterates ContentBlock[] → renders each via NotionBlock
 │   │   ├── NotionBlock.svelte            # Block type dispatcher — renders 17 block types as HTML
 │   │   └── ui/                           # shadcn-svelte auto-generated components
@@ -42,10 +43,10 @@ src/
 │           └── about.service.ts          # About page fetcher (single page → ContentBlock[])
 │
 └── routes/
-    ├── +layout.svelte                    # Root layout: scroll-aware nav, Bodoni logo, ThemeToggle, Space Indigo footer (~145 LOC)
+    ├── +layout.svelte                    # Root layout: LetterSidebar, scroll-aware nav, ThemeToggle, Space Indigo footer (~175 LOC)
     ├── +layout.server.ts                 # Loads site metadata from RM_* env vars
     ├── +layout.ts                        # export const prerender = true (all routes static)
-    ├── +page.svelte                      # Home: Space Indigo hero, gradient fade, stagger animations (~100 LOC)
+    ├── +page.svelte                      # Home: Space Indigo hero with data-hero attr, stagger animations (~100 LOC)
     ├── +page.server.ts                   # Fetches featured items from all Notion databases
     ├── +error.svelte                     # Branded error page (404/500)
     ├── about/
@@ -167,13 +168,23 @@ const rawBlocks = await getPageBlocks(pageId);
 return transformBlocks(rawBlocks);
 ```
 
-### `lib/components/` — UI Components (~370 LOC, 6 files)
+### `lib/components/` — UI Components (~460 LOC, 7 files)
 
 Svelte components for rendering content. Card components receive typed props; Notion renderers handle rich content.
 
-#### `ThemeToggle.svelte` (~28 LOC)
+#### `LetterSidebar.svelte` (~92 LOC)
 
-Dark mode toggle using Lucide Sun/Moon icons. Uses Svelte 5 `$state` for theme tracking. Persists preference to `localStorage` and applies `.dark` class on `<html>`.
+Scroll-collapsing RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in Raleway uppercase are vertically spread on the homepage hero, then animate to a tight stacked monogram as the user scrolls past the hero. R stays fixed at the top; L and M collapse upward via gap interpolation with easeOutCubic easing.
+
+**Key patterns:**
+- **Responsive two-tier sizing:** md (768px+) uses 56px sidebar / 48px font; lg (1024px+) uses 80px sidebar / 72px font
+- **Cross-component coupling:** Reads `[data-hero]` attribute from `+page.svelte` to determine scroll range. No hero → always collapsed.
+- **`prefers-reduced-motion`:** Forces `heroHeight=0` → letters always collapsed, no animation
+- **Gap interpolation:** Single `gap` value interpolated between `spreadGap` and `collapsedGap`, positions = `[R_TOP, R_TOP+gap, R_TOP+gap*2]` — guarantees equal spacing
+
+#### `ThemeToggle.svelte` (~29 LOC)
+
+Dark mode toggle using Lucide Sun/Moon icons. Uses Svelte 5 `$state` for theme tracking. Persists preference to `localStorage` and applies `.dark` class on `<html>`. Accepts optional `class` prop for scroll-aware color overrides (light text on dark hero, dark text on solid nav).
 
 #### `NotionBlocks.svelte` (16 LOC)
 
@@ -284,13 +295,13 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
 | Notion block transformer | 236 | 1 |
 | Notion client + fetcher | 223 | 1 |
 | NotionBlock component | 177 | 1 |
-| Card components + ThemeToggle | ~145 | 4 |
+| Card components + ThemeToggle + LetterSidebar | ~240 | 5 |
 | Design system (app.css + app.html) | ~185 | 2 |
 | Content types | 98 | 1 |
 | Content fetcher services | 268 | 5 |
 | Routes (pages + layouts) | ~550 | 18 |
 | Utilities + config | 27 | 3 |
 | **Tests** | **~480** | **2** |
-| **Total** | **~2,400** | **38** |
+| **Total** | **~2,500** | **39** |
 
 > Tests are ~20% of total LOC. The design system overhaul added ~300 LOC across app.css, app.html, ThemeToggle, layout, and page routes.

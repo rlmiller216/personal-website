@@ -59,12 +59,13 @@ Notion databases/pages
 
 ### Key Patterns
 - OKLCH design tokens in `app.css` with light/dark mode (`--hero`, `--hero-foreground` for Space Indigo sections)
+- **Scroll-collapsing RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top, L and M animate upward on scroll to form a tight monogram. Responsive two-tier sizing: 56px/48px font at md (768px+), 80px/72px font at lg (1024px+). Hidden on mobile.
+- Scroll-aware nav: transparent on homepage hero, opaque white on scroll and all subpages. Nav text colors adapt to background (light text on dark hero, dark text on solid nav).
 - Space Indigo page headers on all content pages
 - Lime Yellow `.text-highlight` marker underline effect
-- Scroll-aware nav: transparent on hero, solid + backdrop-blur on scroll
 - Stagger fade-up animations (up to 12 children), gated behind `prefers-reduced-motion`
 - Card hovers: translate-up + accent borders (Lime Yellow bottom on ProjectCard, Ultra Violet top on ToolCard, Ultra Violet left on ResourceCard)
-- Footer: Space Indigo background with Ultra Violet accent line
+- Footer: Space Indigo background with Ultra Violet accent line, Raleway uppercase RLM branding
 
 ### Accessibility Constraints
 - **Lime Yellow on light bg: ~1.3:1 -- NEVER use as text.** Background/highlight only.
@@ -82,7 +83,8 @@ src/
       ProjectCard.svelte    → Project display card
       ToolCard.svelte       → Open source tool card
       ResourceCard.svelte   → Resource card
-      ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage)
+      ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage, accepts class prop)
+      LetterSidebar.svelte  → Scroll-collapsing RLM monogram sidebar (responsive, scroll-driven)
       NotionBlocks.svelte   → Renders ContentBlock[] as Svelte components
       NotionBlock.svelte    → Individual block type dispatcher
     server/
@@ -97,7 +99,7 @@ src/
     types/
       content.ts            → Project, Tool, Resource, ContentBlock interfaces
   routes/
-    +layout.svelte          → Shared nav + footer + SEO meta
+    +layout.svelte          → Shared nav + footer + SEO meta + LetterSidebar
     +layout.server.ts       → Site metadata from env vars
     +layout.ts              → export const prerender = true
     +page.svelte            → Home page

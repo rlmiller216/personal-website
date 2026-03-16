@@ -6,6 +6,7 @@
 
 /* ── Light mode: White Smoke base, Ultra Violet primary, Lime Yellow secondary ── */
 :root {
+  --sidebar-width: 5rem;
   --radius: 0.625rem;
   --background: oklch(0.97 0.003 90);           /* #F6F5F4 White Smoke */
   --foreground: oklch(0.14 0 0);                 /* #0D0D0D Onyx */

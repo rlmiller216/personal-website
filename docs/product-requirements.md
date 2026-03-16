@@ -13,8 +13,9 @@
 - [ ] **Contact page** with Formspree form
 - [ ] **Responsive design** — mobile, tablet, desktop
 - [x] **Scroll-aware responsive navigation** — desktop nav bar + mobile hamburger menu
+- [x] **Scroll-collapsing RLM letter sidebar** — R fixed, L+M animate on scroll, responsive md/lg sizing
 - [x] **Page header styling** — consistent header treatment across all pages
-- [x] **Footer redesign** — updated layout and styling
+- [x] **Footer redesign** — updated layout and styling with Raleway RLM branding
 - [ ] **Notion as CMS** — all content fetched from Notion API at build time
 - [ ] **Static site generation** — adapter-static produces pure HTML
 - [ ] **Netlify deployment** — free hosting with build hooks

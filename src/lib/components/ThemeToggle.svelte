@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { Sun, Moon } from '@lucide/svelte';
 
+	let { class: className = 'text-muted-foreground hover:text-foreground' }: { class?: string } = $props();
+
 	let isDark = $state(false);
 
 	$effect(() => {
@@ -16,7 +18,7 @@
 
 <button
 	onclick={toggle}
-	class="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+	class="p-2 rounded-lg {className} hover:bg-accent transition-colors"
 	aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
 >
 	{#if isDark}
