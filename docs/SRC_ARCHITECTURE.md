@@ -31,14 +31,21 @@ src/
 │   │   ├── ThemeToggle.svelte            # Dark mode toggle: Sun/Moon icons, localStorage, class prop (~29 LOC)
 │   │   ├── LetterSidebar.svelte          # Scroll-collapsing RLM sidebar + hamburger toggle, $bindable menuOpen (~105 LOC)
 │   │   ├── NotionBlocks.svelte           # Iterates ContentBlock[] → renders each via NotionBlock
-│   │   ├── NotionBlock.svelte            # Block type dispatcher — renders 17 block types as HTML
+│   │   ├── NotionBlock.svelte            # Block type dispatcher → routes to sub-components (~33 LOC)
+│   │   ├── NotionTextBlock.svelte        # Text blocks: paragraphs, headings, lists, toggles, quotes, callouts (~87 LOC)
+│   │   ├── NotionMediaBlock.svelte       # Media blocks: images, video, audio, code, embeds, bookmarks, files, equations (~114 LOC)
+│   │   ├── NotionLayoutBlock.svelte      # Layout blocks: dividers, tables, column layouts, synced blocks (~63 LOC)
+│   │   ├── notion-render-utils.ts        # renderRichTextToSafeHtml(), escapeHtml(), hasContent() (~46 LOC)
 │   │   └── ui/                           # shadcn-svelte auto-generated components
 │   │
 │   └── server/
 │       └── services/
 │           ├── notion.service.ts         # Notion API client, property extractors, generic fetcher, createCachedFetcher, warnSlugCollisions
 │           ├── page-content.ts           # getPageContent() — combines getPageBlocks() + transformBlocks()
-│           ├── notion-blocks.ts          # Block transformer: Notion API → ContentBlock[]
+│           ├── notion-blocks.ts          # Block transformer: Notion API → ContentBlock[] (22+ types, ~230 LOC)
+│           ├── notion-block-utils.ts     # Shared helpers: extractRichText, extractMediaUrl, groupListItems (~85 LOC)
+│           ├── embed-config.ts           # URL pattern → embed provider/aspect-ratio detection (~53 LOC)
+│           ├── code-highlight.ts         # Shiki syntax highlighting: promise-cached, dual-theme (~82 LOC)
 │           ├── projects.service.ts       # Project mapper + queries (uses createCachedFetcher)
 │           ├── tools.service.ts          # Tool mapper + queries (uses createCachedFetcher)
 │           ├── resources.service.ts      # Resource mapper + queries (uses createCachedFetcher, groupByType)
@@ -78,7 +85,7 @@ src/
 
 ## 2. Module Responsibilities
 
-### `lib/types/` — Domain Types (98 LOC, 1 file)
+### `lib/types/` — Domain Types (~149 LOC, 1 file)
 
 Pure TypeScript interfaces with zero dependencies. Defines the contract between services and components.
 
@@ -91,7 +98,7 @@ Pure TypeScript interfaces with zero dependencies. Defines the contract between 
 | `RichTextSpan` | text, annotations, href | ContentBlock.richText[], NotionBlock.svelte |
 | `RichTextAnnotation` | bold, italic, strikethrough, underline, code, color | RichTextSpan.annotations |
 
-### `lib/server/services/` — Notion Data Layer (724 LOC, 7 files)
+### `lib/server/services/` — Notion Data Layer (~940 LOC, 10 files)
 
 Server-only modules that run at build time. Fetches data from the Notion API and transforms it into typed objects for Svelte routes.
 
@@ -123,7 +130,7 @@ The single source of truth for all Notion API interactions.
 - Error handling: try/catch with `[notion]` module prefix and descriptive messages
 - Missing env var guard: returns empty array with console.warn
 
-#### `notion-blocks.ts` — Block Transformer (236 LOC)
+#### `notion-blocks.ts` — Block Transformer (~230 LOC)
 
 Transforms Notion API `BlockObjectResponse[]` into serializable `ContentBlock[]`.
 
@@ -132,13 +139,21 @@ Transforms Notion API `BlockObjectResponse[]` into serializable `ContentBlock[]`
 | `transformBlocks` | `(blocks) → ContentBlock[]` | Main entry point — convert + group |
 
 **Internal functions:**
-- `extractRichText()` — Notion `RichTextItemResponse[]` → `RichTextSpan[]`
-- `extractMediaUrl()` — file/external URL extraction from media blocks
-- `blockToContentBlock()` — switch on 15 block types, returns null for unsupported
+- `blockToContentBlock()` — switch on 22+ block types, returns null for unsupported
 - `fetchAndTransformChildren()` — recursive child block resolution
-- `groupListItems()` — wraps consecutive bulleted/numbered items in synthetic parent lists
 
-**Supported block types:** paragraph, heading_1/2/3, bulleted_list_item, numbered_list_item, to_do, toggle, quote, callout, divider, image, code, bookmark, embed, video
+**Helper modules (extracted to keep file focused):**
+- `notion-block-utils.ts` — `extractRichText()`, `extractMediaUrl()`, `createBaseBlock()`, `groupListItems()`
+- `embed-config.ts` — `getEmbedConfig()` detects embed providers and returns aspect ratios
+- `code-highlight.ts` — `highlightCode()` Shiki-based build-time syntax highlighting
+
+**Supported block types:** paragraph, heading_1/2/3, bulleted_list_item, numbered_list_item, to_do, toggle, quote, callout, divider, image, code, bookmark, embed, video, table, audio, file, column_list, synced_block, equation
+
+**Special handling:**
+- **Tables:** Custom child-fetch path (table_row blocks bypass `transformBlocks` to avoid being dropped as unsupported)
+- **Video blocks:** YouTube/Vimeo URLs auto-convert to embed type with responsive aspect ratios
+- **Synced blocks:** Resolve `synced_from.block_id` for references vs own `block.id` for sources
+- **Column lists:** Sequential child fetching to avoid Notion API rate limits
 
 #### Content Fetcher Services (215 LOC total, 5 files)
 
@@ -171,7 +186,7 @@ const rawBlocks = await getPageBlocks(pageId);
 return transformBlocks(rawBlocks);
 ```
 
-### `lib/components/` — UI Components (~460 LOC, 7 files)
+### `lib/components/` — UI Components (~660 LOC, 12 files)
 
 Svelte components for rendering content. Card components receive typed props; Notion renderers handle rich content.
 
@@ -194,16 +209,24 @@ Dark mode toggle using Lucide Sun/Moon icons. Uses Svelte 5 `$state` for theme t
 
 Simple iterator. Takes `blocks: ContentBlock[]` prop, renders each via `<NotionBlock>`.
 
-#### `NotionBlock.svelte` (177 LOC)
+#### NotionBlock Dispatcher + Sub-Components (~300 LOC total, 5 files)
 
-Block type dispatcher. Uses Svelte `{#if}` chain to render 17 block types with Tailwind classes.
+`NotionBlock.svelte` (~33 LOC) is a thin dispatcher routing blocks to sub-components by type set:
+- `NotionTextBlock.svelte` (~87 LOC) — paragraphs, headings, lists, to_do, toggle, quote, callout
+- `NotionMediaBlock.svelte` (~114 LOC) — images, video, audio, code (Shiki), embed (responsive), bookmark, file, equation
+- `NotionLayoutBlock.svelte` (~63 LOC) — dividers, tables, column layouts, synced blocks
+
+Shared rendering utilities in `notion-render-utils.ts` (~46 LOC):
+- `renderRichTextToSafeHtml()` — XSS-safe HTML from `RichTextSpan[]` (all text goes through `escapeHtml()`)
+- `hasContent()` — checks if rich text array has any non-empty text
 
 **Key patterns:**
-- `renderRichText()` converts `RichTextSpan[]` to inline HTML with annotation classes
-- `escapeHtml()` prevents XSS in `{@html}` content
-- Self-import (`import NotionBlock from './NotionBlock.svelte'`) for recursive rendering (Svelte 5 pattern — `<svelte:self>` is deprecated)
-- Empty paragraphs render as `<div class="h-4">` spacers
-- Images use `loading="lazy"` and caption support
+- Circular import: `NotionTextBlock` → `NotionBlock` (dispatcher) for recursive nested lists/toggles. Svelte 5 handles via lazy resolution.
+- Code blocks prefer `highlightedHtml` (Shiki output) with fallback to plain `<pre><code>`
+- Embeds use responsive `aspect-ratio` CSS from `embedAspectRatio` field + provider-specific CSS classes
+- Tables render with optional `<thead>` based on `hasHeader`, cells via `renderRichTextToSafeHtml()`
+- Column lists render as responsive grid: `grid-cols-1 sm:grid-cols-{n}`
+- Empty state handling: files, equations, and embeds skip rendering if primary data is empty
 
 ### `routes/` — SvelteKit Pages (~550 LOC, 18 files)
 
@@ -254,33 +277,42 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
                            │          │
               ┌────────────┘          └──────────────┐
               │                                      │
-   ┌──────────▼──────────┐              ┌────────────▼────────────┐
-   │  Database Services  │              │    notion-blocks.ts     │
-   │  projects (63)      │              │      (236 LOC)          │
-   │  tools (53)         │              │  transformBlocks()      │
-   │  resources (52)     │              │  groupListItems()       │
-   └──────────┬──────────┘              └────────────┬────────────┘
-              │                                      │
-              │                         ┌────────────┘
-              │                         │
-   ┌──────────▼──────────┐   ┌─────────▼───────────┐
-   │  Page Services      │   │  Svelte Components  │
-   │  about (33)         │   │  NotionBlocks (16)   │
-   │  interests (67)     │   │  NotionBlock (177)   │
-   └──────────┬──────────┘   └─────────┬───────────┘
-              │                         │
-              └────────┬────────────────┘
-                       │
-              ┌────────▼────────┐
-              │  content.ts     │  ← Shared types: Project, Tool, Resource,
-              │    (98 LOC)     │    ContentBlock, RichTextSpan
-              └─────────────────┘
+   ┌──────────▼──────────┐   ┌───────────────────────▼──────────────────┐
+   │  Database Services  │   │         notion-blocks.ts (230 LOC)       │
+   │  projects (63)      │   │  ┌───────────────┐ ┌──────────────────┐  │
+   │  tools (53)         │   │  │ block-utils   │ │  embed-config    │  │
+   │  resources (52)     │   │  │  (85 LOC)     │ │   (53 LOC)       │  │
+   └──────────┬──────────┘   │  └───────────────┘ └──────────────────┘  │
+              │              │  ┌───────────────────────────────────┐    │
+              │              │  │  code-highlight (82 LOC, Shiki)  │    │
+              │              │  └───────────────────────────────────┘    │
+              │              └────────────────────┬─────────────────────┘
+              │                                   │
+   ┌──────────▼──────────┐   ┌────────────────────▼────────────────────┐
+   │  Page Services      │   │       Svelte Components                 │
+   │  about (33)         │   │  NotionBlock (33) → dispatcher          │
+   │  interests (67)     │   │    ├── NotionTextBlock (87)             │
+   └──────────┬──────────┘   │    ├── NotionMediaBlock (114)           │
+              │              │    ├── NotionLayoutBlock (63)            │
+              │              │    └── notion-render-utils (46)          │
+              │              └────────────────────┬────────────────────┘
+              │                                   │
+              └───────────┬───────────────────────┘
+                          │
+                 ┌────────▼────────┐
+                 │  content.ts     │  ← Shared types: Project, Tool, Resource,
+                 │   (~149 LOC)    │    ContentBlock, RichTextSpan
+                 └─────────────────┘
 ```
 
 **Dependency rules:**
 - `content.ts` has zero dependencies (pure types)
 - `notion.service.ts` depends only on `@notionhq/client` and `$env`
-- `notion-blocks.ts` depends on `notion.service.ts` (for child block fetching) and `content.ts`
+- `notion-blocks.ts` depends on `notion.service.ts` (child block fetching), `notion-block-utils.ts`, `embed-config.ts`, `code-highlight.ts`, and `content.ts`
+- `notion-block-utils.ts` depends only on `@notionhq/client` types and `content.ts`
+- `embed-config.ts` has zero dependencies (pure utility)
+- `code-highlight.ts` depends on `shiki` (dev only)
+- `notion-render-utils.ts` depends only on `content.ts`
 - Database services depend on `notion.service.ts` and `content.ts`
 - Page services depend on `notion.service.ts`, `notion-blocks.ts`, and `content.ts`
 - Components depend only on `content.ts` (receive typed data, never call services)
@@ -296,16 +328,16 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
 
 | Module | LOC | Files |
 |---|---|---|
-| Notion block transformer | 236 | 1 |
+| Notion block transformer + utils | ~450 | 4 (notion-blocks, block-utils, embed-config, code-highlight) |
 | Notion client + fetcher | 223 | 1 |
-| NotionBlock component | 177 | 1 |
+| NotionBlock dispatcher + sub-components | ~340 | 5 (dispatcher, 3 sub-components, render-utils) |
 | Card components + ThemeToggle + LetterSidebar | ~240 | 5 |
 | Design system (app.css + app.html) | ~185 | 2 |
-| Content types | 98 | 1 |
+| Content types | ~149 | 1 |
 | Content fetcher services | 268 | 5 |
 | Routes (pages + layouts) | ~550 | 18 |
 | Utilities + config | 27 | 3 |
-| **Tests** | **~480** | **2** |
-| **Total** | **~2,500** | **39** |
+| **Tests** | **~950** | **9** |
+| **Total** | **~3,400** | **53** |
 
-> Tests are ~20% of total LOC. The design system overhaul added ~300 LOC across app.css, app.html, ThemeToggle, layout, and page routes.
+> Tests are ~28% of total LOC. The block expansion added ~900 LOC across 18 new/modified files with 118 tests covering 22+ block types.

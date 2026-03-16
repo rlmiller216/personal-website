@@ -206,3 +206,10 @@
     animation: none;
   }
 }
+
+/* Shiki dual-theme: maps to site light/dark mode */
+html.dark .shiki,
+html.dark .shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}

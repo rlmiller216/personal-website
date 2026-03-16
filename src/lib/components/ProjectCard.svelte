@@ -26,14 +26,15 @@
 		{#if project.sector}
 			<span class="mb-2 w-fit rounded-full px-3 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">{project.sector}</span>
 		{/if}
-		<h3 class="text-lg font-semibold font-body">{project.title}</h3>
+		<h3 class="text-lg font-semibold font-body inline-flex items-center gap-1.5 group-hover:text-primary transition-colors">
+			{project.title}
+			<ArrowRight class="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+		</h3>
 		{#if project.description}
 			<p class="mt-1 flex-1 text-sm text-muted-foreground">{project.description}</p>
 		{/if}
 		{#if project.role}
-			<span class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary">
-				{project.role} <ArrowRight class="h-3.5 w-3.5" />
-			</span>
+			<span class="mt-3 text-sm font-medium text-primary">{project.role}</span>
 		{/if}
 	</div>
 </a>

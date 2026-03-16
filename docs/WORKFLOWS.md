@@ -160,9 +160,12 @@ For About and Interest pages — transforming Notion page blocks into rendered H
 ┌──────────────────┐
 │ transformBlocks()│   For each block:
 │                  │     blockToContentBlock(block)
-│                  │       → switch on block.type (15 types)
+│                  │       → switch on block.type (22+ types)
 │                  │       → extractRichText() for text content
-│                  │       → extractMediaUrl() for images/video
+│                  │       → extractMediaUrl() for images/video/audio
+│                  │       → getEmbedConfig() for embed provider detection
+│                  │       → highlightCode() for Shiki syntax highlighting
+│                  │       → custom child-fetch for tables (table_row cells)
 │                  │       → recursive fetchAndTransformChildren() if has_children
 │                  │     Returns ContentBlock or null (unsupported type)
 └────────┬─────────┘
@@ -184,33 +187,42 @@ For About and Interest pages — transforming Notion page blocks into rendered H
          ▼
 ┌──────────────────┐
 │ <NotionBlocks>   │   Iterates blocks, renders each via <NotionBlock>
-│ <NotionBlock>    │   switch on block.type → HTML element + Tailwind classes
-│                  │   renderRichText() → inline HTML with annotations
+│ <NotionBlock>    │   Dispatcher → routes to sub-components:
+│                  │     NotionTextBlock: paragraphs, headings, lists, toggles
+│                  │     NotionMediaBlock: images, code (Shiki), embeds, audio, files
+│                  │     NotionLayoutBlock: tables, column grids, synced blocks
+│                  │   renderRichTextToSafeHtml() → XSS-safe HTML with annotations
 │                  │   Recursive for nested children (toggle, nested lists)
 └──────────────────┘
 ```
 
 ### 4.2 Block Type Support Matrix
 
-| Notion Block Type | ContentBlock Type | HTML Output | Recursive? |
-|---|---|---|---|
-| `paragraph` | `paragraph` | `<p>` | No |
-| `heading_1` | `heading_1` | `<h1>` | No |
-| `heading_2` | `heading_2` | `<h2>` | No |
-| `heading_3` | `heading_3` | `<h3>` | No |
-| `bulleted_list_item` | `bulleted_list_item` → grouped into `bulleted_list` | `<ul><li>` | Yes (nested lists) |
-| `numbered_list_item` | `numbered_list_item` → grouped into `numbered_list` | `<ol><li>` | Yes (nested lists) |
-| `to_do` | `to_do` | `<div>` with checkbox | No |
-| `toggle` | `toggle` | `<details><summary>` | Yes (children) |
-| `quote` | `quote` | `<blockquote>` | No |
-| `callout` | `callout` | `<div>` with icon + text | No |
-| `divider` | `divider` | `<hr>` | No |
-| `image` | `image` | `<figure><img>` + `<figcaption>` | No |
-| `code` | `code` | `<pre><code>` | No |
-| `bookmark` | `bookmark` | `<a>` card | No |
-| `embed` | `embed` | `<iframe>` | No |
-| `video` | `video` | `<video>` + `<figcaption>` | No |
-| *(all others)* | *(skipped)* | *(nothing)* | No |
+| Notion Block Type | ContentBlock Type | HTML Output | Recursive? | Notes |
+|---|---|---|---|---|
+| `paragraph` | `paragraph` | `<p>` | No | Empty → spacer div |
+| `heading_1` | `heading_1` | `<h1>` | No | |
+| `heading_2` | `heading_2` | `<h2>` | No | |
+| `heading_3` | `heading_3` | `<h3>` | No | |
+| `bulleted_list_item` | → grouped into `bulleted_list` | `<ul><li>` | Yes (nested lists) | |
+| `numbered_list_item` | → grouped into `numbered_list` | `<ol><li>` | Yes (nested lists) | |
+| `to_do` | `to_do` | `<div>` with checkbox | No | |
+| `toggle` | `toggle` | `<details><summary>` | Yes (children) | |
+| `quote` | `quote` | `<blockquote>` | No | |
+| `callout` | `callout` | `<div>` with icon + text | No | |
+| `divider` | `divider` | `<hr>` | No | |
+| `image` | `image` | `<figure><img>` + `<figcaption>` | No | lazy loading |
+| `code` | `code` | `<pre><code>` or Shiki HTML | No | Shiki dual-theme, plaintext fallback |
+| `bookmark` | `bookmark` | `<a>` card | No | |
+| `embed` | `embed` | `<iframe>` with aspect-ratio | No | Smart provider detection (YouTube, Miro, etc.) |
+| `video` | `video` or → `embed` | `<video>` or `<iframe>` | No | YouTube/Vimeo → embed type |
+| `table` | `table` | `<table>` with optional `<thead>` | No* | Custom child-fetch for table_row cells |
+| `audio` | `audio` | `<audio controls>` | No | |
+| `file` | `file` | Download link | No | Skips if no URL |
+| `column_list` | `column_list` | Responsive grid | Yes (columns) | Sequential child fetching |
+| `synced_block` | `synced_block` | Transparent wrapper | Yes (children) | Resolves synced_from source |
+| `equation` | `equation` | Monospace/italic `<div>` | No | No KaTeX (styled fallback) |
+| *(all others)* | *(skipped)* | *(nothing)* | No | |
 
 ### 4.3 List Grouping Detail
 
@@ -231,7 +243,7 @@ After groupListItems():
 
 ### 4.4 Rich Text Rendering
 
-Notion rich text carries annotations (bold, italic, code, etc.) per span. The `renderRichText()` function in `NotionBlock.svelte` converts these to inline HTML:
+Notion rich text carries annotations (bold, italic, code, etc.) per span. The `renderRichTextToSafeHtml()` function in `notion-render-utils.ts` converts these to inline HTML:
 
 ```
 RichTextSpan { text: "hello", annotations: { bold: true, code: true }, href: null }

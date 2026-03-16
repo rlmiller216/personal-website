@@ -85,8 +85,7 @@
 <!-- Open Source — Muted band with list items -->
 {#if data.featuredTools.length > 0}
 	<StickySection title="OPEN" highlightWord="SOURCE" href="/open-source" variant="white">
-		<!-- No animate-stagger — divide-y borders + stagger creates floating-line artifacts -->
-		<div class="flex flex-col divide-y divide-border">
+		<div class="grid gap-6 sm:grid-cols-2 animate-stagger">
 			{#each data.featuredTools as tool}
 				<ToolListItem {tool} />
 			{/each}
@@ -97,7 +96,7 @@
 <!-- Recommended Resources — White band with card grid -->
 {#if data.featuredResources.length > 0}
 	<StickySection title="RESOURCE" highlightWord="LIBRARY" href="/resources" variant="muted">
-		<div class="grid gap-5 sm:grid-cols-2 animate-stagger">
+		<div class="grid gap-6 sm:grid-cols-2 animate-stagger">
 			{#each data.featuredResources as resource}
 				<ResourceCard {resource} />
 			{/each}

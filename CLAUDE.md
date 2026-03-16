@@ -25,6 +25,7 @@ npx svelte-check     # type checking
 | Contact Form | Formspree | adapter-static can't do server-side form handling |
 | Typography | Bodoni Moda + Raleway (Google Fonts) | Didone serif headings + geometric sans body |
 | Icons | Lucide | Standard per Development Bible |
+| Syntax Highlighting | Shiki (dev only) | Build-time code highlighting, dual-theme dark mode via CSS variables, 0 client JS |
 
 ## Architecture
 
@@ -46,6 +47,14 @@ Notion databases/pages
 - `getPageContent()` (in `page-content.ts`) — convenience function combining `getPageBlocks()` + `transformBlocks()`. Used by detail routes and about.service. Lives in a separate file to avoid circular dependency (`notion-blocks.ts` → `notion.service.ts`).
 
 **Notion blocks → Svelte components** (NOT `{@html}` strings). Server transforms API blocks into serializable `ContentBlock[]`, then `<NotionBlocks>` renders them as styled Svelte components. This enables per-block Tailwind styling and eliminates XSS risk.
+
+**NotionBlock dispatcher pattern:** `NotionBlock.svelte` is a thin dispatcher (~33 lines) that routes blocks to three sub-components by type: `NotionTextBlock` (paragraphs, headings, lists, toggles, quotes, callouts), `NotionMediaBlock` (images, video, audio, code, embeds, bookmarks, files, equations), and `NotionLayoutBlock` (dividers, tables, column layouts, synced blocks). Circular import (NotionTextBlock → NotionBlock) enables recursive rendering of nested lists/toggles — Svelte 5 handles this via lazy resolution.
+
+**Smart embed detection:** Embed and video blocks are analyzed via `getEmbedConfig()` (in `embed-config.ts`) to detect providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs) and set responsive aspect ratios. YouTube/Vimeo video blocks are automatically converted to embed type to prevent broken `<video>` tags.
+
+**Build-time syntax highlighting:** Code blocks are highlighted via Shiki at build time with dual-theme output (github-light/github-dark) using CSS variables. The Shiki highlighter uses a promise-cached singleton pattern (same as `createCachedFetcher`). Notion-to-Shiki language mapping handles display name differences. Unknown languages fall back to plaintext.
+
+**XSS contract:** All rich text rendering uses `renderRichTextToSafeHtml()` (in `notion-render-utils.ts`) which passes ALL user text through `escapeHtml()` before annotation wrapping. Never bypass this for `{@html}` content.
 
 **Detail pages** use `getPageContent()` to render Notion page content below structured metadata. `slugify()` in `content.ts` generates URL-safe slugs from titles.
 
@@ -113,7 +122,11 @@ src/
       LetterSidebar.svelte  → Scroll-collapsing RLM monogram sidebar + hamburger menu toggle ($bindable)
       DetailHeader.svelte   → Shared detail page header (back link, title, badge slot)
       NotionBlocks.svelte   → Renders ContentBlock[] as Svelte components
-      NotionBlock.svelte    → Individual block type dispatcher
+      NotionBlock.svelte    → Block type dispatcher → routes to sub-components
+      NotionTextBlock.svelte→ Text blocks: paragraphs, headings, lists, toggles, quotes, callouts
+      NotionMediaBlock.svelte→ Media blocks: images, video, audio, code, embeds, bookmarks, files, equations
+      NotionLayoutBlock.svelte→ Layout blocks: dividers, tables, column layouts, synced blocks
+      notion-render-utils.ts→ renderRichTextToSafeHtml(), escapeHtml(), hasContent()
     server/
       services/
         notion.service.ts   → Notion client + generic fetcher + property extractors + createCachedFetcher + warnSlugCollisions
@@ -122,7 +135,10 @@ src/
         tools.service.ts    → Tool mapper + queries (uses createCachedFetcher)
         resources.service.ts→ Resource mapper + queries (uses createCachedFetcher)
         about.service.ts    → About page fetcher (uses getPageContent)
-        notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[]
+        notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[] (22+ block types)
+        notion-block-utils.ts→ Shared transform helpers: extractRichText, extractMediaUrl, groupListItems
+        embed-config.ts     → URL pattern → embed provider/aspect-ratio detection
+        code-highlight.ts   → Shiki syntax highlighting (promise-cached singleton, dual-theme)
     types/
       content.ts            → Project, Tool, Resource, ContentBlock interfaces + slugify()
   routes/
@@ -147,9 +163,14 @@ static/
 tests/
   services/
     notion.service.test.ts
-    notion-blocks.test.ts
+    notion-blocks.test.ts   → Block transform tests (22+ block types, smart embeds, Shiki)
+    notion-block-utils.test.ts → Shared block utilities (extractRichText, groupListItems)
     mappers.test.ts         → Tests for mapProject, mapTool, mapResource
     slug-collisions.test.ts → Tests for warnSlugCollisions
+    embed-config.test.ts    → Embed provider detection (YouTube, Miro, etc.)
+    code-highlight.test.ts  → Shiki highlighting (language mapping, fallbacks)
+  components/
+    notion-render-utils.test.ts → XSS-safe rich text rendering
 ```
 
 ## Site Structure
@@ -249,10 +270,11 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 70 tests across 5 files: `notion.service.test.ts` (28) + `notion-blocks.test.ts` (16) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (5)
+- 118 tests across 9 files: `notion.service.test.ts` (28) + `notion-blocks.test.ts` (26) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (5) + `embed-config.test.ts` (10) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs
+- Block transform tests cover 22+ block types including smart embed detection, video→embed conversion, table custom child-fetch, column list, synced blocks, and Shiki highlighting
 - Mock Notion SDK responses — no live API calls in tests
 - Run: `npm test` or `npx vitest run`
 

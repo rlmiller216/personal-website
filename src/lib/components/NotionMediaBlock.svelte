@@ -39,7 +39,13 @@
 
 {:else if block.type === 'code'}
 	<div class="my-4">
-		<pre class="bg-hero text-hero-foreground rounded-lg p-4 overflow-x-auto"><code class="text-sm font-mono">{block.richText.map(s => s.text).join('')}</code></pre>
+		{#if block.highlightedHtml}
+			<div class="[&_pre]:rounded-lg [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:text-sm">
+				{@html block.highlightedHtml}
+			</div>
+		{:else}
+			<pre class="bg-hero text-hero-foreground rounded-lg p-4 overflow-x-auto"><code class="text-sm font-mono">{block.richText.map(s => s.text).join('')}</code></pre>
+		{/if}
 		{#if block.caption.length > 0 && hasContent(block.caption)}
 			<p class="text-sm opacity-60 mt-1">{@html renderRichTextToSafeHtml(block.caption)}</p>
 		{/if}

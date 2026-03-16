@@ -14,6 +14,7 @@ import type { ContentBlock } from '$lib/types/content';
 import { getChildBlocks } from './notion.service';
 import { extractRichText, extractMediaUrl, createBaseBlock, groupListItems } from './notion-block-utils';
 import { getEmbedConfig } from './embed-config';
+import { highlightCode } from './code-highlight';
 
 /** Converts a single Notion block to a ContentBlock. */
 async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentBlock | null> {
@@ -86,14 +87,18 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 				caption: extractRichText(block.image.caption)
 			};
 
-		case 'code':
+		case 'code': {
+			const codeText = block.code.rich_text.map((r) => r.plain_text).join('');
+			const highlighted = await highlightCode(codeText, block.code.language);
 			return {
 				...base,
 				type: 'code',
 				richText: extractRichText(block.code.rich_text),
 				language: block.code.language,
-				caption: extractRichText(block.code.caption)
+				caption: extractRichText(block.code.caption),
+				highlightedHtml: highlighted
 			};
+		}
 
 		case 'bookmark':
 			return {

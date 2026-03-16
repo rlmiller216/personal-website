@@ -12,6 +12,12 @@ vi.mock('$lib/server/services/notion.service', () => ({
 	getChildBlocks: mockGetChildBlocks
 }));
 
+// Mock Shiki code highlighting
+const mockHighlightCode = vi.fn().mockResolvedValue('<pre class="shiki"><code>highlighted</code></pre>');
+vi.mock('$lib/server/services/code-highlight', () => ({
+	highlightCode: mockHighlightCode
+}));
+
 const { transformBlocks } = await import('$lib/server/services/notion-blocks');
 
 // --- Mock Helpers ---
@@ -195,7 +201,7 @@ describe('transformBlocks', () => {
 		expect(result[0].caption[0].text).toBe('A nice photo');
 	});
 
-	it('transforms a code block', async () => {
+	it('transforms a code block with syntax highlighting', async () => {
 		const blocks = [codeBlock('const x = 1;', 'javascript')];
 		const result = await transformBlocks(blocks as never[]);
 
@@ -203,6 +209,8 @@ describe('transformBlocks', () => {
 		expect(result[0].type).toBe('code');
 		expect(result[0].richText[0].text).toBe('const x = 1;');
 		expect(result[0].language).toBe('javascript');
+		expect(result[0].highlightedHtml).toBe('<pre class="shiki"><code>highlighted</code></pre>');
+		expect(mockHighlightCode).toHaveBeenCalledWith('const x = 1;', 'javascript');
 	});
 
 	it('transforms a quote block', async () => {

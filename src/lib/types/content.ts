@@ -96,7 +96,13 @@ export interface ContentBlock {
 		| 'code'
 		| 'bookmark'
 		| 'embed'
-		| 'video';
+		| 'video'
+		| 'table'
+		| 'audio'
+		| 'file'
+		| 'equation'
+		| 'column_list'
+		| 'synced_block';
 	richText: RichTextSpan[];
 	children: ContentBlock[];
 	/** Image/video/embed URL. */
@@ -109,4 +115,34 @@ export interface ContentBlock {
 	checked: boolean;
 	/** Callout icon (emoji or URL). */
 	icon: string;
+
+	// -- Code blocks (Shiki) --
+	/** Pre-rendered HTML from Shiki syntax highlighter. */
+	highlightedHtml?: string;
+
+	// -- Table blocks --
+	/** Table rows as a 2D array of rich text spans. */
+	rows?: RichTextSpan[][][];
+	/** Whether the first row is a header row. */
+	hasHeader?: boolean;
+
+	// -- Column layout --
+	/** Each inner array is one column's content blocks. */
+	columns?: ContentBlock[][];
+
+	// -- Equation --
+	/** LaTeX/KaTeX expression string. */
+	expression?: string;
+
+	// -- File downloads --
+	/** Original file name for download links. */
+	fileName?: string;
+	/** Direct URL to the file. */
+	fileUrl?: string;
+
+	// -- Embed detection --
+	/** Detected provider (e.g., "youtube", "vimeo"). */
+	embedType?: string;
+	/** CSS aspect-ratio value (e.g., "16/9"). */
+	embedAspectRatio?: string;
 }

@@ -8,18 +8,18 @@
 <!-- List-item layout for tools — Ultra Violet left border, hover highlight, reveal arrow -->
 <a
 	href={`/open-source/${tool.slug}`}
-	class="group flex items-start gap-5 py-5 rounded-lg
-		transition-colors duration-300 hover:bg-accent border-l-[3px] border-l-primary pl-4"
+	class="group flex items-start gap-6 p-6 rounded-lg bg-background
+		transition-colors duration-300 hover:bg-accent border-l-[3px] border-l-primary"
 >
 	<div class="flex-1 min-w-0">
 		<h3
-			class="text-lg font-semibold font-body group-hover:text-primary transition-colors"
+			class="text-xl font-semibold font-body group-hover:text-primary transition-colors"
 		>
 			{tool.title}
 		</h3>
 		{#if tool.description}
 			<p
-				class="mt-1 text-sm text-muted-foreground line-clamp-2"
+				class="mt-1 text-base text-muted-foreground line-clamp-3"
 			>
 				{tool.description}
 			</p>
@@ -37,7 +37,7 @@
 		{/if}
 	</div>
 	<ArrowRight
-		class="shrink-0 h-5 w-5 text-muted-foreground opacity-0 group-hover:opacity-100
+		class="shrink-0 h-6 w-6 text-muted-foreground opacity-0 group-hover:opacity-100
 			transition-opacity self-center"
 	/>
 </a>
