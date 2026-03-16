@@ -6,7 +6,7 @@
 // - Consecutive list item grouping into parent list blocks
 // - Image URL extraction from both file and external sources
 //
-// Called by: about.service.ts
+// Called by: about.service.ts, project/tool/resource detail routes
 // Depends on: notion.service.ts for child block fetching
 
 import type { BlockObjectResponse, RichTextItemResponse } from '@notionhq/client/build/src/api-endpoints';

@@ -42,6 +42,8 @@ Notion databases/pages
 
 **Notion blocks → Svelte components** (NOT `{@html}` strings). Server transforms API blocks into serializable `ContentBlock[]`, then `<NotionBlocks>` renders them as styled Svelte components. This enables per-block Tailwind styling and eliminates XSS risk.
 
+**Detail pages** use `getPageBlocks()` → `transformBlocks()` pipeline (same as /about) to render Notion page content below structured metadata. `slugify()` in `content.ts` generates URL-safe slugs from titles. Promise-based build cache in each service prevents N+1 API calls when adapter-static pre-renders multiple detail pages that share the same data source query.
+
 ## Design System
 
 ### Color Palette
@@ -67,6 +69,7 @@ Notion databases/pages
 - Space Indigo page headers on all content pages
 - Lime Yellow `.text-highlight` marker underline effect
 - Stagger fade-up animations (up to 12 children), gated behind `prefers-reduced-motion`
+- Cards always link to internal detail pages; external URLs shown as CTA buttons on detail pages
 - Card hovers: translate-up + accent borders (Lime Yellow bottom on ProjectCard, Ultra Violet left on ToolCard/ResourceCard)
 - **Feature card** for first project on homepage: full-width image with Space Indigo gradient overlay, hover scale. Falls back to standard grid if project has no image.
 - **Varied card layouts per section**: Projects use feature card + grid, Open Source uses list items with Ultra Violet left border, Resource Library uses existing card grid.
@@ -92,6 +95,7 @@ src/
       StickySection.svelte  → Sticky section header wrapper (homepage, linked title + angular arrow)
       ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage, accepts class prop)
       LetterSidebar.svelte  → Scroll-collapsing RLM monogram sidebar + hamburger menu toggle ($bindable)
+      DetailHeader.svelte   → Shared detail page header (back link, title, badge slot)
       NotionBlocks.svelte   → Renders ContentBlock[] as Svelte components
       NotionBlock.svelte    → Individual block type dispatcher
     server/
@@ -103,7 +107,7 @@ src/
         about.service.ts    → About page fetcher
         notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[]
     types/
-      content.ts            → Project, Tool, Resource, ContentBlock interfaces
+      content.ts            → Project, Tool, Resource, ContentBlock interfaces + slugify()
   routes/
     +layout.svelte          → Shared nav + footer + SEO meta + LetterSidebar
     +layout.server.ts       → Site metadata from env vars
@@ -112,8 +116,11 @@ src/
     +page.server.ts         → Load featured items
     about/
     projects/
+    projects/[slug]/        → Project detail page
     open-source/
+    open-source/[slug]/     → Tool detail page
     resources/              → Resource Library
+    resources/[slug]/       → Resource detail page
     contact/
     +error.svelte           → Runtime error page
 static/
@@ -135,6 +142,9 @@ tests/
 | Projects | `/projects` | Notion database |
 | Open Source | `/open-source` | Notion database |
 | Resource Library | `/resources` | Notion database |
+| Project Detail | `/projects/[slug]` | Notion database + page blocks |
+| Tool Detail | `/open-source/[slug]` | Notion database + page blocks |
+| Resource Detail | `/resources/[slug]` | Notion database + page blocks |
 | Contact | `/contact` | Formspree form |
 
 > **Note:** Interests page was removed (2026-03-16). Interests content (Poetry, Art, Music, Travel, Food) will be added to the About page in a future session.
@@ -291,6 +301,9 @@ Uses CSS-based configuration (`@import "tailwindcss"`) instead of v3's JS config
 
 ### Google Fonts via CDN
 Bodoni Moda and Raleway load from Google Fonts CDN. Potential FOUC on slow connections. If this becomes a problem, self-host the font files in `static/fonts/`.
+
+### Slugs Derived from Titles
+Slugs are generated at build time from Notion titles via `slugify()`. If Rebecca renames an item in Notion, old URLs break after the next build. No redirect system exists yet.
 
 ### Property Extractors Accept `undefined`
 All property extractors (`getTitle`, `getRichText`, etc.) accept `PageProperty | undefined`. This prevents crashes when a Notion database doesn't have an expected property name. Tested with 8 dedicated undefined-guard tests.
