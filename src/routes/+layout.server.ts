@@ -7,7 +7,7 @@ import { env } from '$env/dynamic/private';
 
 export function load() {
 	return {
-		siteName: env.SITE_NAME || 'Rebecca Miller',
-		siteTagline: env.SITE_TAGLINE || 'Scientist committed to the greater good'
+		siteName: env.RM_SITE_NAME || 'Rebecca Miller',
+		siteTagline: env.RM_SITE_TAGLINE || 'Scientist committed to the greater good'
 	};
 }
