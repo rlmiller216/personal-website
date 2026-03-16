@@ -46,6 +46,7 @@ src/
 │           ├── notion-block-utils.ts     # Shared helpers: extractRichText, extractMediaUrl, groupListItems (~85 LOC)
 │           ├── embed-config.ts           # URL pattern → embed provider/aspect-ratio detection (~53 LOC)
 │           ├── code-highlight.ts         # Shiki syntax highlighting: promise-cached, dual-theme (~82 LOC)
+│           ├── image-cache.ts           # Build-time Notion image downloader: dedup Map, hash, fallback (~95 LOC)
 │           ├── projects.service.ts       # Project mapper + queries (uses createCachedFetcher)
 │           ├── tools.service.ts          # Tool mapper + queries (uses createCachedFetcher)
 │           ├── resources.service.ts      # Resource mapper + queries (uses createCachedFetcher, groupByType)
@@ -140,6 +141,7 @@ Transforms Notion API `BlockObjectResponse[]` into serializable `ContentBlock[]`
 - `notion-block-utils.ts` — `extractRichText()`, `extractMediaUrl()`, `createBaseBlock()`, `groupListItems()`
 - `embed-config.ts` — `getEmbedConfig()` detects embed providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and returns aspect ratios
 - `code-highlight.ts` — `highlightCode()` Shiki-based build-time syntax highlighting
+- `image-cache.ts` — `downloadNotionImage()`, `downloadItemImages()`, `isNotionS3Url()`, `hashUrlToFilename()`. Downloads Notion S3 images to `static/images/` at build time, deduplicates via promise Map, falls back to original URL on failure
 
 **Supported block types:** paragraph, heading_1/2/3, bulleted_list_item, numbered_list_item, to_do, toggle, quote, callout, divider, image, code, bookmark, embed, video, table, audio, file, column_list, synced_block, equation
 
@@ -338,4 +340,4 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
 | **Tests** | **~1,000** | **10** |
 | **Total** | **~3,450** | **54** |
 
-> Tests are ~29% of total LOC. 124 tests across 10 files covering 22+ block types, float physics, XSS safety, and all service mappers.
+> Tests are ~30% of total LOC. 137 tests across 11 files covering 22+ block types, image caching, float physics, XSS safety, and all service mappers.

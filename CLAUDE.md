@@ -149,6 +149,7 @@ src/
         tools.service.ts    → Tool mapper + queries (uses createCachedFetcher)
         resources.service.ts→ Resource mapper + queries (uses createCachedFetcher)
         about.service.ts    → About page fetcher (uses getPageContent)
+        image-cache.ts      → Build-time Notion image downloader (dedup, hash, fallback)
         notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[] (22+ block types)
         notion-block-utils.ts→ Shared transform helpers: extractRichText, extractMediaUrl, groupListItems
         embed-config.ts     → URL pattern → embed provider/aspect-ratio detection
@@ -179,6 +180,7 @@ static/
 tests/
   services/
     notion.service.test.ts
+    image-cache.test.ts     → Image download, dedup, hash, fallback tests
     notion-blocks.test.ts   → Block transform tests (22+ block types, smart embeds, Shiki)
     notion-block-utils.test.ts → Shared block utilities (extractRichText, groupListItems)
     mappers.test.ts         → Tests for mapProject, mapTool, mapResource
@@ -294,7 +296,7 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 124 tests across 10 files: `notion.service.test.ts` (30) + `notion-blocks.test.ts` (24) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (5) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5 — exponential decay interpolation)
+- 137 tests across 11 files: `notion.service.test.ts` (30) + `notion-blocks.test.ts` (24) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (5) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (13 — download, dedup, hash, Content-Type validation)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs
@@ -355,8 +357,8 @@ Errors are written for humans:
 
 ## Known Limitations & Mitigations
 
-### Notion Image URLs Expire (~1 hour)
-Signed S3 URLs expire. Each git push triggers a rebuild with fresh URLs. For content-only updates (no code change), use the Netlify dashboard "Trigger deploy" button. If staleness becomes a problem, future work: download images to `static/` at build time.
+### Image Caching (Build-Time Download)
+Notion S3 image URLs expire after ~1 hour. At build time, `image-cache.ts` downloads all Notion images to `static/images/` and rewrites URLs to permanent `/images/{hash}.ext` paths. Non-image S3 files (PDFs, audio) pass through unchanged. The dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp` copies images to `build/images/` (Vite snapshots `static/` before prerender runs). `static/images/` is gitignored.
 
 ### Netlify Free Tier Limits (300 credits/month)
 Each production deploy costs ~15 credits. The free tier allows ~20 deploys/month. **Do not enable scheduled build hooks** — even a 6-hourly hook would consume 2,700 credits/month. Use push-triggered deploys only, plus manual "Trigger deploy" from the Netlify dashboard for content refreshes.

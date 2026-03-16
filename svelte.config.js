@@ -7,7 +7,15 @@ const config = {
 			pages: 'build',
 			assets: 'build',
 			fallback: '404.html'
-		})
+		}),
+		prerender: {
+			// Images downloaded during prerender land in static/images/ but miss
+			// Vite's earlier snapshot of static/. Post-build cp handles this.
+			handleHttpError: ({ path, message }) => {
+				if (path.startsWith('/images/')) return;
+				throw new Error(message);
+			}
+		}
 	},
 	vitePlugin: {
 		dynamicCompileOptions: ({ filename }) =>

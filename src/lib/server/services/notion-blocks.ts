@@ -15,6 +15,7 @@ import { getChildBlocks } from './notion.service';
 import { extractRichText, extractMediaUrl, createBaseBlock, groupListItems } from './notion-block-utils';
 import { getEmbedConfig } from './embed-config';
 import { highlightCode } from './code-highlight';
+import { downloadNotionImage } from './image-cache';
 
 /** Converts a single Notion block to a ContentBlock. */
 async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentBlock | null> {
@@ -79,13 +80,11 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 		case 'divider':
 			return { ...base, type: 'divider' };
 
-		case 'image':
-			return {
-				...base,
-				type: 'image',
-				url: extractMediaUrl(block.image),
-				caption: extractRichText(block.image.caption)
-			};
+		case 'image': {
+			const rawUrl = extractMediaUrl(block.image);
+			const localUrl = await downloadNotionImage(rawUrl);
+			return { ...base, type: 'image', url: localUrl, caption: extractRichText(block.image.caption) };
+		}
 
 		case 'code': {
 			const codeText = block.code.rich_text.map((r) => r.plain_text).join('');

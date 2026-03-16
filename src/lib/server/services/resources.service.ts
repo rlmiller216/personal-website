@@ -17,6 +17,7 @@ import {
 	getUrl,
 	getFileUrl
 } from './notion.service';
+import { downloadItemImages } from './image-cache';
 
 const MODULE = '[resources]';
 
@@ -58,6 +59,7 @@ async function fetchAllResources(): Promise<Resource[]> {
 	const results = await fetchAndMap(env.NOTION_RESOURCES_DS_ID, mapResource);
 
 	warnSlugCollisions(results, MODULE);
+	await downloadItemImages(results);
 
 	return results;
 }

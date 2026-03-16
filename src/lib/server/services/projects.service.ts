@@ -21,6 +21,7 @@ import {
 	getNumber,
 	getFileUrl
 } from './notion.service';
+import { downloadItemImages } from './image-cache';
 
 const MODULE = '[projects]';
 
@@ -58,6 +59,7 @@ async function fetchAllProjects(): Promise<Project[]> {
 	});
 
 	warnSlugCollisions(results, MODULE);
+	await downloadItemImages(results);
 
 	return results;
 }
@@ -73,7 +75,7 @@ export async function getFeaturedProjects(): Promise<Project[]> {
 		return [];
 	}
 
-	return fetchAndMap(env.NOTION_PROJECTS_DS_ID, mapProject, [
+	const results = await fetchAndMap(env.NOTION_PROJECTS_DS_ID, mapProject, [
 		{ property: 'Order', direction: 'ascending' }
 	], {
 		and: [
@@ -81,4 +83,6 @@ export async function getFeaturedProjects(): Promise<Project[]> {
 			{ property: 'Status', select: { does_not_equal: 'Archived' } }
 		]
 	});
+	await downloadItemImages(results);
+	return results;
 }

@@ -20,6 +20,7 @@ import {
 	getFileUrl,
 	getNumber
 } from './notion.service';
+import { downloadItemImages } from './image-cache';
 
 const MODULE = '[tools]';
 
@@ -52,6 +53,7 @@ async function fetchAllTools(): Promise<Tool[]> {
 		[{ property: 'Order', direction: 'ascending' }]);
 
 	warnSlugCollisions(results, MODULE);
+	await downloadItemImages(results);
 
 	return results;
 }
@@ -67,9 +69,11 @@ export async function getFeaturedTools(): Promise<Tool[]> {
 		return [];
 	}
 
-	return fetchAndMap(env.NOTION_TOOLS_DS_ID, mapTool,
+	const results = await fetchAndMap(env.NOTION_TOOLS_DS_ID, mapTool,
 		[{ property: 'Order', direction: 'ascending' }], {
 		property: 'Featured',
 		checkbox: { equals: true }
 	});
+	await downloadItemImages(results);
+	return results;
 }

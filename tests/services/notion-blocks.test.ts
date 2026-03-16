@@ -18,6 +18,11 @@ vi.mock('$lib/server/services/code-highlight', () => ({
 	highlightCode: mockHighlightCode
 }));
 
+// Mock image cache — passthrough (returns URL unchanged)
+vi.mock('$lib/server/services/image-cache', () => ({
+	downloadNotionImage: vi.fn((url: string) => Promise.resolve(url))
+}));
+
 const { transformBlocks } = await import('$lib/server/services/notion-blocks');
 
 // --- Mock Helpers ---
