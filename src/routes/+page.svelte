@@ -38,7 +38,7 @@
 
 <!-- Featured Projects — White band with feature card + grid -->
 {#if data.featuredProjects.length > 0}
-	<StickySection title="FEATURED" highlightWord="PROJECTS" href="/projects" variant="white">
+	<StickySection title="FEATURED" highlightWord="PROJECTS" href="/projects" variant="muted">
 		<!-- Feature card: only if first project has an image -->
 		{#if hasFeatureImage}
 			<a
@@ -85,7 +85,7 @@
 
 <!-- Open Source — Muted band with list items -->
 {#if data.featuredTools.length > 0}
-	<StickySection title="OPEN" highlightWord="SOURCE" href="/open-source" variant="muted">
+	<StickySection title="OPEN" highlightWord="SOURCE" href="/open-source" variant="white">
 		<!-- No animate-stagger — divide-y borders + stagger creates floating-line artifacts -->
 		<div class="flex flex-col divide-y divide-border">
 			{#each data.featuredTools as tool}
@@ -97,7 +97,7 @@
 
 <!-- Recommended Resources — White band with card grid -->
 {#if data.featuredResources.length > 0}
-	<StickySection title="RESOURCE" highlightWord="LIBRARY" href="/resources" variant="white">
+	<StickySection title="RESOURCE" highlightWord="LIBRARY" href="/resources" variant="muted">
 		<div class="grid gap-5 sm:grid-cols-2 animate-stagger">
 			{#each data.featuredResources as resource}
 				<ResourceCard {resource} />

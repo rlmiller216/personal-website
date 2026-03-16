@@ -62,18 +62,19 @@ Notion databases/pages
 ### Key Patterns
 - OKLCH design tokens in `app.css` with light/dark mode (`--hero`, `--hero-foreground` for Space Indigo sections)
 - **Scroll-collapsing RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top (-12px), L and M animate upward on scroll to form a tight monogram. Collapse range extends 1.8× beyond hero height for a slow, cinematic feel. Responsive two-tier sizing: 56px/48px font at md, 80px/72px font at lg. Hidden on mobile.
-- **Non-fixed desktop nav**: nav scrolls away naturally on desktop (`md:relative md:z-10`) so sticky section headers own the top of the viewport. Transparent on homepage hero (hero extends behind nav via `-mt-16 pt-16`), solid on scroll or subpages. Mobile nav stays fixed.
+- **Non-fixed desktop nav**: nav scrolls away naturally on desktop (`md:relative md:z-10`) so sticky section headers own the top of the viewport. Transparent at top of every page (all headers extend behind nav via `-mt-16 pt-16`), solid on scroll. Mobile nav stays fixed.
 - **MCA-style sticky section headers** on homepage: each section's heading sticks at `top-16` (mobile, below fixed nav) or `top-0` (desktop). Title is a link with bold angular Ultra Violet arrow. No shadow on sticky headers.
 - **Angular icon convention**: all custom SVGs use `stroke-linecap="square"` + `stroke-linejoin="miter"` to match Raleway's geometric character. Applies to hamburger, section arrows, and close icons.
 - **Sidebar hamburger menu**: large angular icon (52px lg, 36px md) matching RLM letter color and width. Opens slide-out nav (w-80) with bold uppercase Raleway links, top-aligned with R. Panel is `bg-white` (matches sidebar). fly/fade Svelte transitions, Escape dismisses, mutual exclusion with mobile menu.
-- Space Indigo page headers on all content pages
-- Lime Yellow `.text-highlight` marker underline effect
+- Space Indigo page headers on all content pages with `-mt-16 pt-16` nav overlap, `text-4xl sm:text-5xl lg:text-6xl` Bodoni Moda headings, compact `py-8 sm:py-10` padding
+- Lime Yellow `.text-highlight` marker underline effect on last word of every page heading
 - Stagger fade-up animations (up to 12 children), gated behind `prefers-reduced-motion`
 - Cards always link to internal detail pages; external URLs shown as CTA buttons on detail pages
 - Card hovers: translate-up + accent borders (Lime Yellow bottom on ProjectCard, Ultra Violet left on ToolCard/ResourceCard)
 - **Feature card** for first project on homepage: full-width image with Space Indigo gradient overlay, hover scale. Falls back to standard grid if project has no image.
 - **Varied card layouts per section**: Projects use feature card + grid, Open Source uses list items with Ultra Violet left border, Resource Library uses existing card grid.
-- Footer: Space Indigo background with Ultra Violet accent line, Raleway uppercase RLM branding
+- Homepage section banding: muted → white → muted (first section gets warm beige)
+- Footer: Space Indigo background with Ultra Violet accent line, Bodoni Moda "Rebecca L Miller, PhD" branding
 
 ### Accessibility Constraints
 - **Lime Yellow on light bg: ~1.3:1 -- NEVER use as text.** Background/highlight only.
@@ -139,7 +140,7 @@ tests/
 |------|-------|---------------|
 | Home | `/` | Featured items from all DBs |
 | About | `/about` | Single Notion page |
-| Projects | `/projects` | Notion database |
+| Professional Projects | `/projects` | Notion database |
 | Open Source | `/open-source` | Notion database |
 | Resource Library | `/resources` | Notion database |
 | Project Detail | `/projects/[slug]` | Notion database + page blocks |
