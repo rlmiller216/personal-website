@@ -177,7 +177,7 @@ describe('mapTool', () => {
 			'Demo URL': mockUrl('https://demo.bioparser.io'),
 			'Tags': mockMultiSelect(['Python', 'Biology', 'Data']),
 			'Featured': mockCheckbox(true),
-			'Image': mockFiles('https://s3.aws.com/bioparser.png')
+			'Files & media': mockFiles('https://s3.aws.com/bioparser.png')
 		});
 
 		const result = mapTool(page);

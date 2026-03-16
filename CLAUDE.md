@@ -220,7 +220,7 @@ tests/
 | Demo URL | URL | Live demo |
 | Tags | Multi-select | Python, Data, Biology, etc. |
 | Featured | Checkbox | Show on homepage? |
-| Image | Files | Preview image for card |
+| Files & media | Files | Preview image for card |
 
 ### Resources Database
 | Property | Type | Purpose |

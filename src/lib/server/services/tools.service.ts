@@ -34,7 +34,7 @@ export function mapTool(page: PageObjectResponse): Tool {
 		demoUrl: getUrl(props['Demo URL']),
 		tags: getMultiSelect(props['Tags']),
 		featured: getCheckbox(props['Featured']),
-		imageUrl: getFileUrl(props['Image'])
+		imageUrl: getFileUrl(props['Files & media'])
 	};
 }
 
