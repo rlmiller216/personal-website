@@ -7,50 +7,17 @@
 // - Image URL extraction from both file and external sources
 //
 // Called by: about.service.ts, project/tool/resource detail routes
-// Depends on: notion.service.ts for child block fetching
+// Depends on: notion.service.ts for child block fetching, notion-block-utils.ts for shared helpers
 
-import type { BlockObjectResponse, RichTextItemResponse } from '@notionhq/client/build/src/api-endpoints';
-import type { ContentBlock, RichTextSpan } from '$lib/types/content';
+import type { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import type { ContentBlock } from '$lib/types/content';
 import { getChildBlocks } from './notion.service';
-
-/** Converts Notion rich text items to our serializable RichTextSpan[]. */
-function extractRichText(richTextItems: RichTextItemResponse[]): RichTextSpan[] {
-	return richTextItems.map((item) => ({
-		text: item.plain_text,
-		annotations: {
-			bold: item.annotations.bold,
-			italic: item.annotations.italic,
-			strikethrough: item.annotations.strikethrough,
-			underline: item.annotations.underline,
-			code: item.annotations.code,
-			color: item.annotations.color
-		},
-		href: item.href
-	}));
-}
-
-/** Extracts the image/video/file URL from a Notion block. */
-function extractMediaUrl(
-	media: { type: 'file'; file: { url: string } } | { type: 'external'; external: { url: string } }
-): string {
-	if (media.type === 'file') return media.file.url;
-	if (media.type === 'external') return media.external.url;
-	return '';
-}
+import { extractRichText, extractMediaUrl, createBaseBlock, groupListItems } from './notion-block-utils';
+import { getEmbedConfig } from './embed-config';
 
 /** Converts a single Notion block to a ContentBlock. */
 async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentBlock | null> {
-	const base: ContentBlock = {
-		id: block.id,
-		type: 'paragraph',
-		richText: [],
-		children: [],
-		url: '',
-		caption: [],
-		language: '',
-		checked: false,
-		icon: ''
-	};
+	const base = createBaseBlock(block.id);
 
 	switch (block.type) {
 		case 'paragraph':
@@ -136,21 +103,97 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 				caption: extractRichText(block.bookmark.caption)
 			};
 
-		case 'embed':
+		case 'embed': {
+			const embedUrl = block.embed.url;
+			const embedConfig = getEmbedConfig(embedUrl);
 			return {
 				...base,
 				type: 'embed',
-				url: block.embed.url,
-				caption: extractRichText(block.embed.caption)
+				url: embedUrl,
+				caption: extractRichText(block.embed.caption),
+				embedType: embedConfig.provider,
+				embedAspectRatio: embedConfig.aspectRatio
 			};
+		}
 
-		case 'video':
+		case 'video': {
+			const videoUrl = extractMediaUrl(block.video);
+			const videoConfig = getEmbedConfig(videoUrl);
+			// YouTube/Vimeo URLs should be embeds, not <video> tags
+			if (videoConfig.provider === 'youtube' || videoConfig.provider === 'vimeo') {
+				return {
+					...base,
+					type: 'embed',
+					url: videoUrl,
+					caption: extractRichText(block.video.caption),
+					embedType: videoConfig.provider,
+					embedAspectRatio: videoConfig.aspectRatio
+				};
+			}
 			return {
 				...base,
 				type: 'video',
-				url: extractMediaUrl(block.video),
+				url: videoUrl,
 				caption: extractRichText(block.video.caption)
 			};
+		}
+
+		case 'table': {
+			const tableRows = await getChildBlocks(block.id);
+			const rows = tableRows.map((row) => {
+				const cells = (row as Record<string, unknown> & { table_row?: { cells: unknown[][] } })
+					.table_row?.cells ?? [];
+				return (cells as import('@notionhq/client/build/src/api-endpoints').RichTextItemResponse[][])
+					.map((cell) => extractRichText(cell));
+			});
+			return {
+				...base,
+				type: 'table',
+				rows,
+				hasHeader: block.table.has_column_header
+			};
+		}
+
+		case 'audio':
+			return {
+				...base,
+				type: 'audio',
+				url: extractMediaUrl(block.audio),
+				caption: extractRichText(block.audio.caption)
+			};
+
+		case 'file':
+			return {
+				...base,
+				type: 'file',
+				fileUrl: extractMediaUrl(block.file),
+				fileName: block.file.caption?.length
+					? extractRichText(block.file.caption).map((s) => s.text).join('')
+					: block.file.name ?? 'Download file'
+			};
+
+		case 'column_list': {
+			const columnBlocks = await getChildBlocks(block.id);
+			const columns: ContentBlock[][] = [];
+			// Fetch columns sequentially to avoid Notion API rate limits
+			for (const col of columnBlocks) {
+				const colChildren = await fetchAndTransformChildren(col.id);
+				columns.push(colChildren);
+			}
+			console.log(`[notion-blocks] column_list: fetched ${columns.length} columns`);
+			return { ...base, type: 'column_list', columns };
+		}
+
+		case 'synced_block': {
+			const sourceId = block.synced_block.synced_from
+				? block.synced_block.synced_from.block_id
+				: block.id;
+			const syncedChildren = await fetchAndTransformChildren(sourceId);
+			return { ...base, type: 'synced_block', children: syncedChildren };
+		}
+
+		case 'equation':
+			return { ...base, type: 'equation', expression: block.equation.expression };
 
 		default:
 			// Unsupported block type — skip silently
@@ -162,59 +205,6 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 async function fetchAndTransformChildren(blockId: string): Promise<ContentBlock[]> {
 	const childBlocks = await getChildBlocks(blockId);
 	return transformBlocks(childBlocks);
-}
-
-/**
- * Groups consecutive list items into parent list blocks.
- *
- * Notion returns individual bulleted_list_item blocks without a parent <ul>.
- * This groups consecutive items of the same type into a synthetic
- * bulleted_list or numbered_list parent block.
- */
-function groupListItems(blocks: ContentBlock[]): ContentBlock[] {
-	const grouped: ContentBlock[] = [];
-	let currentList: ContentBlock | null = null;
-
-	for (const block of blocks) {
-		if (block.type === 'bulleted_list_item') {
-			if (!currentList || currentList.type !== 'bulleted_list') {
-				currentList = {
-					id: `list-${block.id}`,
-					type: 'bulleted_list',
-					richText: [],
-					children: [],
-					url: '',
-					caption: [],
-					language: '',
-					checked: false,
-					icon: ''
-				};
-				grouped.push(currentList);
-			}
-			currentList.children.push(block);
-		} else if (block.type === 'numbered_list_item') {
-			if (!currentList || currentList.type !== 'numbered_list') {
-				currentList = {
-					id: `list-${block.id}`,
-					type: 'numbered_list',
-					richText: [],
-					children: [],
-					url: '',
-					caption: [],
-					language: '',
-					checked: false,
-					icon: ''
-				};
-				grouped.push(currentList);
-			}
-			currentList.children.push(block);
-		} else {
-			currentList = null;
-			grouped.push(block);
-		}
-	}
-
-	return grouped;
 }
 
 /**

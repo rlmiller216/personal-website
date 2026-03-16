@@ -7,8 +7,9 @@
 import { describe, it, expect, vi } from 'vitest';
 
 // Mock the notion.service module before importing notion-blocks
+const mockGetChildBlocks = vi.fn().mockResolvedValue([]);
 vi.mock('$lib/server/services/notion.service', () => ({
-	getChildBlocks: vi.fn().mockResolvedValue([])
+	getChildBlocks: mockGetChildBlocks
 }));
 
 const { transformBlocks } = await import('$lib/server/services/notion-blocks');
@@ -259,5 +260,165 @@ describe('transformBlocks', () => {
 	it('handles empty block array', async () => {
 		const result = await transformBlocks([]);
 		expect(result).toEqual([]);
+	});
+
+	it('transforms embed with YouTube URL to smart embed', async () => {
+		const blocks = [mockBlock('embed', {
+			embed: { url: 'https://www.youtube.com/watch?v=abc123', caption: [] }
+		})];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('embed');
+		expect(result[0].embedType).toBe('youtube');
+		expect(result[0].embedAspectRatio).toBe('16/9');
+	});
+
+	it('converts video with YouTube URL to embed type', async () => {
+		const blocks = [mockBlock('video', {
+			video: {
+				type: 'external',
+				external: { url: 'https://youtu.be/abc123' },
+				caption: mockRichText('A video')
+			}
+		})];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('embed');
+		expect(result[0].embedType).toBe('youtube');
+		expect(result[0].url).toBe('https://youtu.be/abc123');
+	});
+
+	it('keeps video type for non-YouTube/Vimeo URLs', async () => {
+		const blocks = [mockBlock('video', {
+			video: {
+				type: 'external',
+				external: { url: 'https://example.com/video.mp4' },
+				caption: []
+			}
+		})];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('video');
+		expect(result[0].url).toBe('https://example.com/video.mp4');
+	});
+
+	it('transforms table block with rows and header', async () => {
+		mockGetChildBlocks.mockResolvedValueOnce([
+			{ id: 'row-1', type: 'table_row', table_row: { cells: [mockRichText('Name'), mockRichText('Value')] } },
+			{ id: 'row-2', type: 'table_row', table_row: { cells: [mockRichText('Foo'), mockRichText('42')] } }
+		]);
+		const blocks = [mockBlock('table', {
+			table: { has_column_header: true, table_width: 2 }
+		})];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('table');
+		expect(result[0].hasHeader).toBe(true);
+		expect(result[0].rows).toHaveLength(2);
+		expect(result[0].rows![0][0][0].text).toBe('Name');
+		expect(result[0].rows![1][1][0].text).toBe('42');
+	});
+
+	it('transforms audio block', async () => {
+		const blocks = [mockBlock('audio', {
+			audio: {
+				type: 'external',
+				external: { url: 'https://example.com/song.mp3' },
+				caption: mockRichText('A song')
+			}
+		})];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('audio');
+		expect(result[0].url).toBe('https://example.com/song.mp3');
+		expect(result[0].caption[0].text).toBe('A song');
+	});
+
+	it('transforms file block', async () => {
+		const blocks = [mockBlock('file', {
+			file: {
+				type: 'external',
+				external: { url: 'https://example.com/doc.pdf' },
+				caption: mockRichText('My document'),
+				name: 'doc.pdf'
+			}
+		})];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('file');
+		expect(result[0].fileUrl).toBe('https://example.com/doc.pdf');
+		expect(result[0].fileName).toBe('My document');
+	});
+
+	it('transforms column_list block', async () => {
+		// First call returns column blocks, subsequent calls return column children
+		mockGetChildBlocks
+			.mockResolvedValueOnce([
+				{ id: 'col-1', type: 'column', has_children: true },
+				{ id: 'col-2', type: 'column', has_children: true }
+			])
+			.mockResolvedValueOnce([
+				{ id: 'p-1', type: 'paragraph', has_children: false, paragraph: { rich_text: mockRichText('Col 1 text') } }
+			])
+			.mockResolvedValueOnce([
+				{ id: 'p-2', type: 'paragraph', has_children: false, paragraph: { rich_text: mockRichText('Col 2 text') } }
+			]);
+		const blocks = [mockBlock('column_list', {
+			has_children: true
+		})];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('column_list');
+		expect(result[0].columns).toHaveLength(2);
+		expect(result[0].columns![0][0].richText[0].text).toBe('Col 1 text');
+		expect(result[0].columns![1][0].richText[0].text).toBe('Col 2 text');
+	});
+
+	it('transforms synced_block with synced_from (reference)', async () => {
+		mockGetChildBlocks.mockResolvedValueOnce([
+			{ id: 'child-1', type: 'paragraph', has_children: false, paragraph: { rich_text: mockRichText('Synced content') } }
+		]);
+		const blocks = [mockBlock('synced_block', {
+			synced_block: { synced_from: { block_id: 'source-block-id' } }
+		})];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('synced_block');
+		expect(result[0].children[0].richText[0].text).toBe('Synced content');
+		expect(mockGetChildBlocks).toHaveBeenCalledWith('source-block-id');
+	});
+
+	it('transforms synced_block without synced_from (source)', async () => {
+		mockGetChildBlocks.mockResolvedValueOnce([
+			{ id: 'child-2', type: 'paragraph', has_children: false, paragraph: { rich_text: mockRichText('Original content') } }
+		]);
+		const blocks = [mockBlock('synced_block', {
+			id: 'self-block-id',
+			synced_block: { synced_from: null }
+		})];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('synced_block');
+		expect(result[0].children[0].richText[0].text).toBe('Original content');
+	});
+
+	it('transforms equation block', async () => {
+		const blocks = [mockBlock('equation', {
+			equation: { expression: 'E = mc^2' }
+		})];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('equation');
+		expect(result[0].expression).toBe('E = mc^2');
 	});
 });
