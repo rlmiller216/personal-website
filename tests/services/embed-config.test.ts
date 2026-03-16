@@ -48,6 +48,13 @@ describe('getEmbedConfig', () => {
 		expect(config.minHeight).toBe('500px');
 	});
 
+	it('detects Mol* viewer URLs', () => {
+		const config = getEmbedConfig('https://molstar.org/viewer/?pdb=5DHG&hide-controls=1');
+		expect(config.provider).toBe('molstar');
+		expect(config.aspectRatio).toBe('1/1');
+		expect(config.minHeight).toBe('500px');
+	});
+
 	it('returns generic config for unknown URLs', () => {
 		const config = getEmbedConfig('https://example.com/widget');
 		expect(config.provider).toBe('generic');

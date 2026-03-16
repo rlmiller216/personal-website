@@ -35,6 +35,10 @@ const EMBED_PATTERNS: Array<{ test: RegExp; config: EmbedConfig }> = [
 	{
 		test: /docs\.google\.com/i,
 		config: { provider: 'google-docs', aspectRatio: '4/3', minHeight: '500px' }
+	},
+	{
+		test: /molstar\.org/i,
+		config: { provider: 'molstar', aspectRatio: '1/1', minHeight: '500px' }
 	}
 ];
 
