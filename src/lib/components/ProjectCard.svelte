@@ -2,16 +2,19 @@
 	import { ArrowRight } from '@lucide/svelte';
 	import type { Project } from '$lib/types/content';
 
-	let { project }: { project: Project } = $props();
+	let { project, fallbackHref = '/projects' }: { project: Project; fallbackHref?: string } = $props();
+
+	const linkHref = $derived(project.url || fallbackHref);
+	const isExternal = $derived(!!project.url);
 </script>
 
 <a
-	href={project.url || '#'}
+	href={linkHref}
 	class="group flex flex-col overflow-hidden rounded-lg shadow-sm transition-all
 		hover:shadow-lg hover:-translate-y-1"
 	style="border-bottom: 4px solid oklch(0.94 0.22 115);"
-	target={project.url ? '_blank' : undefined}
-	rel={project.url ? 'noopener noreferrer' : undefined}
+	target={isExternal ? '_blank' : undefined}
+	rel={isExternal ? 'noopener noreferrer' : undefined}
 >
 	{#if project.imageUrl}
 		<img

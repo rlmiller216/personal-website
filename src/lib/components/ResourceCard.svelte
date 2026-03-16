@@ -1,15 +1,18 @@
 <script lang="ts">
 	import type { Resource } from '$lib/types/content';
 
-	let { resource }: { resource: Resource } = $props();
+	let { resource, fallbackHref = '/resources' }: { resource: Resource; fallbackHref?: string } = $props();
+
+	const linkHref = $derived(resource.url || fallbackHref);
+	const isExternal = $derived(!!resource.url);
 </script>
 
 <a
-	href={resource.url || '#'}
+	href={linkHref}
 	class="flex items-start gap-4 rounded-lg p-4 transition-shadow hover:shadow-md bg-card"
 	style="border: 1px solid oklch(0.14 0 0 / 8%); border-left: 4px solid oklch(0.47 0.29 285);"
-	target={resource.url ? '_blank' : undefined}
-	rel={resource.url ? 'noopener noreferrer' : undefined}
+	target={isExternal ? '_blank' : undefined}
+	rel={isExternal ? 'noopener noreferrer' : undefined}
 >
 	{#if resource.imageUrl}
 		<img

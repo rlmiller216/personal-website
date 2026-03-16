@@ -42,7 +42,7 @@
 		<!-- Feature card: only if first project has an image -->
 		{#if hasFeatureImage}
 			<a
-				href={firstProject.url || '#'}
+				href={firstProject.url || '/projects'}
 				class="group block relative overflow-hidden rounded-lg mb-8"
 				target={firstProject.url ? '_blank' : undefined}
 				rel={firstProject.url ? 'noopener noreferrer' : undefined}
@@ -99,7 +99,7 @@
 
 <!-- Recommended Resources — White band with card grid -->
 {#if data.featuredResources.length > 0}
-	<StickySection title="RECOMMENDED" highlightWord="RESOURCES" href="/resources" variant="white">
+	<StickySection title="RESOURCE" highlightWord="LIBRARY" href="/resources" variant="white">
 		<div class="grid gap-5 sm:grid-cols-2 animate-stagger">
 			{#each data.featuredResources as resource}
 				<ResourceCard {resource} />

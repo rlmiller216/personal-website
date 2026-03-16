@@ -2,17 +2,20 @@
 	import { ArrowRight } from '@lucide/svelte';
 	import type { Tool } from '$lib/types/content';
 
-	let { tool }: { tool: Tool } = $props();
+	let { tool, fallbackHref = '/open-source' }: { tool: Tool; fallbackHref?: string } = $props();
+
+	const linkHref = $derived(tool.githubUrl || tool.demoUrl || fallbackHref);
+	const isExternal = $derived(!!tool.githubUrl || !!tool.demoUrl);
 </script>
 
 <!-- List-item layout for tools — Ultra Violet left border, hover highlight, reveal arrow -->
 <a
-	href={tool.githubUrl || tool.demoUrl || '#'}
+	href={linkHref}
 	class="group flex items-start gap-5 py-5 rounded-lg
 		transition-colors duration-300 hover:bg-accent"
 	style="border-left: 3px solid oklch(0.47 0.29 285); padding-left: 1rem;"
-	target="_blank"
-	rel="noopener noreferrer"
+	target={isExternal ? '_blank' : undefined}
+	rel={isExternal ? 'noopener noreferrer' : undefined}
 >
 	<div class="flex-1 min-w-0">
 		<h3

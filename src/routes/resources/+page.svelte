@@ -7,13 +7,13 @@
 </script>
 
 <svelte:head>
-	<title>Resources — {data.siteName}</title>
+	<title>Resource Library — {data.siteName}</title>
 </svelte:head>
 
 <!-- Page header — Space Indigo -->
 <div class="bg-hero">
 	<div class="max-w-6xl mx-auto px-6 py-12">
-		<h1 class="text-4xl font-bold text-hero-foreground">Resources</h1>
+		<h1 class="text-4xl font-bold text-hero-foreground">Resource Library</h1>
 	</div>
 </div>
 

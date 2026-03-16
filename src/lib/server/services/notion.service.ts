@@ -147,7 +147,7 @@ export async function fetchAndMap<T>(
 
 /**
  * Fetches all blocks from a Notion page with automatic pagination.
- * Used by about.service.ts and interests.service.ts for rich content pages.
+ * Used by about.service.ts for rich content pages.
  */
 export async function getPageBlocks(pageId: string): Promise<BlockObjectResponse[]> {
 	const notion = getClient();
@@ -191,7 +191,7 @@ export async function getChildBlocks(blockId: string): Promise<BlockObjectRespon
 
 /**
  * Fetches child pages of a parent page.
- * Used by interests.service.ts to discover interest sub-pages.
+ * Fetches child pages of a parent Notion page.
  */
 export async function getChildPages(
 	parentId: string

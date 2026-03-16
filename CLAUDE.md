@@ -59,16 +59,17 @@ Notion databases/pages
 
 ### Key Patterns
 - OKLCH design tokens in `app.css` with light/dark mode (`--hero`, `--hero-foreground` for Space Indigo sections)
-- **Scroll-collapsing RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top, L and M animate upward on scroll to form a tight monogram. Responsive two-tier sizing: 56px/48px font at md (768px+), 80px/72px font at lg (1024px+). Hidden on mobile.
-- Scroll-aware nav: transparent on homepage hero, opaque white on scroll and all subpages. Nav text colors adapt to background (light text on dark hero, dark text on solid nav).
+- **Scroll-collapsing RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top (-12px), L and M animate upward on scroll to form a tight monogram. Collapse range extends 1.8× beyond hero height for a slow, cinematic feel. Responsive two-tier sizing: 56px/48px font at md, 80px/72px font at lg. Hidden on mobile.
+- **Non-fixed desktop nav**: nav scrolls away naturally on desktop (`md:relative`) so sticky section headers own the top of the viewport. Mobile nav stays fixed. `isDesktop` inline init via `matchMedia` prevents white-text-on-white-bg FOUC.
+- **MCA-style sticky section headers** on homepage: each section's heading sticks at `top-16` (mobile, below fixed nav) or `top-0` (desktop). Title is a link with bold angular Ultra Violet arrow. No shadow on sticky headers.
+- **Angular icon convention**: all custom SVGs use `stroke-linecap="square"` + `stroke-linejoin="miter"` to match Raleway's geometric character. Applies to hamburger, section arrows, and close icons.
+- **Sidebar hamburger menu**: large angular icon (52px lg, 36px md) matching RLM letter color and width. Opens slide-out nav (w-80) with bold uppercase Raleway links, top-aligned with R. Panel is `bg-white` (matches sidebar). fly/fade Svelte transitions, Escape dismisses, mutual exclusion with mobile menu.
 - Space Indigo page headers on all content pages
 - Lime Yellow `.text-highlight` marker underline effect
 - Stagger fade-up animations (up to 12 children), gated behind `prefers-reduced-motion`
-- Card hovers: translate-up + accent borders (Lime Yellow bottom on ProjectCard, Ultra Violet top on ToolCard, Ultra Violet left on ResourceCard)
-- **MCA-style sticky section headers** on homepage: each section's heading sticks below the nav while scrolling through its content, replaced by the next section's header. IntersectionObserver sentinel detects stuck state, adds `shadow-sm`. No padding compression — shadow-only transition.
-- **Feature card** for first project on homepage: full-width image with Space Indigo gradient overlay, hover scale effect. Falls back to standard grid if project has no image.
-- **Varied card layouts per section**: Projects use feature card + grid, Open Source uses list items with Ultra Violet left border, Resources use existing card grid.
-- **Sidebar hamburger menu**: opens slide-out nav overlay with fly/fade Svelte transitions. Panel is `bg-white` (matches sidebar). Responsive wrapper `hidden md:block` gates overlay to md+ viewports. Escape key dismisses. Mutual exclusion with mobile menu via `$effect`.
+- Card hovers: translate-up + accent borders (Lime Yellow bottom on ProjectCard, Ultra Violet left on ToolCard/ResourceCard)
+- **Feature card** for first project on homepage: full-width image with Space Indigo gradient overlay, hover scale. Falls back to standard grid if project has no image.
+- **Varied card layouts per section**: Projects use feature card + grid, Open Source uses list items with Ultra Violet left border, Resource Library uses existing card grid.
 - Footer: Space Indigo background with Ultra Violet accent line, Raleway uppercase RLM branding
 
 ### Accessibility Constraints
@@ -88,7 +89,7 @@ src/
       ToolCard.svelte       → Open source tool card (used on /open-source subpage)
       ToolListItem.svelte   → Tool list-item layout for homepage (Ultra Violet left border, hover arrow)
       ResourceCard.svelte   → Resource card
-      StickySection.svelte  → Sticky section header wrapper (homepage, IntersectionObserver shadow)
+      StickySection.svelte  → Sticky section header wrapper (homepage, linked title + angular arrow)
       ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage, accepts class prop)
       LetterSidebar.svelte  → Scroll-collapsing RLM monogram sidebar + hamburger menu toggle ($bindable)
       NotionBlocks.svelte   → Renders ContentBlock[] as Svelte components
@@ -99,7 +100,6 @@ src/
         projects.service.ts → Project mapper + queries
         tools.service.ts    → Tool mapper + queries
         resources.service.ts→ Resource mapper + queries
-        interests.service.ts→ Interest page fetcher
         about.service.ts    → About page fetcher
         notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[]
     types/
@@ -113,9 +113,7 @@ src/
     about/
     projects/
     open-source/
-    resources/
-    interests/              → Interest index (links to each topic)
-    interests/[slug]/       → entries() required for adapter-static
+    resources/              → Resource Library
     contact/
     +error.svelte           → Runtime error page
 static/
@@ -136,9 +134,10 @@ tests/
 | About | `/about` | Single Notion page |
 | Projects | `/projects` | Notion database |
 | Open Source | `/open-source` | Notion database |
-| Resources | `/resources` | Notion database |
-| Interests | `/interests/[slug]` | Notion pages (Poetry, Art, Music, Travel, Food) |
+| Resource Library | `/resources` | Notion database |
 | Contact | `/contact` | Formspree form |
+
+> **Note:** Interests page was removed (2026-03-16). Interests content (Poetry, Art, Music, Travel, Food) will be added to the About page in a future session.
 
 ## Notion Database Schemas
 
@@ -177,9 +176,6 @@ tests/
 | Why I Love It | Rich text | Personal recommendation |
 | Image | Files | Cover image |
 
-### Interests (Notion Pages)
-One page per interest: Poetry, Art, Music, Travel, Food. Parent "Interests" page contains child pages.
-
 ### Notion SDK v5
 - Uses `dataSources.query()` with `data_source_id` (NOT the removed `databases.query()`)
 - Type: `QueryDataSourceParameters` (NOT `QueryDatabaseParameters`)
@@ -198,7 +194,6 @@ NOTION_API_KEY=ntn_...
 NOTION_PROJECTS_DS_ID=...
 NOTION_TOOLS_DS_ID=...
 NOTION_RESOURCES_DS_ID=...
-NOTION_INTERESTS_PAGE_ID=...
 NOTION_ABOUT_PAGE_ID=...
 
 # Site metadata — prefixed RM_ because Netlify reserves SITE_NAME
@@ -264,7 +259,7 @@ Errors are written for humans:
 - Good: `[notion] Failed to fetch project "X" — property "Name" missing or empty`
 
 ### Logging
-- Every module logs its name: `[notion]`, `[projects]`, `[interests]`
+- Every module logs its name: `[notion]`, `[projects]`, `[resources]`
 - Format: `[module] action: detail`
 - Never log secrets
 
@@ -296,9 +291,6 @@ Uses CSS-based configuration (`@import "tailwindcss"`) instead of v3's JS config
 
 ### Google Fonts via CDN
 Bodoni Moda and Raleway load from Google Fonts CDN. Potential FOUC on slow connections. If this becomes a problem, self-host the font files in `static/fonts/`.
-
-### adapter-static Dynamic Routes
-`interests/[slug]/+page.server.ts` must export `entries()` returning all valid slugs from Notion. Required for pre-rendering dynamic routes.
 
 ### Property Extractors Accept `undefined`
 All property extractors (`getTitle`, `getRichText`, etc.) accept `PageProperty | undefined`. This prevents crashes when a Notion database doesn't have an expected property name. Tested with 8 dedicated undefined-guard tests.

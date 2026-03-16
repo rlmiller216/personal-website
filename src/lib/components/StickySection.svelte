@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { ArrowRight } from '@lucide/svelte';
 	import type { Snippet } from 'svelte';
 
 	let {
@@ -28,19 +27,23 @@
 	<div
 		class="sticky z-30 py-4 {bgClass} top-16 md:top-0"
 	>
-		<div class="max-w-6xl mx-auto px-6 flex items-baseline justify-between">
-			<h2
-				class="text-3xl md:text-4xl font-bold"
+		<div class="max-w-6xl mx-auto px-6">
+			<a
+				href={href}
+				class="group inline-flex items-baseline gap-3 text-3xl md:text-4xl font-bold
+					hover:text-primary transition-colors"
 				style="font-family: 'Raleway', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;"
 			>
 				{title} <span class="text-highlight">{highlightWord}</span>
-			</h2>
-			<a
-				href={href}
-				class="group flex items-center gap-1 text-sm font-medium text-primary shrink-0"
-				style="font-family: 'Raleway', sans-serif;"
-			>
-				View all <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+				<!-- Sharp angular arrow — matches Raleway's geometric character -->
+				<svg
+					class="h-9 w-9 md:h-11 md:w-11 text-primary self-center
+						transition-transform group-hover:translate-x-2"
+					viewBox="0 0 24 24" fill="none" stroke="currentColor"
+					stroke-width="2.5" stroke-linecap="square" stroke-linejoin="miter"
+				>
+					<path d="M5 12h14M13 5l7 7-7 7" />
+				</svg>
 			</a>
 		</div>
 	</div>

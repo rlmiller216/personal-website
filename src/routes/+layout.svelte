@@ -13,8 +13,7 @@
 		{ href: '/about', label: 'About' },
 		{ href: '/projects', label: 'Projects' },
 		{ href: '/open-source', label: 'Open Source' },
-		{ href: '/resources', label: 'Resources' },
-		{ href: '/interests', label: 'Interests' },
+		{ href: '/resources', label: 'Resource Library' },
 		{ href: '/contact', label: 'Contact' }
 	];
 
@@ -86,15 +85,16 @@
 
 		<!-- Slide-out panel -->
 		<nav
-			class="fixed top-0 left-14 lg:left-20 z-40 h-screen w-56
-				flex flex-col justify-center gap-2 px-8 py-16 overflow-y-auto
+			class="fixed top-0 left-14 lg:left-20 z-40 h-screen w-80
+				flex flex-col gap-3 px-10 pb-16 overflow-y-auto
 				bg-white border-r border-border shadow-xl"
-			transition:fly={{ x: -300, duration: 300 }}
+			style="padding-top: 0.75rem;"
+			transition:fly={{ x: -400, duration: 300 }}
 		>
 			{#each navLinks as link}
 				<a
 					href={link.href}
-					class="relative py-3 px-4 text-lg font-semibold transition-colors rounded-lg
+					class="relative py-3 px-4 text-2xl lg:text-3xl font-bold uppercase tracking-wide transition-colors rounded-lg
 						hover:bg-accent
 						{isActive(link.href) ? 'text-primary' : 'text-foreground'}"
 					style="font-family: 'Raleway', sans-serif;"
@@ -102,14 +102,14 @@
 				>
 					{link.label}
 					{#if isActive(link.href)}
-						<span class="absolute bottom-1.5 left-4 right-4 h-0.5 rounded-full bg-secondary"></span>
+						<span class="absolute bottom-1 left-4 right-4 h-0.5 rounded-full bg-secondary"></span>
 					{/if}
 				</a>
 			{/each}
-			<!-- ThemeToggle — accessible after nav scrolls away on desktop -->
-			<div class="mt-4 pt-4 border-t border-border flex items-center gap-2 px-4">
+			<!-- ThemeToggle — pushed to bottom of panel -->
+			<div class="mt-auto pt-4 border-t border-border flex items-center gap-2 px-4">
 				<ThemeToggle class="text-muted-foreground hover:text-foreground" />
-				<span class="text-sm text-muted-foreground" style="font-family: 'Raleway', sans-serif;">Theme</span>
+				<span class="text-sm text-muted-foreground uppercase tracking-wide" style="font-family: 'Raleway', sans-serif;">Theme</span>
 			</div>
 		</nav>
 	{/if}

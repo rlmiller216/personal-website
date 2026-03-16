@@ -30,8 +30,9 @@
 	const spreadGap = $derived((viewportHeight * 0.70) / 2);
 
 	// No hero (subpages, reduced motion) → always collapsed.
+	// Collapse range extends 80% beyond the hero for a slower, more cinematic feel.
 	const hasHero = $derived(heroHeight > 0);
-	const range = $derived(Math.max(heroHeight, 1));
+	const range = $derived(Math.max(heroHeight * 1.8, 1));
 	const progress = $derived(hasHero ? Math.min(scrollY / range, 1) : 1);
 	const eased = $derived(1 - (1 - progress) ** 3); // easeOutCubic
 
@@ -109,11 +110,12 @@
 		<svg
 			style="width: {isLarge ? 52 : 36}px; height: {isLarge ? 52 : 36}px;"
 			fill="none" stroke="currentColor" viewBox="0 0 24 24"
+			stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"
 		>
 			{#if menuOpen}
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+				<path d="M6 18L18 6M6 6l12 12" />
 			{:else}
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+				<path d="M4 6h16M4 12h16M4 18h16" />
 			{/if}
 		</svg>
 	</button>
