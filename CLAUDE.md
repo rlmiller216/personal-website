@@ -112,7 +112,7 @@ Notion databases/pages
 - **Feature card** for first project on homepage: full-width image with Space Indigo gradient overlay, hover scale. Falls back to standard grid if project has no image.
 - **Varied card layouts per section**: Projects use feature card + grid (Lime Yellow bottom), Open Source uses image cards with Ultra Violet left border, Toolkit uses ResourceCard grid (Lime Yellow bottom).
 - Homepage section banding: muted → white → muted (first section gets warm beige)
-- Footer: Space Indigo background, Bodoni Moda "Rebecca L Miller, PhD" branding, "Science for Good" tagline
+- **Footer**: Space Indigo background, Bodoni Moda "Rebecca L Miller, PhD" branding, "Science for Good" tagline, land acknowledgement in Bodoni Moda (`#c3bdb8` at 70% opacity, `text-base`), nav links match header styling (`font-medium text-hero-foreground/70 hover:text-hero-foreground`)
 
 ### Accessibility Constraints
 - **Lime Yellow on light bg: ~1.3:1 -- NEVER use as text.** Background/highlight only.

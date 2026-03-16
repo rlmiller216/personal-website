@@ -179,11 +179,9 @@ All configuration is in `.env` (never committed). `.env.example` documents the c
 
 ## 5. Known Limitations & Risks
 
-### 5.1 Notion Image URLs Expire (~1 hour)
+### 5.1 Notion Image URLs (Cached at Build Time)
 
-Notion-hosted images (type `"file"`) use signed S3 URLs that expire in ~1 hour. External URLs (type `"external"`) do not expire.
-
-**Mitigation:** Each git push triggers a rebuild with fresh URLs. For content-only refreshes, use the Netlify dashboard "Trigger deploy" button. If staleness becomes a problem, future work: download images to `static/` at build time.
+Notion-hosted images (type `"file"`) use signed S3 URLs that expire in ~1 hour. At build time, `image-cache.ts` downloads all Notion images to `static/images/` and rewrites URLs to permanent `/images/{hash}.ext` paths. A dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp` copies images to `build/images/` (Vite snapshots `static/` before prerender runs). `static/images/` is gitignored.
 
 ### 5.2 Notion SDK v5 Breaking Changes
 

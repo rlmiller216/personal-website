@@ -207,11 +207,16 @@
 				</div>
 			</div>
 
+			<!-- Land acknowledgement -->
+			<p id="land-ack" class="font-display text-base leading-relaxed max-w-3xl mb-8" style="color: rgba(195, 189, 184, 0.7);">
+				Our digital presence operates on the land known as Turtle Island. We pay respect to the traditional guardians of this territory and commit to ongoing reconciliation and partnership.
+			</p>
+
 			<!-- Bottom row: nav + copyright -->
 			<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-6 border-t border-white/10">
-				<div class="flex flex-wrap gap-x-6 gap-y-2 text-sm opacity-60">
+				<div class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
 					{#each navLinks as link}
-						<a href={link.href} class="hover:opacity-100 transition-opacity">{link.label}</a>
+						<a href={link.href} class="font-medium text-hero-foreground/70 hover:text-hero-foreground transition-colors">{link.label}</a>
 					{/each}
 				</div>
 				<span class="text-sm opacity-40">&copy; {new Date().getFullYear()} {data.siteName}</span>
