@@ -10,10 +10,10 @@
 
 	const navLinks = [
 		{ href: '/', label: 'Home' },
-		{ href: '/about', label: 'About' },
 		{ href: '/projects', label: 'Projects' },
 		{ href: '/open-source', label: 'Open Source' },
 		{ href: '/resources', label: 'Resource Library' },
+		{ href: '/about', label: 'About' },
 		{ href: '/contact', label: 'Contact' }
 	];
 
@@ -194,8 +194,8 @@
 			<!-- Top row: branding -->
 			<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
 				<div>
-					<p class="text-3xl font-bold tracking-tight uppercase opacity-80" style="font-family: 'Raleway', sans-serif;">
-						{data.siteName}
+					<p class="text-3xl font-bold tracking-tight opacity-80" style="font-family: 'Bodoni Moda', serif;">
+						Rebecca L Miller, PhD
 					</p>
 					<p class="text-sm opacity-70 mt-1">{data.siteTagline}</p>
 				</div>
