@@ -30,6 +30,7 @@ src/
 │   │   ├── StickySection.svelte          # Sticky section header: linked title + angular arrow (~54 LOC)
 │   │   ├── ThemeToggle.svelte            # Dark mode toggle: Sun/Moon icons, localStorage, class prop (~29 LOC)
 │   │   ├── LetterSidebar.svelte          # Floating RLM sidebar (RAF-driven scroll physics) + hamburger toggle (~170 LOC)
+│   │   ├── DetailHeader.svelte           # Shared detail page header: back link, title, badge slot (~40 LOC)
 │   │   ├── NotionBlocks.svelte           # Iterates ContentBlock[] → renders each via NotionBlock
 │   │   ├── NotionBlock.svelte            # Block type dispatcher → routes to sub-components (~33 LOC)
 │   │   ├── NotionTextBlock.svelte        # Text blocks: paragraphs, headings, lists, toggles, quotes, callouts (~87 LOC)
@@ -40,13 +41,13 @@ src/
 │   │
 │   └── server/
 │       └── services/
-│           ├── notion.service.ts         # Notion API client, property extractors, generic fetcher, createCachedFetcher, warnSlugCollisions
+│           ├── notion.service.ts         # Notion API client, property extractors, generic fetcher, createCachedFetcher, warnSlugCollisions (~263 LOC)
 │           ├── page-content.ts           # getPageContent() — combines getPageBlocks() + transformBlocks()
 │           ├── notion-blocks.ts          # Block transformer: Notion API → ContentBlock[] (22+ types, ~230 LOC)
 │           ├── notion-block-utils.ts     # Shared helpers: extractRichText, extractMediaUrl, groupListItems (~85 LOC)
 │           ├── embed-config.ts           # URL pattern → embed provider/aspect-ratio detection (~53 LOC)
 │           ├── code-highlight.ts         # Shiki syntax highlighting: promise-cached, dual-theme (~82 LOC)
-│           ├── image-cache.ts           # Build-time Notion image downloader: dedup Map, hash, fallback (~95 LOC)
+│           ├── image-cache.ts           # Build-time Notion image downloader: dedup Map, hash, fallback (~103 LOC)
 │           ├── projects.service.ts       # Project mapper + queries (uses createCachedFetcher)
 │           ├── tools.service.ts          # Tool mapper + queries (uses createCachedFetcher)
 │           ├── resources.service.ts      # Resource mapper + queries (uses createCachedFetcher, groupByType)
@@ -96,7 +97,7 @@ Pure TypeScript interfaces with zero dependencies. Defines the contract between 
 
 Server-only modules that run at build time. Fetches data from the Notion API and transforms it into typed objects for Svelte routes.
 
-#### `notion.service.ts` — Core Client (223 LOC)
+#### `notion.service.ts` — Core Client (~263 LOC)
 
 The single source of truth for all Notion API interactions.
 
@@ -151,16 +152,17 @@ Transforms Notion API `BlockObjectResponse[]` into serializable `ContentBlock[]`
 - **Synced blocks:** Resolve `synced_from.block_id` for references vs own `block.id` for sources
 - **Column lists:** Sequential child fetching to avoid Notion API rate limits
 
-#### Content Fetcher Services (215 LOC total, 5 files)
+#### Content Fetcher Services (~283 LOC total, 5 files)
 
 Thin mappers over `fetchAndMap<T>()`. Each owns one domain type.
 
 | Service | LOC | Exports |
 |---|---|---|
-| `projects.service.ts` | 63 | `getAllProjects()`, `getFeaturedProjects()` |
-| `tools.service.ts` | 75 | `getAllTools()`, `getFeaturedTools()`, `getToolBySlug()` |
-| `resources.service.ts` | 52 | `getAllResources()`, `groupByType()` |
-| `about.service.ts` | 33 | `getAboutContent()` |
+| `projects.service.ts` | ~88 | `getAllProjects()`, `getFeaturedProjects()` |
+| `tools.service.ts` | ~79 | `getAllTools()`, `getFeaturedTools()`, `getToolBySlug()` |
+| `resources.service.ts` | ~70 | `getAllResources()`, `groupByType()` |
+| `about.service.ts` | ~30 | `getAboutContent()` |
+| `page-content.ts` | ~16 | `getPageContent()` |
 
 **Shared pattern (database services):**
 ```
@@ -272,7 +274,7 @@ The visual identity is defined in `app.css` (~240 LOC) using CSS custom properti
                                  │
                         ┌────────▼────────┐
                         │ notion.service  │ ← Client init, property extractors,
-                        │     (223 LOC)   │   queryAllPages, fetchAndMap, getPageBlocks
+                        │    (~263 LOC)   │   queryAllPages, fetchAndMap, getPageBlocks
                         └──┬──────────┬───┘
                            │          │
               ┌────────────┘          └──────────────┐
@@ -329,15 +331,15 @@ The visual identity is defined in `app.css` (~240 LOC) using CSS custom properti
 | Module | LOC | Files |
 |---|---|---|
 | Notion block transformer + utils | ~450 | 4 (notion-blocks, block-utils, embed-config, code-highlight) |
-| Notion client + fetcher | 223 | 1 |
+| Notion client + fetcher | ~263 | 1 |
 | NotionBlock dispatcher + sub-components | ~340 | 5 (dispatcher, 3 sub-components, render-utils) |
 | Card components + ThemeToggle + LetterSidebar | ~240 | 5 |
 | Design system (app.css + app.html) | ~260 | 2 |
 | Content types | ~149 | 1 |
-| Content fetcher services | 201 | 4 |
+| Content fetcher services | ~283 | 5 |
 | Routes (pages + layouts) | ~550 | 21 |
 | Utilities + config | 27 | 3 |
-| **Tests** | **~1,000** | **10** |
+| **Tests** | **~1,000** | **11** |
 | **Total** | **~3,450** | **54** |
 
 > Tests are ~30% of total LOC. 137 tests across 11 files covering 22+ block types, image caching, float physics, XSS safety, and all service mappers.

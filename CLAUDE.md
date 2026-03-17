@@ -95,7 +95,7 @@ Notion databases/pages
 
 ### Key Patterns
 - `overflow-x: hidden` on `html` — prevents horizontal bounce on mobile from elements slightly exceeding viewport width
-- OKLCH design tokens in `app.css` with light/dark mode (`--hero`, `--hero-foreground` for Deep Twilight sections)
+- Hex + OKLCH design tokens in `app.css` with light/dark mode. Brand-critical colors use hex directly (`#050950` Deep Twilight, `#eeff5d` Neon Chartreuse) to prevent OKLCH approximation drift. Dark mode variants use `color-mix()` (e.g., `color-mix(in oklch, #050950 85%, white)`). `--hero`/`--hero-foreground` tokens power Deep Twilight sections.
 - **Floating RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top (0px md, -12px lg), L and M drift toward it on scroll via exponential decay interpolation in a RAF loop. Each letter has a different damping rate (R=8, L=5, M=3) creating a cascading wave where R arrives first and M trails behind. Collapse range extends 1.8× beyond hero height for a slow, cinematic feel. Responsive two-tier sizing: 68px/60px font at md, 80px/72px font at lg. Hidden on mobile.
 - **Non-fixed nav**: nav scrolls away naturally on ALL screen sizes (`relative z-10 bg-transparent`). Always transparent with light text — all page headers extend behind nav via `-mt-16 pt-16 bg-hero`. Footer nav links serve as persistent navigation once the header scrolls away on mobile.
 - **MCA-style sticky section headers** on homepage: each section's heading sticks at `top-0` on all screen sizes. Title is a link with bold angular Ultra Violet arrow. No shadow on sticky headers.
