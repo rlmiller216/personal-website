@@ -23,9 +23,9 @@
 </script>
 
 <section class="relative w-full {bgClass}">
-	<!-- Sticky header — pins at top of viewport (desktop) or below fixed nav (mobile) -->
+	<!-- Sticky header — pins at top of viewport on all screen sizes -->
 	<div
-		class="sticky z-30 py-4 {bgClass} top-16 md:top-0"
+		class="sticky z-30 py-4 {bgClass} top-0"
 	>
 		<div class="max-w-6xl mx-auto px-6">
 			<a

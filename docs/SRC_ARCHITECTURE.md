@@ -26,7 +26,7 @@ src/
 │   │   ├── ProjectCard.svelte            # Project card: hover translate-up, Ultra Violet overlay (~45 LOC)
 │   │   ├── ToolCard.svelte               # Tool card: image-forward, category badge, hover shadow (~40 LOC, used on /open-source)
 │   │   ├── ToolListItem.svelte           # Tool image card: Ultra Violet left border, hover arrow (~45 LOC, homepage)
-│   │   ├── ResourceCard.svelte           # Resource card: Lime Yellow bottom border, hover arrow (~45 LOC)
+│   │   ├── ResourceCard.svelte           # Resource card: Neon Chartreuse bottom border, hover arrow (~45 LOC)
 │   │   ├── StickySection.svelte          # Sticky section header: IntersectionObserver shadow, "View all →" (~70 LOC)
 │   │   ├── ThemeToggle.svelte            # Dark mode toggle: Sun/Moon icons, localStorage, class prop (~29 LOC)
 │   │   ├── LetterSidebar.svelte          # Floating RLM sidebar (RAF-driven scroll physics) + hamburger toggle (~170 LOC)
@@ -53,10 +53,10 @@ src/
 │           └── about.service.ts          # About page fetcher (uses getPageContent)
 │
 └── routes/
-    ├── +layout.svelte                    # Root layout: LetterSidebar + slide-out overlay, scroll-aware nav, ThemeToggle, Space Indigo footer w/ land acknowledgement (~226 LOC)
+    ├── +layout.svelte                    # Root layout: LetterSidebar + slide-out overlay, non-fixed nav, ThemeToggle, Deep Twilight footer w/ land acknowledgement (~206 LOC)
     ├── +layout.server.ts                 # Loads site metadata from RM_* env vars
     ├── +layout.ts                        # export const prerender = true (all routes static)
-    ├── +page.svelte                      # Home: Space Indigo hero with 3-part headline, feature card + grid, stagger animations (~145 LOC)
+    ├── +page.svelte                      # Home: Deep Twilight hero with 3-part headline, feature card + grid, stagger animations (~145 LOC)
     ├── +page.server.ts                   # Fetches featured items from all Notion databases
     ├── +error.svelte                     # Branded error page (404/500)
     ├── about/
@@ -198,11 +198,11 @@ Floating RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in
 - **`prefers-reduced-motion`:** Forces `heroHeight=0` → letters always collapsed, snap to targets on every scroll (no RAF)
 - **Gap interpolation:** Single `gap` value interpolated between `spreadGap` and `collapsedGap`, target positions = `[R_TOP, R_TOP+gap, R_TOP+gap*2]` — guarantees equal spacing
 - **`$bindable` menuOpen prop:** Parent binds `sidebarMenuOpen` state. Hamburger button toggles it. X icon shows when open. `aria-expanded` and dynamic `aria-label` for accessibility.
-- **Dark mode:** Sidebar, slide-out panel, and scrolled nav use `dark:bg-hero` (Space Indigo) with `dark:text-hero-foreground` for letters/links. Borders switch to `dark:border-white/10`.
+- **Dark mode:** Sidebar and slide-out panel use `dark:bg-hero` (Deep Twilight) with `dark:text-hero-foreground` for letters/links. Borders switch to `dark:border-white/10`.
 
 #### `ThemeToggle.svelte` (~29 LOC)
 
-Dark mode toggle using Lucide Sun/Moon icons. Uses Svelte 5 `$state` for theme tracking. Persists preference to `localStorage` and applies `.dark` class on `<html>`. Accepts optional `class` prop for scroll-aware color overrides (light text on dark hero, dark text on solid nav).
+Dark mode toggle using Lucide Sun/Moon icons. Uses Svelte 5 `$state` for theme tracking. Persists preference to `localStorage` and applies `.dark` class on `<html>`. Accepts optional `class` prop for contextual color overrides (light text on dark hero backgrounds).
 
 #### `NotionBlocks.svelte` (16 LOC)
 
@@ -248,9 +248,9 @@ All 7 pages are fully wired to Notion data. Each route has a `+page.server.ts` (
 The visual identity is defined in `app.css` (~165 LOC) using CSS custom properties with OKLCH color space.
 
 **Color palette (5 custom colors, light + dark tokens):**
-- Space Indigo — primary backgrounds (hero, nav, footer, page headers)
+- Deep Twilight — primary backgrounds (hero, nav, footer, page headers)
 - Ultra Violet — accents (borders, overlays, links, quotes)
-- Lime Yellow — highlights (`.text-highlight` utility, tags, callouts)
+- Neon Chartreuse — highlights (`.text-highlight` utility, tags, callouts)
 - Two additional palette colors for supporting roles
 
 **Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Raleway (body, weights 400–800). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px) bump all weights: body 400→500, headings→700, bold→800 to compensate for thin strokes on small/high-DPI screens.

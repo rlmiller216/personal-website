@@ -276,10 +276,10 @@ Five-color OKLCH palette mapped to CSS custom properties in `app.css`:
 | `--color-primary` | Ultra Violet | Brand accent, interactive elements |
 | `--color-secondary` | White Smoke | Light backgrounds, cards |
 | `--color-foreground` | Onyx | Primary text |
-| `--color-accent` | Lime Yellow | Highlights, CTAs |
-| `--color-deep` | Space Indigo | Dark backgrounds, headers |
+| `--color-accent` | Neon Chartreuse | Highlights, CTAs |
+| `--color-deep` | Deep Twilight | Dark backgrounds, headers |
 
-All colors are defined as OKLCH values for perceptual uniformity. Tailwind consumes them via `@theme` inline mapping, producing utility classes like `bg-primary`, `text-foreground`, etc.
+Colors use hex values for brand-critical accuracy (OKLCH approximations caused color drift). Tailwind consumes them via `@theme` inline mapping, producing utility classes like `bg-primary`, `text-foreground`, etc.
 
 ### 8.2 Typography
 

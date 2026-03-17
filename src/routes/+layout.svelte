@@ -19,22 +19,11 @@
 
 	let mobileMenuOpen = $state(false);
 	let sidebarMenuOpen = $state(false);
-	let scrolled = $state(false);
 
 	// Mutual exclusion — prevent both menus open during resize
 	$effect(() => {
 		if (sidebarMenuOpen) mobileMenuOpen = false;
 	});
-
-	$effect(() => {
-		const onScroll = () => { scrolled = window.scrollY > 50; };
-		onScroll();
-		window.addEventListener('scroll', onScroll, { passive: true });
-		return () => window.removeEventListener('scroll', onScroll);
-	});
-
-	// Transparent at top of every page, solid once user scrolls
-	const showSolidNav = $derived(scrolled);
 
 	function isActive(href: string): boolean {
 		if (href === '/') return page.url.pathname === '/';
@@ -99,18 +88,12 @@
 </div>
 
 <div class="min-h-screen flex flex-col md:ml-14 lg:ml-20">
-	<!-- Nav — mobile: fixed + transparent→solid. Desktop: in-flow, scrolls away. -->
-	<header
-		class="fixed top-0 inset-x-0 z-50
-			transition-[background-color,border-color,box-shadow] duration-300
-			{showSolidNav ? 'bg-white dark:bg-hero border-b border-border dark:border-white/10 shadow-sm' : 'bg-transparent'}
-			md:relative md:inset-auto md:z-10"
-	>
+	<!-- Nav — scrolls away naturally on all screen sizes -->
+	<header class="relative z-10 bg-transparent">
 		<nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
 			<a
 				href="/"
-				class="text-2xl font-bold tracking-tight uppercase md:invisible
-					{showSolidNav ? 'text-hero' : 'text-hero-foreground'}"
+				class="text-2xl font-bold tracking-tight uppercase md:invisible text-hero-foreground"
 			>
 				{data.siteName}
 			</a>
@@ -122,11 +105,11 @@
 						href={link.href}
 						class="relative px-3 py-2 text-sm font-medium transition-colors
 							{isActive(link.href)
-								? (showSolidNav ? 'text-primary' : 'text-hero-foreground')
-								: (showSolidNav ? 'text-muted-foreground hover:text-foreground' : 'text-hero-foreground/70 hover:text-hero-foreground')}"
+								? 'text-hero-foreground'
+								: 'text-hero-foreground/70 hover:text-hero-foreground'}"
 					>
 						{link.label}
-						<!-- Lime Yellow underline — active or on hover -->
+						<!-- Neon Chartreuse underline — active or on hover -->
 						<span
 							class="absolute bottom-0.5 left-3 right-3 h-0.5 bg-secondary rounded-full
 								transition-transform duration-200 origin-center
@@ -134,15 +117,14 @@
 						></span>
 					</a>
 				{/each}
-				<ThemeToggle class={showSolidNav ? 'text-muted-foreground hover:text-foreground' : 'text-hero-foreground/70 hover:text-hero-foreground'} />
+				<ThemeToggle class="text-hero-foreground/70 hover:text-hero-foreground" />
 			</div>
 
 			<!-- Mobile: theme toggle + hamburger -->
 			<div class="md:hidden flex items-center gap-1">
-				<ThemeToggle class={showSolidNav ? 'text-muted-foreground hover:text-foreground' : 'text-hero-foreground/70 hover:text-hero-foreground'} />
+				<ThemeToggle class="text-hero-foreground/70 hover:text-hero-foreground" />
 				<button
-					class="p-2 transition-colors
-						{showSolidNav ? 'text-muted-foreground hover:text-foreground' : 'text-hero-foreground/70 hover:text-hero-foreground'}"
+					class="p-2 transition-colors text-hero-foreground/70 hover:text-hero-foreground"
 					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
 					aria-label="Toggle menu"
 				>
@@ -174,15 +156,12 @@
 		{/if}
 	</header>
 
-	<!-- Spacer for fixed nav — mobile only (desktop nav is in-flow) -->
-	<div class="h-16 md:hidden"></div>
-
 	<!-- Main content -->
 	<main class="flex-1">
 		{@render children()}
 	</main>
 
-	<!-- Footer — Space Indigo background -->
+	<!-- Footer — Deep Twilight background -->
 	<footer class="bg-hero text-hero-foreground mt-16">
 		<div class="max-w-6xl mx-auto px-6 py-12">
 			<!-- Top row: branding -->
