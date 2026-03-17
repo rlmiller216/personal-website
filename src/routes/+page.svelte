@@ -38,10 +38,10 @@
 	);
 </script>
 
-<!-- Hero — full-width Space Indigo -->
+<!-- Hero — full-width Deep Twilight -->
 <section data-hero class="relative -mt-16 pt-16 bg-hero overflow-hidden">
 	<div class="max-w-6xl mx-auto px-6 pt-20 pb-28 sm:pt-24 sm:pb-36 lg:pt-32 lg:pb-48 text-center animate-stagger">
-		<h1 class="mx-auto max-w-3xl text-4xl sm:text-5xl md:text-6xl lg:text-[5.5rem] font-bold text-hero-foreground leading-[1] mb-6">
+		<h1 class="mx-auto max-w-3xl text-5xl md:text-6xl lg:text-[5.5rem] font-bold text-hero-foreground leading-[1] mb-6">
 			{#if bridgeWords}
 				<span class="block tracking-[0.04em]">{leadWords}</span>
 				<span class="block text-[0.65em] opacity-50 font-normal tracking-[0.05em] -mt-[0.05em] -mb-[0.1em]">{bridgeWords}</span>
@@ -74,7 +74,7 @@
 					alt={firstProject.title}
 					class="w-full h-64 sm:h-80 lg:h-96 object-cover transition-transform duration-300 group-hover:scale-105"
 				/>
-				<!-- Space Indigo gradient overlay — uses site palette, not generic black -->
+				<!-- Deep Twilight gradient overlay — uses site palette, not generic black -->
 				<div
 					class="absolute inset-0"
 					style="background: linear-gradient(to top, oklch(0.15 0.04 270 / 75%), oklch(0.15 0.04 270 / 20%), transparent);"
