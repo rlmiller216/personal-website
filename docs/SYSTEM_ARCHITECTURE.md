@@ -48,13 +48,14 @@ A **build-time static site** that pulls content from Notion databases and pages 
 
 ```
 Personal Website v0.1.0
-├── src/lib/server/services/  ~724 LOC — Notion API client, data fetchers, block transformer
-├── src/lib/components/       ~193 LOC — Notion content renderers (Svelte 5)
-├── src/lib/types/             ~98 LOC — Domain type definitions
-├── src/routes/                ~13 LOC — Page routes (placeholders, expanding in Chunk 3-4)
-├── tests/                    ~446 LOC — Vitest unit tests (36 tests)
+├── src/lib/server/services/  ~870 LOC — Notion API client, data fetchers, block transformer, image cache
+├── src/lib/components/       ~660 LOC — Cards, NotionBlock renderers, LetterSidebar, ThemeToggle
+├── src/lib/types/            ~149 LOC — Domain type definitions
+├── src/routes/               ~550 LOC — 9 page routes + layouts + error page
+├── src/app.css               ~240 LOC — Design system tokens, typography, animations
+├── tests/                  ~1,000 LOC — Vitest unit tests (137 tests across 11 files)
 ├── docs/                              — Architecture docs + product requirements
-└── static/                            — Favicon, robots.txt
+└── static/                            — Favicon, robots.txt, 404, Mol* sessions, Netlify headers
 ```
 
 ---

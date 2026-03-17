@@ -8,7 +8,7 @@ Map of everything under `src/`, how it connects, and where to find things.
 
 ```
 src/
-├── app.css                               # Design system: OKLCH color tokens, typography, animations (~215 LOC)
+├── app.css                               # Design system: color tokens (hex + OKLCH), typography, animations (~240 LOC)
 ├── app.d.ts                              # SvelteKit type augmentations (App namespace)
 ├── app.html                              # HTML shell + Google Fonts preconnect + dark-mode flash prevention (~20 LOC)
 │
@@ -27,7 +27,7 @@ src/
 │   │   ├── ToolCard.svelte               # Tool card: image-forward, category badge, hover shadow (~40 LOC, used on /open-source)
 │   │   ├── ToolListItem.svelte           # Tool image card: Ultra Violet left border, hover arrow (~45 LOC, homepage)
 │   │   ├── ResourceCard.svelte           # Resource card: Neon Chartreuse bottom border, hover arrow (~45 LOC)
-│   │   ├── StickySection.svelte          # Sticky section header: IntersectionObserver shadow, "View all →" (~70 LOC)
+│   │   ├── StickySection.svelte          # Sticky section header: linked title + angular arrow (~54 LOC)
 │   │   ├── ThemeToggle.svelte            # Dark mode toggle: Sun/Moon icons, localStorage, class prop (~29 LOC)
 │   │   ├── LetterSidebar.svelte          # Floating RLM sidebar (RAF-driven scroll physics) + hamburger toggle (~170 LOC)
 │   │   ├── NotionBlocks.svelte           # Iterates ContentBlock[] → renders each via NotionBlock
@@ -245,7 +245,7 @@ All 7 pages are fully wired to Notion data. Each route has a `+page.server.ts` (
 
 ### Design System (`app.css`, `app.html`)
 
-The visual identity is defined in `app.css` (~165 LOC) using CSS custom properties with OKLCH color space.
+The visual identity is defined in `app.css` (~240 LOC) using CSS custom properties with hex values and OKLCH color space.
 
 **Color palette (5 custom colors, light + dark tokens):**
 - Deep Twilight — primary backgrounds (hero, nav, footer, page headers)
@@ -332,7 +332,7 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
 | Notion client + fetcher | 223 | 1 |
 | NotionBlock dispatcher + sub-components | ~340 | 5 (dispatcher, 3 sub-components, render-utils) |
 | Card components + ThemeToggle + LetterSidebar | ~240 | 5 |
-| Design system (app.css + app.html) | ~185 | 2 |
+| Design system (app.css + app.html) | ~260 | 2 |
 | Content types | ~149 | 1 |
 | Content fetcher services | 201 | 4 |
 | Routes (pages + layouts) | ~550 | 21 |
