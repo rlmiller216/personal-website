@@ -49,7 +49,7 @@ Notion databases/pages
 
 **Notion blocks → Svelte components** (NOT `{@html}` strings). Server transforms API blocks into serializable `ContentBlock[]`, then `<NotionBlocks>` renders them as styled Svelte components. This enables per-block Tailwind styling and eliminates XSS risk.
 
-**NotionBlock dispatcher pattern:** `NotionBlock.svelte` is a thin dispatcher (~33 lines) that routes blocks to three sub-components by type: `NotionTextBlock` (paragraphs, headings, lists, toggles, quotes, callouts), `NotionMediaBlock` (images, video, audio, code, embeds, bookmarks, files, equations), and `NotionLayoutBlock` (dividers, tables, column layouts, synced blocks). Circular import (NotionTextBlock → NotionBlock) enables recursive rendering of nested lists/toggles — Svelte 5 handles this via lazy resolution.
+**NotionBlock dispatcher pattern:** `NotionBlock.svelte` is a thin dispatcher (~33 lines) that routes blocks to three sub-components by type: `NotionTextBlock` (paragraphs, headings, toggle headings, lists, toggles, quotes, callouts), `NotionMediaBlock` (images, video, audio, code, embeds, bookmarks, files, equations), and `NotionLayoutBlock` (dividers, tables, column layouts, synced blocks). Circular import (NotionTextBlock → NotionBlock) enables recursive rendering of nested lists/toggles/toggle headings — Svelte 5 handles this via lazy resolution.
 
 **Smart embed detection:** Embed and video blocks are analyzed via `getEmbedConfig()` (in `embed-config.ts`) to detect providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and set responsive aspect ratios, min-heights, and loading strategy. Embed min-height uses `min(configured, 70vh)` to prevent overflow on mobile viewports. YouTube/Vimeo video blocks are automatically converted to embed type to prevent broken `<video>` tags. Mol* embeds use a `snapshot-url` parameter to load pre-configured 3D protein visualizations from `.molx` session files in `static/molstar/`. Requires CORS headers on Netlify (`static/_headers` sets `Access-Control-Allow-Origin: *` for `/molstar/*`). Mol* embeds use `loading="eager"` (not lazy) because iOS Safari's lazy loading breaks WebGL context initialization in iframes — the browser never retries after the initial failed visibility check.
 
@@ -303,11 +303,11 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 158 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (25) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (21 — image + video + file download, dedup, hash, content-type validation)
+- 163 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (30) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (21 — image + video + file download, dedup, hash, content-type validation)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs
-- Block transform tests cover 23+ block types including PDF blocks, smart embed detection, video→embed conversion, table custom child-fetch, column list, synced blocks, and Shiki highlighting
+- Block transform tests cover 23+ block types including PDF blocks, toggle headings, smart embed detection, video→embed conversion, table custom child-fetch, column list, synced blocks, and Shiki highlighting
 - Mock Notion SDK responses — no live API calls in tests
 - Run: `npm test` or `npx vitest run`
 

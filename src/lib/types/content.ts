@@ -165,6 +165,10 @@ export interface ContentBlock {
 	/** Direct URL to the file. */
 	fileUrl?: string;
 
+	// -- Toggle headings --
+	/** Whether a heading block is toggleable (expands/collapses to show children). */
+	isToggleable?: boolean;
+
 	// -- Embed detection --
 	/** Detected provider (e.g., "youtube", "vimeo"). */
 	embedType?: string;
