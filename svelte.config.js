@@ -9,8 +9,6 @@ const config = {
 			fallback: '404.html'
 		}),
 		prerender: {
-			// Images downloaded during prerender land in static/images/ but miss
-			// Vite's earlier snapshot of static/. Post-build cp handles this.
 			handleHttpError: ({ path, message }) => {
 				// Files downloaded during prerender land in static/ but miss
 				// Vite's earlier snapshot. Post-build cp handles this.
