@@ -19,7 +19,7 @@ npx svelte-check     # type checking
 | Layer | Choice | Why |
 |-------|--------|-----|
 | Framework | SvelteKit + adapter-static | Static output, component-based DX, Svelte 5 runes |
-| Styling | Tailwind CSS 4 + shadcn-svelte | CSS-based config, accessible components out of the box |
+| Styling | Tailwind CSS 4 | CSS-based config, utility-first styling |
 | CMS | Notion API (@notionhq/client) | Rebecca already uses Notion daily. Edit there → site rebuilds |
 | Hosting | Netlify (free tier) | Static hosting, auto-deploys on push to `main` |
 | Contact Form | Formspree | adapter-static can't do server-side form handling |
@@ -129,7 +129,6 @@ Notion databases/pages
 src/
   lib/
     components/
-      ui/                   → shadcn-svelte (auto-generated, don't edit)
       ProjectCard.svelte    → Project display card
       ToolCard.svelte       → Open source tool card (used on /open-source subpage)
       ToolListItem.svelte   → Tool image card for homepage (Ultra Violet left border, hover arrow)
@@ -176,9 +175,7 @@ src/
     contact/
     +error.svelte           → Runtime error page
 static/
-  favicon.svg
   robots.txt
-  404.html                  → Static 404 fallback (adapter-static)
   molstar/                  → Mol* 3D viewer session files (.molx)
   _headers                  → Netlify custom headers (CORS for /molstar/*)
 tests/
