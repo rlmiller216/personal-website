@@ -51,7 +51,7 @@ Notion databases/pages
 
 **NotionBlock dispatcher pattern:** `NotionBlock.svelte` is a thin dispatcher (~33 lines) that routes blocks to three sub-components by type: `NotionTextBlock` (paragraphs, headings, lists, toggles, quotes, callouts), `NotionMediaBlock` (images, video, audio, code, embeds, bookmarks, files, equations), and `NotionLayoutBlock` (dividers, tables, column layouts, synced blocks). Circular import (NotionTextBlock → NotionBlock) enables recursive rendering of nested lists/toggles — Svelte 5 handles this via lazy resolution.
 
-**Smart embed detection:** Embed and video blocks are analyzed via `getEmbedConfig()` (in `embed-config.ts`) to detect providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and set responsive aspect ratios and min-heights. Embed min-height uses `min(configured, 70vh)` to prevent overflow on mobile viewports. YouTube/Vimeo video blocks are automatically converted to embed type to prevent broken `<video>` tags. Mol* embeds use a `snapshot-url` parameter to load pre-configured 3D protein visualizations from `.molx` session files in `static/molstar/`. Requires CORS headers on Netlify (`static/_headers` sets `Access-Control-Allow-Origin: *` for `/molstar/*`).
+**Smart embed detection:** Embed and video blocks are analyzed via `getEmbedConfig()` (in `embed-config.ts`) to detect providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and set responsive aspect ratios, min-heights, and loading strategy. Embed min-height uses `min(configured, 70vh)` to prevent overflow on mobile viewports. YouTube/Vimeo video blocks are automatically converted to embed type to prevent broken `<video>` tags. Mol* embeds use a `snapshot-url` parameter to load pre-configured 3D protein visualizations from `.molx` session files in `static/molstar/`. Requires CORS headers on Netlify (`static/_headers` sets `Access-Control-Allow-Origin: *` for `/molstar/*`). Mol* embeds use `loading="eager"` (not lazy) because iOS Safari's lazy loading breaks WebGL context initialization in iframes — the browser never retries after the initial failed visibility check.
 
 **Build-time syntax highlighting:** Code blocks are highlighted via Shiki at build time with dual-theme output (github-light/github-dark) using CSS variables. The Shiki highlighter uses a promise-cached singleton pattern (same as `createCachedFetcher`). Notion-to-Shiki language mapping handles display name differences. Unknown languages fall back to plaintext.
 
@@ -361,6 +361,7 @@ Errors are written for humans:
 | Separate backend | adapter-static. Formspree for forms. |
 | Use Neon Chartreuse as text on light bg | Background/highlight only — fails WCAG contrast |
 | Approximate/guess color space conversions | Use exact hex or OKLCH from user. If conversion needed, use programmatic tool — never eyeball |
+| Use `loading="lazy"` on WebGL iframes | Set `loading: 'eager'` in embed-config.ts — iOS Safari breaks WebGL context init with lazy loading |
 
 ## Known Limitations & Mitigations
 

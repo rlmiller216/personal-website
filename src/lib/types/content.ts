@@ -172,4 +172,6 @@ export interface ContentBlock {
 	embedAspectRatio?: string;
 	/** CSS min-height value (e.g., "500px"). */
 	embedMinHeight?: string;
+	/** Iframe loading strategy — 'eager' bypasses lazy loading for WebGL embeds that fail on iOS Safari. */
+	embedLoading?: 'lazy' | 'eager';
 }

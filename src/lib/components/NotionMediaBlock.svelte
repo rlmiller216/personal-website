@@ -58,7 +58,7 @@
 			title="Embedded content"
 			class="w-full rounded-lg border {block.embedType ? `embed-${block.embedType}` : ''}"
 			style="aspect-ratio: {block.embedAspectRatio || '16/9'}; min-height: min({block.embedMinHeight || '315px'}, 70vh)"
-			loading="lazy"
+			loading={block.embedLoading || 'lazy'}
 			allowfullscreen
 		></iframe>
 		{#if block.caption.length > 0 && hasContent(block.caption)}
