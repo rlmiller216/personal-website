@@ -287,7 +287,7 @@ Colors use hex values for brand-critical accuracy (OKLCH approximations caused c
 | Role | Typeface | Source |
 |---|---|---|
 | Headings | Bodoni Moda | Google Fonts CDN |
-| Body | Raleway | Google Fonts CDN |
+| Body | Plus Jakarta Sans | Google Fonts CDN |
 
 Font links are loaded in `app.html` `<head>`. Tailwind `@theme` maps `--font-heading` and `--font-body` to utility classes.
 

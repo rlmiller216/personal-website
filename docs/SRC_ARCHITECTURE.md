@@ -191,7 +191,7 @@ Svelte components for rendering content. Card components receive typed props; No
 
 #### `LetterSidebar.svelte` (~145 LOC)
 
-Floating RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in Raleway uppercase are vertically spread on the homepage hero, then drift to a tight stacked monogram as the user scrolls — each letter at a different rate, creating a cascading wave effect. R stays fixed at the top; L and M float toward it via exponential decay interpolation (`1 - Math.exp(-rate * dt)`) in a RAF loop. Hamburger button at bottom toggles a slide-out nav overlay (state managed by parent via `$bindable`).
+Floating RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in Plus Jakarta Sans uppercase are vertically spread on the homepage hero, then drift to a tight stacked monogram as the user scrolls — each letter at a different rate, creating a cascading wave effect. R stays fixed at the top; L and M float toward it via exponential decay interpolation (`1 - Math.exp(-rate * dt)`) in a RAF loop. Hamburger button at bottom toggles a slide-out nav overlay (state managed by parent via `$bindable`).
 
 **Key patterns:**
 - **Exponential decay scroll physics:** Letters drift toward scroll-derived targets at different rates (R=8, L=5, M=3) via `requestAnimationFrame` loop. Higher rate = snappier response. Creates a cascading wave where R arrives first and M trails behind.
@@ -257,7 +257,7 @@ The visual identity is defined in `app.css` (~240 LOC) using CSS custom properti
 - Neon Chartreuse — highlights (`.text-highlight` utility, tags, callouts)
 - Two additional palette colors for supporting roles
 
-**Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Raleway (body, weights 400–800). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px) bump all weights: body 400→500, headings→700, bold→800 to compensate for thin strokes on small/high-DPI screens.
+**Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Plus Jakarta Sans (body, weights 400–800). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px) bump all weights: body 400→700, headings→700, bold→800 to compensate for thin strokes on small/high-DPI screens.
 
 **Animations:** `fadeUp`, `fadeIn`, `gradientShift` keyframes. Stagger animation support for up to 12 children via `--stagger-index` custom property.
 
@@ -324,7 +324,7 @@ The visual identity is defined in `app.css` (~240 LOC) using CSS custom properti
 
 **External dependencies (runtime):**
 - `@lucide/svelte` — icon components (Github, Linkedin, Mail, Sun, Moon, ArrowRight, Send)
-- Google Fonts CDN — Bodoni Moda (variable) + Raleway, loaded via `<link>` in `app.html`
+- Google Fonts CDN — Bodoni Moda (variable) + Plus Jakarta Sans, loaded via `<link>` in `app.html`
 
 ---
 

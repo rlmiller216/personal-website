@@ -23,7 +23,7 @@ npx svelte-check     # type checking
 | CMS | Notion API (@notionhq/client) | Rebecca already uses Notion daily. Edit there → site rebuilds |
 | Hosting | Netlify (free tier) | Static hosting, auto-deploys on push to `main` |
 | Contact Form | Formspree | adapter-static can't do server-side form handling |
-| Typography | Bodoni Moda + Raleway (Google Fonts) | Didone serif headings + geometric sans body |
+| Typography | Bodoni Moda + Plus Jakarta Sans (Google Fonts) | Didone serif headings + geometric sans body |
 | Icons | Lucide | Standard per Development Bible |
 | Syntax Highlighting | Shiki (dev only) | Build-time code highlighting, dual-theme dark mode via CSS variables, 0 client JS |
 | Image Conversion | heic-convert (dev only) | Build-time HEIC→JPEG for iPhone uploads via Notion, 0 client JS |
@@ -74,12 +74,12 @@ Notion databases/pages
 
 ### Typography
 - **Headings:** Bodoni Moda (Didone serif, variable optical size). Bumped to font-weight 700 on mobile (< 768px) — hairline strokes vanish on small/high-DPI screens.
-- **Body:** Raleway (geometric sans-serif). Bumped to font-weight 700 (bold) on mobile — 400→500 was too subtle to notice; bold text bumped to 800 (extrabold). Weights 400–800 loaded from Google Fonts.
+- **Body:** Plus Jakarta Sans (geometric sans-serif). Bumped to font-weight 700 (bold) on mobile — naturally thicker strokes than Raleway for better iOS Retina rendering; bold text bumped to 800 (extrabold). Weights 400–800 loaded from Google Fonts.
 
 ### Font Utilities
 - `font-display` — applies Bodoni Moda. Use on non-heading elements that need the display font (e.g., footer branding `<p>`).
-- `font-body` — applies Raleway. Use on heading elements (`<h1>`–`<h4>`) that need to override the base Bodoni Moda rule.
-- Headings get Bodoni Moda from base CSS (`@layer base`). Body text gets Raleway from `body`. No inline `style="font-family:..."` — use utility classes instead.
+- `font-body` — applies Plus Jakarta Sans. Use on heading elements (`<h1>`–`<h4>`) that need to override the base Bodoni Moda rule.
+- Headings get Bodoni Moda from base CSS (`@layer base`). Body text gets Plus Jakarta Sans from `body`. No inline `style="font-family:..."` — use utility classes instead.
 
 ### Card Border Patterns
 - ProjectCard: `border-b-4 border-b-secondary` (Neon Chartreuse bottom)
@@ -100,8 +100,8 @@ Notion databases/pages
 - **Floating RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top (0px md, -12px lg), L and M drift toward it on scroll via exponential decay interpolation in a RAF loop. Each letter has a different damping rate (R=8, L=5, M=3) creating a cascading wave where R arrives first and M trails behind. Collapse range extends 1.8× beyond hero height for a slow, cinematic feel. Responsive two-tier sizing: 68px/60px font at md, 80px/72px font at lg. Hidden on mobile.
 - **Non-fixed nav**: nav scrolls away naturally on ALL screen sizes (`relative z-10 bg-transparent`). Always transparent with light text — all page headers extend behind nav via `-mt-16 pt-16 bg-hero`. Footer nav links serve as persistent navigation once the header scrolls away on mobile.
 - **MCA-style sticky section headers** on homepage: each section's heading sticks at `top-0` on all screen sizes. Title is a link with bold angular Ultra Violet arrow. No shadow on sticky headers.
-- **Angular icon convention**: all custom SVGs use `stroke-linecap="square"` + `stroke-linejoin="miter"` to match Raleway's geometric character. Applies to hamburger, section arrows, and close icons.
-- **Sidebar hamburger menu**: large angular icon (52px lg, 36px md) matching RLM letter color and width. Opens slide-out nav (w-80) with bold uppercase Raleway links, top-aligned with R. Panel is `bg-white` / `dark:bg-hero` (Deep Twilight in dark mode). fly/fade Svelte transitions, Escape dismisses, mutual exclusion with mobile menu.
+- **Angular icon convention**: all custom SVGs use `stroke-linecap="square"` + `stroke-linejoin="miter"` to match Plus Jakarta Sans's geometric character. Applies to hamburger, section arrows, and close icons.
+- **Sidebar hamburger menu**: large angular icon (52px lg, 36px md) matching RLM letter color and width. Opens slide-out nav (w-80) with bold uppercase Plus Jakarta Sans links, top-aligned with R. Panel is `bg-white` / `dark:bg-hero` (Deep Twilight in dark mode). fly/fade Svelte transitions, Escape dismisses, mutual exclusion with mobile menu.
 - **Dark mode sidebar/nav**: LetterSidebar and slide-out panel use `dark:bg-hero` (Deep Twilight) with `dark:text-hero-foreground` for letters and links. Borders switch to `dark:border-white/10`.
 - Deep Twilight page headers on all content pages with `-mt-16 pt-16` nav overlap, `text-4xl sm:text-5xl lg:text-6xl` Bodoni Moda headings, compact `py-8 sm:py-10` padding
 - Neon Chartreuse `.text-highlight` marker underline effect on last word of every page heading
@@ -377,7 +377,7 @@ Uses CSS-based configuration (`@import "tailwindcss"`) instead of v3's JS config
 - Tailwind CSS 4 setup: install `tailwindcss` + `@tailwindcss/vite`, add plugin to `vite.config.ts`, use `@import 'tailwindcss'` in `app.css`
 
 ### Google Fonts via CDN
-Bodoni Moda and Raleway load from Google Fonts CDN. Potential FOUC on slow connections. If this becomes a problem, self-host the font files in `static/fonts/`.
+Bodoni Moda and Plus Jakarta Sans load from Google Fonts CDN. Potential FOUC on slow connections. If this becomes a problem, self-host the font files in `static/fonts/`.
 
 ### Slugs Derived from Titles
 Slugs are generated at build time from Notion titles via `slugify()`. If Rebecca renames an item in Notion, old URLs break after the next build. No redirect system exists yet.
