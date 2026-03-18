@@ -15,7 +15,7 @@
 	</div>
 </div>
 
-<article class="max-w-6xl mx-auto px-6 py-12">
+<article class="max-w-6xl mx-auto px-6 pt-4 sm:pt-8 pb-12">
 	{#if data.blocks.length > 0}
 		<div class="prose max-w-none">
 			<NotionBlocks blocks={data.blocks} />

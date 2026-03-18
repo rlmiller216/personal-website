@@ -375,7 +375,6 @@ Uses CSS-based configuration (`@import "tailwindcss"`) instead of v3's JS config
 
 ### CLI Quirks
 - `npx sv create` and `npx sv add` require clean git working directory or `--skip-preflight`
-- `npx shadcn-svelte init` prompts for lib alias — pass `--lib-alias '$lib'` to skip
 - Tailwind CSS 4 setup: install `tailwindcss` + `@tailwindcss/vite`, add plugin to `vite.config.ts`, use `@import 'tailwindcss'` in `app.css`
 
 ### Google Fonts via CDN

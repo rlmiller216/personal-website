@@ -41,7 +41,7 @@
   {/if}
 </DetailHeader>
 
-<article class="max-w-6xl mx-auto px-6 py-12 animate-stagger">
+<article class="max-w-6xl mx-auto px-6 pt-4 sm:pt-8 pb-12 animate-stagger">
   {#if blocks.length > 0}
     <div class="prose max-w-none">
       <NotionBlocks {blocks} />

@@ -38,7 +38,7 @@
   {/if}
 </DetailHeader>
 
-<article class="max-w-6xl mx-auto px-6 py-12 animate-stagger">
+<article class="max-w-6xl mx-auto px-6 pt-4 sm:pt-8 pb-12 animate-stagger">
   {#if resource.whyILoveIt}
     <blockquote
       class="border-l-4 border-primary bg-primary/5 py-6 px-8 rounded-r-lg mb-8"
