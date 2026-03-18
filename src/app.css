@@ -159,7 +159,7 @@
       font-weight: 700;             /* Plus Jakarta Sans 400→700 (bold) */
     }
     h1, h2, h3, h4, .font-display {
-      font-weight: 700;             /* Bodoni 400→700 (bold) */
+      font-weight: 800;             /* Bodoni 400→800 (extrabold) — hairlines need max weight */
     }
     strong, b, .font-bold {
       font-weight: 800;             /* bold→extrabold */

@@ -73,8 +73,8 @@ Notion databases/pages
 | `#F2EDF7` | Pill Accent Light | Lighter variant used on `.bg-card` (white) backgrounds |
 
 ### Typography
-- **Headings:** Bodoni Moda (Didone serif, variable optical size). Bumped to font-weight 700 on mobile (< 768px) — hairline strokes vanish on small/high-DPI screens.
-- **Body:** Plus Jakarta Sans (geometric sans-serif). Bumped to font-weight 700 (bold) on mobile — naturally thicker strokes than Raleway for better iOS Retina rendering; bold text bumped to 800 (extrabold). Weights 400–800 loaded from Google Fonts.
+- **Headings:** Bodoni Moda (Didone serif, variable optical size). Bumped to font-weight 800 (extrabold) on mobile (< 768px) — hairline strokes need max weight on small/high-DPI screens.
+- **Body:** Plus Jakarta Sans (geometric sans-serif). Bumped to font-weight 700 (bold) on mobile — naturally thicker strokes for better iOS Retina rendering; bold text bumped to 800 (extrabold, max for Plus Jakarta Sans). Weights 400–800 loaded from Google Fonts.
 
 ### Font Utilities
 - `font-display` — applies Bodoni Moda. Use on non-heading elements that need the display font (e.g., footer branding `<p>`).
