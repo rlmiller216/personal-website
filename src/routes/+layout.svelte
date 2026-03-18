@@ -2,7 +2,9 @@
 	import '../app.css';
 	import { page } from '$app/state';
 	import { fly, fade } from 'svelte/transition';
-	import { Github, Linkedin, Mail } from '@lucide/svelte';
+	import GithubLogoIcon from 'phosphor-svelte/lib/GithubLogoIcon';
+	import LinkedinLogoIcon from 'phosphor-svelte/lib/LinkedinLogoIcon';
+	import EnvelopeSimpleIcon from 'phosphor-svelte/lib/EnvelopeSimpleIcon';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import LetterSidebar from '$lib/components/LetterSidebar.svelte';
 
@@ -93,7 +95,7 @@
 		<nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
 			<a
 				href="/"
-				class="text-2xl font-bold tracking-tight uppercase md:invisible text-hero-foreground"
+				class="text-3xl font-black tracking-tight uppercase md:invisible text-hero-foreground"
 			>
 				{data.siteName}
 			</a>
@@ -175,13 +177,13 @@
 				<!-- Social links -->
 				<div class="flex items-center gap-4">
 					<a href="https://github.com/rlmiller216" class="opacity-70 hover:opacity-100 transition-opacity" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-						<Github class="w-5 h-5" />
+						<GithubLogoIcon size={22} weight="fill" />
 					</a>
 					<a href="https://www.linkedin.com/in/rebeccalauriemiller/" class="opacity-70 hover:opacity-100 transition-opacity" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-						<Linkedin class="w-5 h-5" />
+						<LinkedinLogoIcon size={22} weight="fill" />
 					</a>
 					<a href="/contact" class="opacity-70 hover:opacity-100 transition-opacity" aria-label="Contact">
-						<Mail class="w-5 h-5" />
+						<EnvelopeSimpleIcon size={22} weight="fill" />
 					</a>
 				</div>
 			</div>
