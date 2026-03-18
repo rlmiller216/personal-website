@@ -156,7 +156,7 @@
   /* Thin strokes vanish on small/high-DPI screens — bump all weights on mobile */
   @media (max-width: 767px) {
     body {
-      font-weight: 500;             /* Raleway 400→500 (medium) */
+      font-weight: 700;             /* Raleway 400→700 (bold) */
     }
     h1, h2, h3, h4, .font-display {
       font-weight: 700;             /* Bodoni 400→700 (bold) */

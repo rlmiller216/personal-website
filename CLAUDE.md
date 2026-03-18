@@ -74,7 +74,7 @@ Notion databases/pages
 
 ### Typography
 - **Headings:** Bodoni Moda (Didone serif, variable optical size). Bumped to font-weight 700 on mobile (< 768px) — hairline strokes vanish on small/high-DPI screens.
-- **Body:** Raleway (geometric sans-serif). Bumped to font-weight 500 on mobile; bold text bumped to 800 (extrabold). Weights 400–800 loaded from Google Fonts.
+- **Body:** Raleway (geometric sans-serif). Bumped to font-weight 700 (bold) on mobile — 400→500 was too subtle to notice; bold text bumped to 800 (extrabold). Weights 400–800 loaded from Google Fonts.
 
 ### Font Utilities
 - `font-display` — applies Bodoni Moda. Use on non-heading elements that need the display font (e.g., footer branding `<p>`).
