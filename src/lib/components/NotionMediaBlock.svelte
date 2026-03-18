@@ -78,6 +78,35 @@
 		{/if}
 	</figure>
 
+{:else if block.type === 'pdf'}
+	{#if block.fileUrl}
+		<figure class="my-6">
+			<object
+				data={block.fileUrl}
+				type="application/pdf"
+				class="w-full rounded-lg border border-border"
+				style="height: min(80vh, 800px)"
+				title={block.fileName || 'PDF document'}
+			>
+				<!-- Fallback for browsers that can't embed PDFs -->
+				<div class="p-6 text-center">
+					<p class="text-muted-foreground mb-3">PDF preview not available in this browser.</p>
+					<a
+						href={block.fileUrl}
+						class="inline-flex items-center gap-2 text-primary underline decoration-1 underline-offset-2 hover:opacity-70 transition-opacity"
+						target="_blank"
+						rel="noopener noreferrer"
+					>Open PDF: {block.fileName || 'Document.pdf'}</a>
+				</div>
+			</object>
+			{#if block.caption.length > 0 && hasContent(block.caption)}
+				<figcaption class="text-sm opacity-60 mt-2 text-center">
+					{@html renderRichTextToSafeHtml(block.caption)}
+				</figcaption>
+			{/if}
+		</figure>
+	{/if}
+
 {:else if block.type === 'file'}
 	{#if block.fileUrl}
 		<div class="my-4 p-4 border rounded-lg flex items-center gap-3">

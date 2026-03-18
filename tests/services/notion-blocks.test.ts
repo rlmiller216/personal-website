@@ -20,7 +20,8 @@ vi.mock('$lib/server/services/code-highlight', () => ({
 
 // Mock image cache — passthrough (returns URL unchanged)
 vi.mock('$lib/server/services/image-cache', () => ({
-	downloadNotionImage: vi.fn((url: string) => Promise.resolve(url))
+	downloadNotionImage: vi.fn((url: string) => Promise.resolve(url)),
+	downloadNotionFile: vi.fn((url: string) => Promise.resolve(url))
 }));
 
 const { transformBlocks } = await import('$lib/server/services/notion-blocks');
@@ -367,6 +368,23 @@ describe('transformBlocks', () => {
 		expect(result[0].type).toBe('file');
 		expect(result[0].fileUrl).toBe('https://example.com/doc.pdf');
 		expect(result[0].fileName).toBe('My document');
+	});
+
+	it('transforms pdf block', async () => {
+		const blocks = [mockBlock('pdf', {
+			pdf: {
+				type: 'external',
+				external: { url: 'https://example.com/paper.pdf' },
+				caption: mockRichText('Research paper')
+			}
+		})];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('pdf');
+		expect(result[0].fileUrl).toBe('https://example.com/paper.pdf');
+		expect(result[0].fileName).toBe('Research paper');
+		expect(result[0].caption).toHaveLength(1);
 	});
 
 	it('transforms column_list block', async () => {

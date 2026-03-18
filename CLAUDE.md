@@ -138,7 +138,7 @@ src/
       NotionBlocks.svelte   → Renders ContentBlock[] as Svelte components
       NotionBlock.svelte    → Block type dispatcher → routes to sub-components
       NotionTextBlock.svelte→ Text blocks: paragraphs, headings, lists, toggles, quotes, callouts
-      NotionMediaBlock.svelte→ Media blocks: images, video, audio, code, embeds, bookmarks, files, equations
+      NotionMediaBlock.svelte→ Media blocks: images, video, audio, code, embeds, bookmarks, files, PDFs, equations
       NotionLayoutBlock.svelte→ Layout blocks: dividers, tables, column layouts, synced blocks
       notion-render-utils.ts→ renderRichTextToSafeHtml(), escapeHtml(), hasContent()
     server/
@@ -149,8 +149,8 @@ src/
         tools.service.ts    → Tool mapper + queries (uses createCachedFetcher)
         resources.service.ts→ Resource mapper + queries (uses createCachedFetcher)
         about.service.ts    → About page fetcher (uses getPageContent)
-        image-cache.ts      → Build-time Notion image downloader (dedup, hash, fallback)
-        notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[] (22+ block types)
+        image-cache.ts      → Build-time Notion file downloader (images → static/images/, PDFs/files → static/files/, dedup, hash, fallback)
+        notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[] (23+ block types incl. pdf)
         notion-block-utils.ts→ Shared transform helpers: extractRichText, extractMediaUrl, groupListItems
         embed-config.ts     → URL pattern → embed provider/aspect-ratio detection
         code-highlight.ts   → Shiki syntax highlighting (promise-cached singleton, dual-theme)
@@ -180,8 +180,8 @@ static/
 tests/
   services/
     notion.service.test.ts
-    image-cache.test.ts     → Image download, dedup, hash, fallback tests
-    notion-blocks.test.ts   → Block transform tests (22+ block types, smart embeds, Shiki)
+    image-cache.test.ts     → Image + file download, dedup, hash, content-type validation tests
+    notion-blocks.test.ts   → Block transform tests (23+ block types incl. pdf, smart embeds, Shiki)
     notion-block-utils.test.ts → Shared block utilities (extractRichText, groupListItems)
     mappers.test.ts         → Tests for mapProject, mapTool, mapResource
     slug-collisions.test.ts → Tests for warnSlugCollisions
@@ -296,11 +296,11 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 137 tests across 11 files: `notion.service.test.ts` (30) + `notion-blocks.test.ts` (24) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (5) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (13 — download, dedup, hash, Content-Type validation)
+- 144 tests across 11 files: `notion.service.test.ts` (30) + `notion-blocks.test.ts` (25) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (5) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (19 — image + file download, dedup, hash, content-type validation)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs
-- Block transform tests cover 22+ block types including smart embed detection, video→embed conversion, table custom child-fetch, column list, synced blocks, and Shiki highlighting
+- Block transform tests cover 23+ block types including PDF blocks, smart embed detection, video→embed conversion, table custom child-fetch, column list, synced blocks, and Shiki highlighting
 - Mock Notion SDK responses — no live API calls in tests
 - Run: `npm test` or `npx vitest run`
 
@@ -358,8 +358,8 @@ Errors are written for humans:
 
 ## Known Limitations & Mitigations
 
-### Image Caching (Build-Time Download)
-Notion S3 image URLs expire after ~1 hour. At build time, `image-cache.ts` downloads all Notion images to `static/images/` and rewrites URLs to permanent `/images/{hash}.ext` paths. Non-image S3 files (PDFs, audio) pass through unchanged. The dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp` copies images to `build/images/` (Vite snapshots `static/` before prerender runs). `static/images/` is gitignored.
+### File Caching (Build-Time Download)
+Notion S3 signed URLs expire after ~1 hour. At build time, `image-cache.ts` downloads all Notion S3 files: images to `static/images/` and other files (PDFs, docs, etc.) to `static/files/`. Both rewrite to permanent `/{dir}/{hash}.ext` paths. A shared `downloadS3File()` function handles both paths with a content-type safelist (rejects S3 XML/HTML error pages). The dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp` copies both `static/images/` and `static/files/` to `build/` (Vite snapshots `static/` before prerender runs). Both directories are gitignored.
 
 ### Netlify Free Tier Limits (300 credits/month)
 Each production deploy costs ~15 credits. The free tier allows ~20 deploys/month. **Do not enable scheduled build hooks** — even a 6-hourly hook would consume 2,700 credits/month. Use push-triggered deploys only, plus manual "Trigger deploy" from the Netlify dashboard for content refreshes.

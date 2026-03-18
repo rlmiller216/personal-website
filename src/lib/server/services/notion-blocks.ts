@@ -15,7 +15,7 @@ import { getChildBlocks } from './notion.service';
 import { extractRichText, extractMediaUrl, createBaseBlock, groupListItems } from './notion-block-utils';
 import { getEmbedConfig } from './embed-config';
 import { highlightCode } from './code-highlight';
-import { downloadNotionImage } from './image-cache';
+import { downloadNotionImage, downloadNotionFile } from './image-cache';
 
 /** Converts a single Notion block to a ContentBlock. */
 async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentBlock | null> {
@@ -168,15 +168,32 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 				caption: extractRichText(block.audio.caption)
 			};
 
-		case 'file':
+		case 'file': {
+			const rawFileUrl = extractMediaUrl(block.file);
+			const cachedFileUrl = await downloadNotionFile(rawFileUrl);
 			return {
 				...base,
 				type: 'file',
-				fileUrl: extractMediaUrl(block.file),
+				fileUrl: cachedFileUrl,
 				fileName: block.file.caption?.length
 					? extractRichText(block.file.caption).map((s) => s.text).join('')
 					: block.file.name ?? 'Download file'
 			};
+		}
+
+		case 'pdf': {
+			const rawPdfUrl = extractMediaUrl(block.pdf);
+			const cachedPdfUrl = await downloadNotionFile(rawPdfUrl);
+			return {
+				...base,
+				type: 'pdf',
+				fileUrl: cachedPdfUrl,
+				fileName: block.pdf.caption?.length
+					? extractRichText(block.pdf.caption).map((s) => s.text).join('')
+					: 'Document.pdf',
+				caption: extractRichText(block.pdf.caption)
+			};
+		}
 
 		case 'column_list': {
 			const columnBlocks = await getChildBlocks(block.id);

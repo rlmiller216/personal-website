@@ -190,7 +190,7 @@ For About page — transforming Notion page blocks into rendered HTML.
 │ <NotionBlocks>   │   Iterates blocks, renders each via <NotionBlock>
 │ <NotionBlock>    │   Dispatcher → routes to sub-components:
 │                  │     NotionTextBlock: paragraphs, headings, lists, toggles
-│                  │     NotionMediaBlock: images, code (Shiki), embeds, audio, files
+│                  │     NotionMediaBlock: images, code (Shiki), embeds, audio, files, PDFs
 │                  │     NotionLayoutBlock: tables, column grids, synced blocks
 │                  │   renderRichTextToSafeHtml() → XSS-safe HTML with annotations
 │                  │   Recursive for nested children (toggle, nested lists)
@@ -219,7 +219,8 @@ For About page — transforming Notion page blocks into rendered HTML.
 | `video` | `video` or → `embed` | `<video>` or `<iframe>` | No | YouTube/Vimeo → embed type |
 | `table` | `table` | `<table>` with optional `<thead>` | No* | Custom child-fetch for table_row cells |
 | `audio` | `audio` | `<audio controls>` | No | |
-| `file` | `file` | Download link | No | Skips if no URL |
+| `file` | `file` | Download link | No | S3 URLs cached via `downloadNotionFile()` |
+| `pdf` | `pdf` | `<object>` PDF viewer + fallback link | No | S3 URLs cached via `downloadNotionFile()` |
 | `column_list` | `column_list` | Responsive grid | Yes (columns) | Sequential child fetching |
 | `synced_block` | `synced_block` | Transparent wrapper | Yes (children) | Resolves synced_from source |
 | `equation` | `equation` | Monospace/italic `<div>` | No | No KaTeX (styled fallback) |

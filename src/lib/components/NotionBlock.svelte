@@ -16,7 +16,7 @@
 		'to_do', 'toggle', 'quote', 'callout'
 	]);
 	const MEDIA_TYPES = new Set([
-		'image', 'video', 'audio', 'code', 'embed', 'bookmark', 'file', 'equation'
+		'image', 'video', 'audio', 'code', 'embed', 'bookmark', 'file', 'pdf', 'equation'
 	]);
 	const LAYOUT_TYPES = new Set([
 		'divider', 'table', 'column_list', 'synced_block'

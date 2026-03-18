@@ -34,7 +34,7 @@ src/
 │   │   ├── NotionBlocks.svelte           # Iterates ContentBlock[] → renders each via NotionBlock
 │   │   ├── NotionBlock.svelte            # Block type dispatcher → routes to sub-components (~33 LOC)
 │   │   ├── NotionTextBlock.svelte        # Text blocks: paragraphs, headings, lists, toggles, quotes, callouts (~87 LOC)
-│   │   ├── NotionMediaBlock.svelte       # Media blocks: images, video, audio, code, embeds, bookmarks, files, equations (~114 LOC)
+│   │   ├── NotionMediaBlock.svelte       # Media blocks: images, video, audio, code, embeds, bookmarks, files, PDFs, equations (~130 LOC)
 │   │   ├── NotionLayoutBlock.svelte      # Layout blocks: dividers, tables, column layouts, synced blocks (~63 LOC)
 │   │   ├── notion-render-utils.ts        # renderRichTextToSafeHtml(), escapeHtml(), hasContent() (~46 LOC)
 │   │   └── ui/                           # shadcn-svelte auto-generated components
@@ -47,7 +47,7 @@ src/
 │           ├── notion-block-utils.ts     # Shared helpers: extractRichText, extractMediaUrl, groupListItems (~85 LOC)
 │           ├── embed-config.ts           # URL pattern → embed provider/aspect-ratio detection (~53 LOC)
 │           ├── code-highlight.ts         # Shiki syntax highlighting: promise-cached, dual-theme (~82 LOC)
-│           ├── image-cache.ts           # Build-time Notion image downloader: dedup Map, hash, fallback (~103 LOC)
+│           ├── image-cache.ts           # Build-time Notion file downloader: images → static/images/, PDFs/files → static/files/, dedup, hash, content-type safelist (~131 LOC)
 │           ├── projects.service.ts       # Project mapper + queries (uses createCachedFetcher)
 │           ├── tools.service.ts          # Tool mapper + queries (uses createCachedFetcher)
 │           ├── resources.service.ts      # Resource mapper + queries (uses createCachedFetcher, groupByType)
@@ -142,9 +142,9 @@ Transforms Notion API `BlockObjectResponse[]` into serializable `ContentBlock[]`
 - `notion-block-utils.ts` — `extractRichText()`, `extractMediaUrl()`, `createBaseBlock()`, `groupListItems()`
 - `embed-config.ts` — `getEmbedConfig()` detects embed providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and returns aspect ratios
 - `code-highlight.ts` — `highlightCode()` Shiki-based build-time syntax highlighting
-- `image-cache.ts` — `downloadNotionImage()`, `downloadItemImages()`, `isNotionS3Url()`, `hashUrlToFilename()`. Downloads Notion S3 images to `static/images/` at build time, deduplicates via promise Map, falls back to original URL on failure
+- `image-cache.ts` — `downloadNotionImage()`, `downloadNotionFile()`, `downloadItemImages()`, `isNotionS3Url()`, `hashUrlToFilename()`. Downloads Notion S3 images to `static/images/` and files (PDFs, etc.) to `static/files/` at build time. Shared `downloadS3File()` internal function with content-type safelist. Deduplicates via promise Map, falls back to original URL on failure.
 
-**Supported block types:** paragraph, heading_1/2/3, bulleted_list_item, numbered_list_item, to_do, toggle, quote, callout, divider, image, code, bookmark, embed, video, table, audio, file, column_list, synced_block, equation
+**Supported block types:** paragraph, heading_1/2/3, bulleted_list_item, numbered_list_item, to_do, toggle, quote, callout, divider, image, code, bookmark, embed, video, table, audio, file, pdf, column_list, synced_block, equation
 
 **Special handling:**
 - **Tables:** Custom child-fetch path (table_row blocks bypass `transformBlocks` to avoid being dropped as unsupported)
@@ -214,7 +214,7 @@ Simple iterator. Takes `blocks: ContentBlock[]` prop, renders each via `<NotionB
 
 `NotionBlock.svelte` (~33 LOC) is a thin dispatcher routing blocks to sub-components by type set:
 - `NotionTextBlock.svelte` (~87 LOC) — paragraphs, headings, lists, to_do, toggle, quote, callout
-- `NotionMediaBlock.svelte` (~114 LOC) — images, video, audio, code (Shiki), embed (responsive), bookmark, file, equation
+- `NotionMediaBlock.svelte` (~130 LOC) — images, video, audio, code (Shiki), embed (responsive), bookmark, file, pdf, equation
 - `NotionLayoutBlock.svelte` (~63 LOC) — dividers, tables, column layouts, synced blocks
 
 Shared rendering utilities in `notion-render-utils.ts` (~46 LOC):
@@ -294,7 +294,7 @@ The visual identity is defined in `app.css` (~240 LOC) using CSS custom properti
    │  Page Services      │   │       Svelte Components                 │
    │  about (33)         │   │  NotionBlock (33) → dispatcher          │
    │                     │   │    ├── NotionTextBlock (87)             │
-   └──────────┬──────────┘   │    ├── NotionMediaBlock (114)           │
+   └──────────┬──────────┘   │    ├── NotionMediaBlock (130)           │
               │              │    ├── NotionLayoutBlock (63)            │
               │              │    └── notion-render-utils (46)          │
               │              └────────────────────┬────────────────────┘
@@ -342,4 +342,4 @@ The visual identity is defined in `app.css` (~240 LOC) using CSS custom properti
 | **Tests** | **~1,000** | **11** |
 | **Total** | **~3,450** | **54** |
 
-> Tests are ~30% of total LOC. 137 tests across 11 files covering 22+ block types, image caching, float physics, XSS safety, and all service mappers.
+> Tests are ~30% of total LOC. 144 tests across 11 files covering 23+ block types (incl. pdf), image + file caching, float physics, XSS safety, and all service mappers.

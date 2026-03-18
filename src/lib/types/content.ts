@@ -103,6 +103,7 @@ export interface ContentBlock {
 		| 'table'
 		| 'audio'
 		| 'file'
+		| 'pdf'
 		| 'equation'
 		| 'column_list'
 		| 'synced_block';

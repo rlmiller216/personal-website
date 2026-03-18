@@ -180,9 +180,9 @@ All configuration is in `.env` (never committed). `.env.example` documents the c
 
 ## 5. Known Limitations & Risks
 
-### 5.1 Notion Image URLs (Cached at Build Time)
+### 5.1 Notion S3 Files (Cached at Build Time)
 
-Notion-hosted images (type `"file"`) use signed S3 URLs that expire in ~1 hour. At build time, `image-cache.ts` downloads all Notion images to `static/images/` and rewrites URLs to permanent `/images/{hash}.ext` paths. A dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp` copies images to `build/images/` (Vite snapshots `static/` before prerender runs). `static/images/` is gitignored.
+Notion-hosted files (type `"file"`) use signed S3 URLs that expire in ~1 hour. At build time, `image-cache.ts` downloads all Notion S3 files: images to `static/images/` and other files (PDFs, docs, etc.) to `static/files/`. Both are rewritten to permanent `/{dir}/{hash}.ext` paths. A shared `downloadS3File()` function handles both paths with a content-type safelist (rejects S3 XML/HTML error pages). A dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp` copies both directories to `build/` (Vite snapshots `static/` before prerender runs). Both `static/images/` and `static/files/` are gitignored.
 
 ### 5.2 Notion SDK v5 Breaking Changes
 
