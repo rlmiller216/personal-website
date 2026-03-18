@@ -258,6 +258,7 @@ describe('mapResource', () => {
 	it('maps complete properties correctly', () => {
 		const page = makePage('res-1', {
 			'Title': mockTitle('The Selfish Gene'),
+			'Description': mockRichText('A foundational text on evolutionary biology'),
 			'Type': mockSelect('Book'),
 			'Category': mockSelect('Science'),
 			'Author': mockRichText('Richard Dawkins'),
@@ -273,7 +274,7 @@ describe('mapResource', () => {
 		expect(result.id).toBe('res-1');
 		expect(result.title).toBe('The Selfish Gene');
 		expect(result.slug).toBe('the-selfish-gene');
-		expect(result.description).toBe('');
+		expect(result.description).toBe('A foundational text on evolutionary biology');
 		expect(result.type).toBe('Book');
 		expect(result.category).toBe('Science');
 		expect(result.author).toBe('Richard Dawkins');

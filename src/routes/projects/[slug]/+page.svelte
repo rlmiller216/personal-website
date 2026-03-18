@@ -23,7 +23,7 @@
   {/if}
 </svelte:head>
 
-<DetailHeader backHref="/projects" backLabel="All Projects" title={project.title}>
+<DetailHeader backHref="/projects" backLabel="All Projects" title={project.title} description={project.description}>
   {#each project.sector as s}
     <span class="rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-pill-accent-foreground bg-pill-accent">
       {s}
@@ -48,12 +48,6 @@
       alt={project.title}
       class="w-full max-h-96 object-cover rounded-lg mb-8 transition-transform duration-300 hover:scale-[1.02]"
     />
-  {/if}
-
-  {#if project.description}
-    <p class="text-lg text-muted-foreground leading-relaxed mb-8">
-      {project.description}
-    </p>
   {/if}
 
   {#if blocks.length > 0}

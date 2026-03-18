@@ -1,10 +1,11 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
 
-  let { backHref, backLabel, title, children }: {
+  let { backHref, backLabel, title, description, children }: {
     backHref: string;
     backLabel: string;
     title: string;
+    description?: string;
     children?: Snippet;
   } = $props();
 </script>
@@ -35,6 +36,12 @@
       <div class="mt-4 flex flex-wrap items-center gap-3">
         {@render children()}
       </div>
+    {/if}
+
+    {#if description}
+      <p class="mt-3 text-base text-hero-foreground/70 leading-relaxed max-w-3xl line-clamp-3">
+        {description}
+      </p>
     {/if}
   </div>
 </div>
