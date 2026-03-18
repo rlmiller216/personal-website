@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ArrowRight } from '@lucide/svelte';
+	import CardMedia from '$lib/components/CardMedia.svelte';
 	import type { Tool } from '$lib/types/content';
 
 	let { tool }: { tool: Tool } = $props();
@@ -11,11 +12,12 @@
 		hover:shadow-lg hover:-translate-y-1 bg-card border border-border"
 >
 	{#if tool.imageUrl}
-		<img
+		<CardMedia
 			src={tool.imageUrl}
+			poster={tool.posterUrl}
 			alt={tool.title}
+			isVideo={tool.isVideo}
 			class="h-44 w-full object-cover"
-			loading="lazy"
 		/>
 	{:else}
 		<div class="h-44 w-full flex items-center justify-center bg-muted/40">

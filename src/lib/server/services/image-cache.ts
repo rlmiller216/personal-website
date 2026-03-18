@@ -11,15 +11,17 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import heicConvert from 'heic-convert';
+import { isVideoUrl } from '$lib/types/content';
 
 const MODULE = '[files]';
 const IMAGE_DIR = 'static/images';
 const FILES_DIR = 'static/files';
 const KNOWN_IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']);
+const KNOWN_VIDEO_EXTS = new Set(['.mp4', '.webm', '.mov']);
 const KNOWN_FILE_EXTS = new Set(['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.pptx', '.csv', '.zip']);
 
 /** Content types that are safe to cache (reject S3 error pages which are XML/HTML). */
-const SAFE_CONTENT_TYPES = ['image/', 'application/pdf', 'application/octet-stream',
+const SAFE_CONTENT_TYPES = ['image/', 'video/', 'application/pdf', 'application/octet-stream',
 	'application/zip', 'application/vnd.', 'text/csv'];
 
 /** Dedup map: URL pathname → Promise<local path or original URL>. */
@@ -62,7 +64,7 @@ export function hashUrlToFilename(url: string): string {
 	const pathname = new URL(url).pathname;
 	const dotIdx = pathname.lastIndexOf('.');
 	const rawExt = dotIdx !== -1 ? pathname.slice(dotIdx).toLowerCase() : '';
-	const ext = KNOWN_IMAGE_EXTS.has(rawExt) || KNOWN_FILE_EXTS.has(rawExt) ? rawExt : '.jpg';
+	const ext = KNOWN_IMAGE_EXTS.has(rawExt) || KNOWN_VIDEO_EXTS.has(rawExt) || KNOWN_FILE_EXTS.has(rawExt) ? rawExt : '.jpg';
 	const hash = createHash('sha256').update(pathname).digest('hex').slice(0, 12);
 	return `${hash}${ext}`;
 }
@@ -116,8 +118,14 @@ async function downloadS3File(
 				return url;
 			}
 
-			// Reject S3 error pages (XML/HTML) but allow images, PDFs, and other files
+			// Reject S3 error pages (XML/HTML) but allow images, videos, PDFs, and other files
 			const contentType = response.headers.get('content-type') ?? '';
+			// Safety net: warn if content-type says video but extension doesn't match
+			const dotIdx = new URL(url).pathname.lastIndexOf('.');
+			const rawExt = dotIdx !== -1 ? new URL(url).pathname.slice(dotIdx).toLowerCase() : '';
+			if (contentType.startsWith('video/') && !KNOWN_VIDEO_EXTS.has(rawExt)) {
+				console.warn(`${MODULE} content-type "${contentType}" doesn't match extension "${rawExt}": ${cacheKey}`);
+			}
 			if (!isSafeContentType(contentType)) {
 				console.warn(`${MODULE} unexpected content-type "${contentType}": ${cacheKey}`);
 				return url;
@@ -144,14 +152,19 @@ async function downloadS3File(
 	return promise;
 }
 
-/** Downloads images for all items with an imageUrl property. Mutates in-place. */
-export async function downloadItemImages(
-	items: { imageUrl: string }[]
+/** Downloads media for all items with imageUrl/posterUrl properties. Mutates in-place.
+ *  Sets isVideo based on the resolved local path extension. */
+export async function downloadItemMedia(
+	items: { imageUrl: string; isVideo: boolean; posterUrl: string }[]
 ): Promise<void> {
 	await Promise.all(
 		items.map(async (item) => {
 			if (item.imageUrl) {
 				item.imageUrl = await downloadNotionImage(item.imageUrl);
+				item.isVideo = isVideoUrl(item.imageUrl);
+			}
+			if (item.posterUrl) {
+				item.posterUrl = await downloadNotionImage(item.posterUrl);
 			}
 		})
 	);

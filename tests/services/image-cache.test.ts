@@ -79,6 +79,12 @@ describe('hashUrlToFilename', () => {
 		expect(hashUrlToFilename('https://example.com/path/image.jpg?q=1')).toMatch(/\.jpg$/);
 	});
 
+	it('preserves .mp4, .webm, .mov video extensions', () => {
+		expect(hashUrlToFilename('https://example.com/path/clip.mp4?q=1')).toMatch(/\.mp4$/);
+		expect(hashUrlToFilename('https://example.com/path/clip.webm?q=1')).toMatch(/\.webm$/);
+		expect(hashUrlToFilename('https://example.com/path/clip.mov?q=1')).toMatch(/\.mov$/);
+	});
+
 	it('preserves .pdf extension', () => {
 		expect(hashUrlToFilename('https://example.com/path/paper.pdf?q=1')).toMatch(/\.pdf$/);
 	});
@@ -176,6 +182,17 @@ describe('downloadNotionImage', () => {
 
 		expect(result).toMatch(/^\/images\/[a-f0-9]{12}\.jpg$/);
 		expect(fetchMock).not.toHaveBeenCalled();
+	});
+
+	it('accepts video/mp4 content-type and writes file', async () => {
+		mockFetchOk('video/mp4');
+
+		const result = await downloadNotionImage(
+			'https://prod-files-secure.s3.us-west-2.amazonaws.com/w/b/clip.mp4?X-Amz-Expires=3600'
+		);
+
+		expect(mockWriteFile).toHaveBeenCalledOnce();
+		expect(result).toMatch(/^\/images\/[a-f0-9]{12}\.mp4$/);
 	});
 });
 

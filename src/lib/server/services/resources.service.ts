@@ -15,14 +15,15 @@ import {
 	getRichText,
 	getSelect,
 	getUrl,
-	getFileUrl
+	getMediaFiles
 } from './notion.service';
-import { downloadItemImages } from './image-cache';
+import { downloadItemMedia } from './image-cache';
 
 const MODULE = '[resources]';
 
 export function mapResource(page: PageObjectResponse): Resource {
 	const props = page.properties;
+	const media = getMediaFiles(props['Image']);
 	return {
 		id: page.id,
 		slug: slugify(getTitle(props['Title'])),
@@ -33,7 +34,9 @@ export function mapResource(page: PageObjectResponse): Resource {
 		author: getRichText(props['Author']),
 		url: getUrl(props['URL']),
 		whyILoveIt: getRichText(props['Why I Love It']),
-		imageUrl: getFileUrl(props['Image'])
+		imageUrl: media.mediaUrl,
+		isVideo: false,
+		posterUrl: media.posterUrl
 	};
 }
 
@@ -59,7 +62,7 @@ async function fetchAllResources(): Promise<Resource[]> {
 	const results = await fetchAndMap(env.NOTION_RESOURCES_DS_ID, mapResource);
 
 	warnSlugCollisions(results, MODULE);
-	await downloadItemImages(results);
+	await downloadItemMedia(results);
 
 	return results;
 }

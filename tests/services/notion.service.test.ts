@@ -12,7 +12,8 @@ import {
 	getUrl,
 	getCheckbox,
 	getNumber,
-	getFileUrl
+	getFileUrl,
+	getMediaFiles
 } from '$lib/server/services/notion.service';
 
 // --- Mock Helpers ---
@@ -211,5 +212,46 @@ describe('getFileUrl', () => {
 
 	it('returns empty for undefined property', () => {
 		expect(getFileUrl(undefined)).toBe('');
+	});
+});
+
+describe('getMediaFiles', () => {
+	it('returns single image as mediaUrl with empty posterUrl', () => {
+		const prop = mockFiles('https://s3.aws.com/photo.jpg', 'file');
+		const result = getMediaFiles(prop);
+		expect(result.mediaUrl).toBe('https://s3.aws.com/photo.jpg');
+		expect(result.posterUrl).toBe('');
+	});
+
+	it('returns single video as mediaUrl with empty posterUrl', () => {
+		const prop = {
+			id: 'files', type: 'files' as const,
+			files: [{ name: 'clip.mp4', type: 'file' as const, file: { url: 'https://s3.aws.com/clip.mp4', expiry_time: '2025-01-01T00:00:00.000Z' } }]
+		};
+		const result = getMediaFiles(prop);
+		expect(result.mediaUrl).toBe('https://s3.aws.com/clip.mp4');
+		expect(result.posterUrl).toBe('');
+	});
+
+	it('separates video + image: video as mediaUrl, image as posterUrl', () => {
+		const prop = {
+			id: 'files', type: 'files' as const,
+			files: [
+				{ name: 'clip.mp4', type: 'file' as const, file: { url: 'https://s3.aws.com/clip.mp4', expiry_time: '2025-01-01T00:00:00.000Z' } },
+				{ name: 'thumb.jpg', type: 'file' as const, file: { url: 'https://s3.aws.com/thumb.jpg', expiry_time: '2025-01-01T00:00:00.000Z' } }
+			]
+		};
+		const result = getMediaFiles(prop);
+		expect(result.mediaUrl).toBe('https://s3.aws.com/clip.mp4');
+		expect(result.posterUrl).toBe('https://s3.aws.com/thumb.jpg');
+	});
+
+	it('returns empty for undefined property', () => {
+		expect(getMediaFiles(undefined)).toEqual({ mediaUrl: '', posterUrl: '' });
+	});
+
+	it('returns empty for empty files array', () => {
+		const prop = { id: 'files', type: 'files' as const, files: [] };
+		expect(getMediaFiles(prop)).toEqual({ mediaUrl: '', posterUrl: '' });
 	});
 });

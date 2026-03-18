@@ -20,13 +20,14 @@ src/
 │   │   └── favicon.svg                   # R monogram SVG favicon
 │   │
 │   ├── types/
-│   │   └── content.ts                    # Domain interfaces: Project, Tool, Resource, ContentBlock
+│   │   └── content.ts                    # Domain interfaces: Project, Tool, Resource, ContentBlock + isVideoUrl() helper
 │   │
 │   ├── components/
 │   │   ├── ProjectCard.svelte            # Project card: hover translate-up, Ultra Violet overlay (~45 LOC)
 │   │   ├── ToolCard.svelte               # Tool card: image-forward, category badge, hover shadow (~40 LOC, used on /open-source)
 │   │   ├── ToolListItem.svelte           # Tool image card: Ultra Violet left border, hover arrow (~45 LOC, homepage)
 │   │   ├── ResourceCard.svelte           # Resource card: Neon Chartreuse bottom border, hover arrow (~45 LOC)
+│   │   ├── CardMedia.svelte              # Shared card media — renders <video> or <img> with poster + reduced-motion pause
 │   │   ├── StickySection.svelte          # Sticky section header: linked title + angular arrow (~54 LOC)
 │   │   ├── ThemeToggle.svelte            # Dark mode toggle: Sun/Moon icons, localStorage, class prop (~29 LOC)
 │   │   ├── LetterSidebar.svelte          # Floating RLM sidebar (RAF-driven scroll physics) + hamburger toggle (~170 LOC)
@@ -41,13 +42,13 @@ src/
 │   │
 │   └── server/
 │       └── services/
-│           ├── notion.service.ts         # Notion API client, property extractors, generic fetcher, createCachedFetcher, warnSlugCollisions (~263 LOC)
+│           ├── notion.service.ts         # Notion API client, property extractors (incl. getMediaFiles), generic fetcher, createCachedFetcher, warnSlugCollisions (~263 LOC)
 │           ├── page-content.ts           # getPageContent() — combines getPageBlocks() + transformBlocks()
 │           ├── notion-blocks.ts          # Block transformer: Notion API → ContentBlock[] (22+ types, ~230 LOC)
 │           ├── notion-block-utils.ts     # Shared helpers: extractRichText, extractMediaUrl, groupListItems (~85 LOC)
 │           ├── embed-config.ts           # URL pattern → embed provider/aspect-ratio detection (~53 LOC)
 │           ├── code-highlight.ts         # Shiki syntax highlighting: promise-cached, dual-theme (~82 LOC)
-│           ├── image-cache.ts           # Build-time Notion file downloader: images → static/images/, PDFs/files → static/files/, HEIC→JPEG conversion, dedup, hash (~148 LOC)
+│           ├── image-cache.ts           # Build-time Notion file downloader: images + videos → static/images/, PDFs/files → static/files/, HEIC→JPEG conversion, dedup, hash. downloadItemMedia (renamed from downloadItemImages) (~148 LOC)
 │           ├── projects.service.ts       # Project mapper + queries (uses createCachedFetcher)
 │           ├── tools.service.ts          # Tool mapper + queries (uses createCachedFetcher)
 │           ├── resources.service.ts      # Resource mapper + queries (uses createCachedFetcher, groupByType)
@@ -112,6 +113,7 @@ The single source of truth for all Notion API interactions.
 | `getCheckbox` | `(property) → boolean` | Extract checkbox state |
 | `getNumber` | `(property) → number` | Extract number value |
 | `getFileUrl` | `(property) → string` | Extract first file/external URL |
+| `getMediaFiles` | `(property) → {url, name}[]` | Extract all file URLs from files property (images + videos) |
 | `queryAllPages` | `(dataSourceId, sorts?, filter?) → PageObjectResponse[]` | Paginated data source query |
 | `fetchAndMap<T>` | `(dataSourceId, mapper, sorts?, filter?) → T[]` | Query + map in one call |
 | `getPageBlocks` | `(pageId) → BlockObjectResponse[]` | Paginated block fetching |
@@ -142,7 +144,7 @@ Transforms Notion API `BlockObjectResponse[]` into serializable `ContentBlock[]`
 - `notion-block-utils.ts` — `extractRichText()`, `extractMediaUrl()`, `createBaseBlock()`, `groupListItems()`
 - `embed-config.ts` — `getEmbedConfig()` detects embed providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and returns aspect ratios
 - `code-highlight.ts` — `highlightCode()` Shiki-based build-time syntax highlighting
-- `image-cache.ts` — `downloadNotionImage()`, `downloadNotionFile()`, `downloadItemImages()`, `isNotionS3Url()`, `hashUrlToFilename()`. Downloads Notion S3 images to `static/images/` and files (PDFs, etc.) to `static/files/` at build time. Auto-detects HEIC images (iPhone uploads) via magic bytes and converts to JPEG via `heic-convert`. Shared `downloadS3File()` internal with content-type safelist. Deduplicates via promise Map, falls back to original URL on failure.
+- `image-cache.ts` — `downloadNotionImage()`, `downloadNotionFile()`, `downloadItemMedia()` (renamed from `downloadItemImages`), `isNotionS3Url()`, `hashUrlToFilename()`. Downloads Notion S3 images and videos (mp4/webm/mov) to `static/images/` and files (PDFs, etc.) to `static/files/` at build time. Auto-detects HEIC images (iPhone uploads) via magic bytes and converts to JPEG via `heic-convert`. Shared `downloadS3File()` internal with content-type safelist (includes `video/*`). Deduplicates via promise Map, falls back to original URL on failure.
 
 **Supported block types:** paragraph, heading_1/2/3, bulleted_list_item, numbered_list_item, to_do, toggle, quote, callout, divider, image, code, bookmark, embed, video, table, audio, file, pdf, column_list, synced_block, equation
 

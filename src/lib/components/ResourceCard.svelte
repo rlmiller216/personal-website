@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ArrowRight } from '@lucide/svelte';
+	import CardMedia from '$lib/components/CardMedia.svelte';
 	import type { Resource } from '$lib/types/content';
 
 	let { resource }: { resource: Resource } = $props();
@@ -10,11 +11,12 @@
 	class="group flex items-start gap-5 rounded-lg p-5 transition-all hover:shadow-md hover:-translate-y-1 bg-card border border-border border-b-4 border-b-secondary"
 >
 	{#if resource.imageUrl}
-		<img
+		<CardMedia
 			src={resource.imageUrl}
+			poster={resource.posterUrl}
 			alt={resource.title}
+			isVideo={resource.isVideo}
 			class="h-28 w-20 shrink-0 rounded object-cover"
-			loading="lazy"
 		/>
 	{:else}
 		<div class="w-20 h-28 bg-primary/10 rounded shrink-0 flex items-center justify-center text-sm text-primary font-bold">

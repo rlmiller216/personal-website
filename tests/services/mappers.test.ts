@@ -116,6 +116,8 @@ describe('mapProject', () => {
 		expect(result.status).toBe('Active');
 		expect(result.role).toBe('Lead Scientist');
 		expect(result.imageUrl).toBe('https://s3.aws.com/cover.png');
+		expect(result.isVideo).toBe(false);
+		expect(result.posterUrl).toBe('');
 		expect(result.url).toBe('https://example.com/project');
 		expect(result.featured).toBe(true);
 		expect(result.order).toBe(3);
@@ -137,6 +139,8 @@ describe('mapProject', () => {
 		expect(result.status).toBe('');
 		expect(result.role).toBe('');
 		expect(result.imageUrl).toBe('');
+		expect(result.isVideo).toBe(false);
+		expect(result.posterUrl).toBe('');
 		expect(result.url).toBe('');
 		expect(result.featured).toBe(false);
 		expect(result.order).toBe(0);
@@ -196,6 +200,8 @@ describe('mapTool', () => {
 		expect(result.tags).toEqual(['Python', 'Biology', 'Data']);
 		expect(result.featured).toBe(true);
 		expect(result.imageUrl).toBe('https://s3.aws.com/bioparser.png');
+		expect(result.isVideo).toBe(false);
+		expect(result.posterUrl).toBe('');
 		expect(result.order).toBe(2);
 	});
 
@@ -216,6 +222,8 @@ describe('mapTool', () => {
 		expect(result.tags).toEqual([]);
 		expect(result.featured).toBe(false);
 		expect(result.imageUrl).toBe('');
+		expect(result.isVideo).toBe(false);
+		expect(result.posterUrl).toBe('');
 		expect(result.order).toBe(0);
 	});
 
@@ -270,6 +278,8 @@ describe('mapResource', () => {
 		expect(result.url).toBe('https://example.com/book');
 		expect(result.whyILoveIt).toBe('Changed how I think about evolution');
 		expect(result.imageUrl).toBe('https://s3.aws.com/book-cover.jpg');
+		expect(result.isVideo).toBe(false);
+		expect(result.posterUrl).toBe('');
 	});
 
 	it('returns graceful defaults for missing optional properties', () => {
@@ -289,6 +299,8 @@ describe('mapResource', () => {
 		expect(result.url).toBe('');
 		expect(result.whyILoveIt).toBe('');
 		expect(result.imageUrl).toBe('');
+		expect(result.isVideo).toBe(false);
+		expect(result.posterUrl).toBe('');
 	});
 
 	it('returns empty slug for empty title', () => {

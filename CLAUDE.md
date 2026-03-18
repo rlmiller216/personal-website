@@ -113,6 +113,7 @@ Notion databases/pages
 - **Feature card** for first project on homepage: full-width image with Deep Twilight gradient overlay, hover scale. Falls back to standard grid if project has no image.
 - **Varied card layouts per section**: Projects use feature card + grid (Neon Chartreuse bottom), Open Source uses image cards with Ultra Violet left border, Toolkit uses ResourceCard grid (Neon Chartreuse bottom).
 - Homepage section banding: muted → white → muted (first section gets warm beige)
+- **Autoplay video cards**: Cards support `<video autoplay loop muted playsinline>` for mp4/webm thumbnails. `CardMedia.svelte` handles video/image detection, poster frame from multi-file Notion properties, and `prefers-reduced-motion` pause (same pattern as LetterSidebar). Detection via `isVideoUrl()` on resolved local paths. Video content guidance: short clips (5-15s), < 10MB, mp4/webm preferred; `.mov` has partial browser support.
 - **Footer**: Deep Twilight background, Bodoni Moda "Rebecca L Miller, PhD" branding, "Science for Good" tagline, land acknowledgement in Bodoni Moda (`#c3bdb8` at 70% opacity, `text-base`), nav links match header styling (`font-medium text-hero-foreground/70 hover:text-hero-foreground`)
 
 ### Accessibility Constraints
@@ -120,6 +121,7 @@ Notion databases/pages
 - Ultra Violet on White Smoke: ~4.7:1 -- OK for large text; use Onyx for body text
 - Onyx on White Smoke: ~18:1 -- excellent for body text
 - Neon Chartreuse on Deep Twilight: ~10:1 -- excellent
+- Video cards respect `prefers-reduced-motion`: CardMedia pauses video when reduced motion is preferred
 
 ## Project Structure
 
@@ -131,6 +133,7 @@ src/
       ProjectCard.svelte    → Project display card
       ToolCard.svelte       → Open source tool card (used on /open-source subpage)
       ToolListItem.svelte   → Tool image card for homepage (Ultra Violet left border, hover arrow)
+      CardMedia.svelte      → Shared card media (video/image with poster + reduced-motion pause)
       ResourceCard.svelte   → Resource card
       StickySection.svelte  → Sticky section header wrapper (homepage, linked title + angular arrow)
       ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage, accepts class prop)
@@ -144,19 +147,19 @@ src/
       notion-render-utils.ts→ renderRichTextToSafeHtml(), escapeHtml(), hasContent()
     server/
       services/
-        notion.service.ts   → Notion client + generic fetcher + property extractors (incl. getSelectOrMulti) + createCachedFetcher + warnSlugCollisions
+        notion.service.ts   → Notion client + generic fetcher + property extractors (incl. getSelectOrMulti, getMediaFiles) + createCachedFetcher + warnSlugCollisions
         page-content.ts     → getPageContent() — combines getPageBlocks() + transformBlocks()
         projects.service.ts → Project mapper + queries (uses createCachedFetcher)
         tools.service.ts    → Tool mapper + queries (uses createCachedFetcher)
         resources.service.ts→ Resource mapper + queries (uses createCachedFetcher)
         about.service.ts    → About page fetcher (uses getPageContent)
-        image-cache.ts      → Build-time Notion file downloader (images → static/images/, PDFs/files → static/files/, dedup, hash, fallback)
+        image-cache.ts      → Build-time Notion media downloader (images + video → static/images/, PDFs/files → static/files/, dedup, hash, HEIC→JPEG, fallback)
         notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[] (23+ block types incl. pdf)
         notion-block-utils.ts→ Shared transform helpers: extractRichText, extractMediaUrl, groupListItems
         embed-config.ts     → URL pattern → embed provider/aspect-ratio detection
         code-highlight.ts   → Shiki syntax highlighting (promise-cached singleton, dual-theme)
     types/
-      content.ts            → Project, Tool, Resource, ContentBlock interfaces + slugify()
+      content.ts            → Project, Tool, Resource, ContentBlock interfaces + slugify() + isVideoUrl()
   routes/
     +layout.svelte          → Shared nav + footer + SEO meta + LetterSidebar
     +layout.server.ts       → Site metadata from env vars
@@ -181,7 +184,7 @@ static/
 tests/
   services/
     notion.service.test.ts
-    image-cache.test.ts     → Image + file download, dedup, hash, content-type validation tests
+    image-cache.test.ts     → Image, video + file download, dedup, hash, content-type validation tests
     notion-blocks.test.ts   → Block transform tests (23+ block types incl. pdf, smart embeds, Shiki)
     notion-block-utils.test.ts → Shared block utilities (extractRichText, groupListItems)
     mappers.test.ts         → Tests for mapProject, mapTool, mapResource
@@ -189,7 +192,7 @@ tests/
     embed-config.test.ts    → Embed provider detection (YouTube, Miro, Mol*, etc.)
     code-highlight.test.ts  → Shiki highlighting (language mapping, fallbacks)
   types/
-    content.test.ts         → slugify() and type interface tests
+    content.test.ts         → slugify(), isVideoUrl(), and type interface tests
   components/
     notion-render-utils.test.ts → XSS-safe rich text rendering
     float-physics.test.ts       → Exponential decay interpolation (smoothDamp)
@@ -221,7 +224,7 @@ tests/
 | Sector | Select/Multi-select | Product, Paper, Patent, Prototype (read via `getSelectOrMulti()`) |
 | Status | Select | Active, Completed, Archived |
 | Role | Text | Your role |
-| Image | Files | Cover image |
+| Image | Files | Cover image or video. Upload video + thumbnail for poster support. |
 | URL | URL | Link to project |
 | Featured | Checkbox | Show on homepage? |
 | Order | Number | Display order |
@@ -297,7 +300,7 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 144 tests across 11 files: `notion.service.test.ts` (30) + `notion-blocks.test.ts` (25) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (5) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (19 — image + file download, dedup, hash, content-type validation)
+- 158 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (25) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (21 — image + video + file download, dedup, hash, content-type validation)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs
@@ -359,8 +362,8 @@ Errors are written for humans:
 
 ## Known Limitations & Mitigations
 
-### File Caching (Build-Time Download)
-Notion S3 signed URLs expire after ~1 hour. At build time, `image-cache.ts` downloads all Notion S3 files: images to `static/images/` and other files (PDFs, docs, etc.) to `static/files/`. Both rewrite to permanent `/{dir}/{hash}.ext` paths. A shared `downloadS3File()` function handles both paths with a content-type safelist (rejects S3 XML/HTML error pages). HEIC images (iPhone uploads via Notion) are auto-detected by magic bytes and converted to JPEG via `heic-convert`. The dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp -f` copies file contents (not dirs) from `static/images/*` and `static/files/*` to `build/` — using `*` glob avoids nested directories when Vite's snapshot already created the target dir. Both directories are gitignored. The `handleHttpError` in `svelte.config.js` ignores 404s for `/images/` and `/files/` paths during prerender (files are downloaded mid-prerender, after Vite's snapshot).
+### Media Caching (Build-Time Download)
+Notion S3 signed URLs expire after ~1 hour. At build time, `image-cache.ts` downloads all Notion S3 files: images and videos to `static/images/` and other files (PDFs, docs, etc.) to `static/files/`. Both rewrite to permanent `/{dir}/{hash}.ext` paths. A shared `downloadS3File()` function handles both paths with a content-type safelist (rejects S3 XML/HTML error pages). Videos (mp4, webm, mov) are cached alongside images in `static/images/`. HEIC images (iPhone uploads via Notion) are auto-detected by magic bytes and converted to JPEG via `heic-convert`. The dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp -f` copies file contents (not dirs) from `static/images/*` and `static/files/*` to `build/` — using `*` glob avoids nested directories when Vite's snapshot already created the target dir. Both directories are gitignored. The `handleHttpError` in `svelte.config.js` ignores 404s for `/images/` and `/files/` paths during prerender (files are downloaded mid-prerender, after Vite's snapshot).
 
 ### Netlify Free Tier Limits (300 credits/month)
 Each production deploy costs ~15 credits. The free tier allows ~20 deploys/month. **Do not enable scheduled build hooks** — even a 6-hourly hook would consume 2,700 credits/month. Use push-triggered deploys only, plus manual "Trigger deploy" from the Netlify dashboard for content refreshes.

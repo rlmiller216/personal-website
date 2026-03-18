@@ -11,6 +11,19 @@ export function slugify(title: string): string {
 		.replace(/^-|-$/g, '');
 }
 
+const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.mov'];
+
+/** True if the URL points to a video file based on extension. */
+export function isVideoUrl(url: string): boolean {
+	if (!url) return false;
+	try {
+		const pathname = new URL(url, 'https://placeholder').pathname.toLowerCase();
+		return VIDEO_EXTENSIONS.some((ext) => pathname.endsWith(ext));
+	} catch {
+		return false;
+	}
+}
+
 /** A professional project from the Projects database. */
 export interface Project {
 	id: string;
@@ -21,6 +34,8 @@ export interface Project {
 	status: string;
 	role: string;
 	imageUrl: string;
+	isVideo: boolean;
+	posterUrl: string;
 	url: string;
 	featured: boolean;
 	order: number;
@@ -39,6 +54,8 @@ export interface Tool {
 	tags: string[];
 	featured: boolean;
 	imageUrl: string;
+	isVideo: boolean;
+	posterUrl: string;
 	order: number;
 }
 
@@ -54,6 +71,8 @@ export interface Resource {
 	url: string;
 	whyILoveIt: string;
 	imageUrl: string;
+	isVideo: boolean;
+	posterUrl: string;
 }
 
 /** Rich text annotation from Notion. */

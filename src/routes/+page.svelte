@@ -4,6 +4,7 @@
 	import ToolListItem from '$lib/components/ToolListItem.svelte';
 	import ResourceCard from '$lib/components/ResourceCard.svelte';
 	import StickySection from '$lib/components/StickySection.svelte';
+	import CardMedia from '$lib/components/CardMedia.svelte';
 
 	let { data } = $props();
 
@@ -32,9 +33,9 @@
 
 	// Feature card logic — must be $derived in script, not {@const} in template
 	const firstProject = $derived(data.featuredProjects[0]);
-	const hasFeatureImage = $derived(firstProject?.imageUrl);
+	const hasFeatureMedia = $derived(firstProject?.imageUrl);
 	const gridProjects = $derived(
-		hasFeatureImage ? data.featuredProjects.slice(1) : data.featuredProjects
+		hasFeatureMedia ? data.featuredProjects.slice(1) : data.featuredProjects
 	);
 </script>
 
@@ -62,16 +63,18 @@
 <!-- Featured Projects — White band with feature card + grid -->
 {#if data.featuredProjects.length > 0}
 	<StickySection title="FEATURED" highlightWord="PROJECTS" href="/projects" variant="muted">
-		<!-- Feature card: only if first project has an image -->
-		{#if hasFeatureImage}
+		<!-- Feature card: only if first project has media (image or video) -->
+		{#if hasFeatureMedia}
 			<a
 				href={'/projects/' + firstProject.slug}
 				class="group block relative overflow-hidden rounded-lg mb-8"
 			>
 				<!-- No loading="lazy" — feature card is above the fold -->
-				<img
+				<CardMedia
 					src={firstProject.imageUrl}
+					poster={firstProject.posterUrl}
 					alt={firstProject.title}
+					isVideo={firstProject.isVideo}
 					class="w-full h-64 sm:h-80 lg:h-96 object-cover transition-transform duration-300 group-hover:scale-105"
 				/>
 				<!-- Deep Twilight gradient overlay — uses site palette, not generic black -->
@@ -100,7 +103,7 @@
 			</a>
 		{/if}
 
-		<!-- Remaining projects in grid (or all projects if no feature image) -->
+		<!-- Remaining projects in grid (or all projects if no feature media) -->
 		{#if gridProjects.length > 0}
 			<div class="grid gap-6 sm:grid-cols-2 {gridProjects.length >= 3 ? 'lg:grid-cols-3' : ''} animate-stagger">
 				{#each gridProjects as project}
