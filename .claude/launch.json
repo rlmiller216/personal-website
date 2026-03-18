@@ -6,6 +6,12 @@
       "runtimeExecutable": "/Users/admin/local/nodejs/node-v22.15.0-darwin-arm64/bin/node",
       "runtimeArgs": ["node_modules/.bin/vite", "dev"],
       "port": 5173
+    },
+    {
+      "name": "preview",
+      "runtimeExecutable": "/Users/admin/local/nodejs/node-v22.15.0-darwin-arm64/bin/node",
+      "runtimeArgs": ["node_modules/.bin/vite", "preview", "--port", "4173"],
+      "port": 4173
     }
   ]
 }

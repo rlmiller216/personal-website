@@ -10,6 +10,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
+import heicConvert from 'heic-convert';
 
 const MODULE = '[files]';
 const IMAGE_DIR = 'static/images';
@@ -34,6 +35,26 @@ export function isNotionS3Url(url: string): boolean {
 /** True if the content-type is safe to cache (not an error page). */
 function isSafeContentType(contentType: string): boolean {
 	return SAFE_CONTENT_TYPES.some((prefix) => contentType.startsWith(prefix));
+}
+
+/** HEIC magic bytes: offset 4 = "ftyp", offset 8 = "heic" or "heix" or "mif1". */
+function isHeicBuffer(buf: Buffer): boolean {
+	if (buf.length < 12) return false;
+	const ftyp = buf.toString('ascii', 4, 8);
+	const brand = buf.toString('ascii', 8, 12);
+	return ftyp === 'ftyp' && (brand === 'heic' || brand === 'heix' || brand === 'mif1');
+}
+
+/** Convert HEIC buffer to JPEG. Returns original buffer if conversion fails. */
+async function convertHeicToJpeg(buf: Buffer, cacheKey: string): Promise<Buffer> {
+	try {
+		const result = await heicConvert({ buffer: buf, format: 'JPEG', quality: 0.9 });
+		console.log(`${MODULE} converted HEIC → JPEG: ${cacheKey}`);
+		return Buffer.from(result);
+	} catch (err) {
+		console.warn(`${MODULE} HEIC conversion failed, keeping original: ${cacheKey}`, err);
+		return buf;
+	}
 }
 
 /** Deterministic filename from URL path (ignores query params / signatures). */
@@ -102,8 +123,15 @@ async function downloadS3File(
 				return url;
 			}
 
-			const buffer = await response.arrayBuffer();
-			await writeFile(filePath, Buffer.from(buffer));
+			let buffer = Buffer.from(await response.arrayBuffer());
+
+			// HEIC images (from iPhone uploads) are unrenderable in browsers.
+			// Detect via magic bytes and convert to JPEG.
+			if (isHeicBuffer(buffer)) {
+				buffer = await convertHeicToJpeg(buffer, cacheKey);
+			}
+
+			await writeFile(filePath, buffer);
 			console.log(`${MODULE} cached: ${filename}`);
 			return `${publicPrefix}${filename}`;
 		} catch (err) {

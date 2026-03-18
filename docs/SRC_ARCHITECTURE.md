@@ -47,7 +47,7 @@ src/
 │           ├── notion-block-utils.ts     # Shared helpers: extractRichText, extractMediaUrl, groupListItems (~85 LOC)
 │           ├── embed-config.ts           # URL pattern → embed provider/aspect-ratio detection (~53 LOC)
 │           ├── code-highlight.ts         # Shiki syntax highlighting: promise-cached, dual-theme (~82 LOC)
-│           ├── image-cache.ts           # Build-time Notion file downloader: images → static/images/, PDFs/files → static/files/, dedup, hash, content-type safelist (~131 LOC)
+│           ├── image-cache.ts           # Build-time Notion file downloader: images → static/images/, PDFs/files → static/files/, HEIC→JPEG conversion, dedup, hash (~148 LOC)
 │           ├── projects.service.ts       # Project mapper + queries (uses createCachedFetcher)
 │           ├── tools.service.ts          # Tool mapper + queries (uses createCachedFetcher)
 │           ├── resources.service.ts      # Resource mapper + queries (uses createCachedFetcher, groupByType)
@@ -142,7 +142,7 @@ Transforms Notion API `BlockObjectResponse[]` into serializable `ContentBlock[]`
 - `notion-block-utils.ts` — `extractRichText()`, `extractMediaUrl()`, `createBaseBlock()`, `groupListItems()`
 - `embed-config.ts` — `getEmbedConfig()` detects embed providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and returns aspect ratios
 - `code-highlight.ts` — `highlightCode()` Shiki-based build-time syntax highlighting
-- `image-cache.ts` — `downloadNotionImage()`, `downloadNotionFile()`, `downloadItemImages()`, `isNotionS3Url()`, `hashUrlToFilename()`. Downloads Notion S3 images to `static/images/` and files (PDFs, etc.) to `static/files/` at build time. Shared `downloadS3File()` internal function with content-type safelist. Deduplicates via promise Map, falls back to original URL on failure.
+- `image-cache.ts` — `downloadNotionImage()`, `downloadNotionFile()`, `downloadItemImages()`, `isNotionS3Url()`, `hashUrlToFilename()`. Downloads Notion S3 images to `static/images/` and files (PDFs, etc.) to `static/files/` at build time. Auto-detects HEIC images (iPhone uploads) via magic bytes and converts to JPEG via `heic-convert`. Shared `downloadS3File()` internal with content-type safelist. Deduplicates via promise Map, falls back to original URL on failure.
 
 **Supported block types:** paragraph, heading_1/2/3, bulleted_list_item, numbered_list_item, to_do, toggle, quote, callout, divider, image, code, bookmark, embed, video, table, audio, file, pdf, column_list, synced_block, equation
 

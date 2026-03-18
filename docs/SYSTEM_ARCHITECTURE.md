@@ -53,7 +53,7 @@ Personal Website v0.1.0
 ├── src/lib/types/            ~149 LOC — Domain type definitions
 ├── src/routes/               ~550 LOC — 9 page routes + layouts + error page
 ├── src/app.css               ~240 LOC — Design system tokens, typography, animations
-├── tests/                  ~1,000 LOC — Vitest unit tests (137 tests across 11 files)
+├── tests/                  ~1,000 LOC — Vitest unit tests (144 tests across 11 files)
 ├── docs/                              — Architecture docs + product requirements
 └── static/                            — Favicon, robots.txt, 404, Mol* sessions, Netlify headers
 ```
@@ -182,7 +182,7 @@ All configuration is in `.env` (never committed). `.env.example` documents the c
 
 ### 5.1 Notion S3 Files (Cached at Build Time)
 
-Notion-hosted files (type `"file"`) use signed S3 URLs that expire in ~1 hour. At build time, `image-cache.ts` downloads all Notion S3 files: images to `static/images/` and other files (PDFs, docs, etc.) to `static/files/`. Both are rewritten to permanent `/{dir}/{hash}.ext` paths. A shared `downloadS3File()` function handles both paths with a content-type safelist (rejects S3 XML/HTML error pages). A dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp` copies both directories to `build/` (Vite snapshots `static/` before prerender runs). Both `static/images/` and `static/files/` are gitignored.
+Notion-hosted files (type `"file"`) use signed S3 URLs that expire in ~1 hour. At build time, `image-cache.ts` downloads all Notion S3 files: images to `static/images/` and other files (PDFs, docs, etc.) to `static/files/`. Both are rewritten to permanent `/{dir}/{hash}.ext` paths. HEIC images (common from iPhone uploads via Notion) are auto-detected by magic bytes and converted to JPEG via `heic-convert`. A shared `downloadS3File()` function handles both paths with a content-type safelist (rejects S3 XML/HTML error pages). A dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp -f` copies file contents from `static/images/*` and `static/files/*` to `build/` — uses glob (`*`) instead of `cp -r` to avoid nested directories when Vite's static snapshot already created the target. Both `static/images/` and `static/files/` are gitignored.
 
 ### 5.2 Notion SDK v5 Breaking Changes
 

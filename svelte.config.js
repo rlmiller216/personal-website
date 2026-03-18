@@ -12,7 +12,9 @@ const config = {
 			// Images downloaded during prerender land in static/images/ but miss
 			// Vite's earlier snapshot of static/. Post-build cp handles this.
 			handleHttpError: ({ path, message }) => {
-				if (path.startsWith('/images/')) return;
+				// Files downloaded during prerender land in static/ but miss
+				// Vite's earlier snapshot. Post-build cp handles this.
+				if (path.startsWith('/images/') || path.startsWith('/files/')) return;
 				throw new Error(message);
 			}
 		}

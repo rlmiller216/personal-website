@@ -26,6 +26,7 @@ npx svelte-check     # type checking
 | Typography | Bodoni Moda + Raleway (Google Fonts) | Didone serif headings + geometric sans body |
 | Icons | Lucide | Standard per Development Bible |
 | Syntax Highlighting | Shiki (dev only) | Build-time code highlighting, dual-theme dark mode via CSS variables, 0 client JS |
+| Image Conversion | heic-convert (dev only) | Build-time HEIC→JPEG for iPhone uploads via Notion, 0 client JS |
 
 ## Architecture
 
@@ -359,7 +360,7 @@ Errors are written for humans:
 ## Known Limitations & Mitigations
 
 ### File Caching (Build-Time Download)
-Notion S3 signed URLs expire after ~1 hour. At build time, `image-cache.ts` downloads all Notion S3 files: images to `static/images/` and other files (PDFs, docs, etc.) to `static/files/`. Both rewrite to permanent `/{dir}/{hash}.ext` paths. A shared `downloadS3File()` function handles both paths with a content-type safelist (rejects S3 XML/HTML error pages). The dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp` copies both `static/images/` and `static/files/` to `build/` (Vite snapshots `static/` before prerender runs). Both directories are gitignored.
+Notion S3 signed URLs expire after ~1 hour. At build time, `image-cache.ts` downloads all Notion S3 files: images to `static/images/` and other files (PDFs, docs, etc.) to `static/files/`. Both rewrite to permanent `/{dir}/{hash}.ext` paths. A shared `downloadS3File()` function handles both paths with a content-type safelist (rejects S3 XML/HTML error pages). HEIC images (iPhone uploads via Notion) are auto-detected by magic bytes and converted to JPEG via `heic-convert`. The dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp -f` copies file contents (not dirs) from `static/images/*` and `static/files/*` to `build/` — using `*` glob avoids nested directories when Vite's snapshot already created the target dir. Both directories are gitignored. The `handleHttpError` in `svelte.config.js` ignores 404s for `/images/` and `/files/` paths during prerender (files are downloaded mid-prerender, after Vite's snapshot).
 
 ### Netlify Free Tier Limits (300 credits/month)
 Each production deploy costs ~15 credits. The free tier allows ~20 deploys/month. **Do not enable scheduled build hooks** — even a 6-hourly hook would consume 2,700 credits/month. Use push-triggered deploys only, plus manual "Trigger deploy" from the Netlify dashboard for content refreshes.
