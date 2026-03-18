@@ -1,9 +1,8 @@
-// Resources listing — fetches all resources and groups by type.
+// Resources listing — fetches all resources ordered by Order column.
 
-import { getAllResources, groupByType } from '$lib/server/services/resources.service';
+import { getAllResources } from '$lib/server/services/resources.service';
 
 export async function load() {
 	const resources = await getAllResources();
-	const grouped = groupByType(resources);
-	return { grouped };
+	return { resources };
 }

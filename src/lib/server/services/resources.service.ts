@@ -15,6 +15,8 @@ import {
 	getRichText,
 	getSelect,
 	getUrl,
+	getCheckbox,
+	getNumber,
 	getMediaFiles
 } from './notion.service';
 import { downloadItemMedia } from './image-cache';
@@ -36,19 +38,10 @@ export function mapResource(page: PageObjectResponse): Resource {
 		whyILoveIt: getRichText(props['Why I Love It']),
 		imageUrl: media.mediaUrl,
 		isVideo: false,
-		posterUrl: media.posterUrl
+		posterUrl: media.posterUrl,
+		order: getNumber(props['Order']),
+		featured: getCheckbox(props['Featured'])
 	};
-}
-
-/** Groups resources by their Type property (Book, Website, Podcast, etc.). */
-export function groupByType(resources: Resource[]): Record<string, Resource[]> {
-	const groups: Record<string, Resource[]> = {};
-	for (const resource of resources) {
-		const type = resource.type || 'Other';
-		if (!groups[type]) groups[type] = [];
-		groups[type].push(resource);
-	}
-	return groups;
 }
 
 export const getAllResources = createCachedFetcher(fetchAllResources);
@@ -59,12 +52,19 @@ async function fetchAllResources(): Promise<Resource[]> {
 		return [];
 	}
 
-	const results = await fetchAndMap(env.NOTION_RESOURCES_DS_ID, mapResource);
+	const results = await fetchAndMap(env.NOTION_RESOURCES_DS_ID, mapResource, [
+		{ property: 'Order', direction: 'ascending' }
+	]);
 
 	warnSlugCollisions(results, MODULE);
 	await downloadItemMedia(results);
 
 	return results;
+}
+
+export async function getFeaturedResources(): Promise<Resource[]> {
+	const all = await getAllResources();
+	return all.filter(r => r.featured);
 }
 
 export async function getResourceBySlug(slug: string): Promise<Resource | null> {

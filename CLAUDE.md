@@ -253,6 +253,8 @@ tests/
 | URL | URL | Link |
 | Why I Love It | Rich text | Personal recommendation |
 | Image | Files | Cover image |
+| Featured | Checkbox | Show on homepage? |
+| Order | Number | Display order |
 
 ### Notion SDK v5
 - Uses `dataSources.query()` with `data_source_id` (NOT the removed `databases.query()`)

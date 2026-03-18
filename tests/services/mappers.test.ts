@@ -263,7 +263,9 @@ describe('mapResource', () => {
 			'Author': mockRichText('Richard Dawkins'),
 			'URL': mockUrl('https://example.com/book'),
 			'Why I Love It': mockRichText('Changed how I think about evolution'),
-			'Image': mockFiles('https://s3.aws.com/book-cover.jpg')
+			'Image': mockFiles('https://s3.aws.com/book-cover.jpg'),
+			'Featured': mockCheckbox(true),
+			'Order': mockNumber(5)
 		});
 
 		const result = mapResource(page);
@@ -280,6 +282,8 @@ describe('mapResource', () => {
 		expect(result.imageUrl).toBe('https://s3.aws.com/book-cover.jpg');
 		expect(result.isVideo).toBe(false);
 		expect(result.posterUrl).toBe('');
+		expect(result.featured).toBe(true);
+		expect(result.order).toBe(5);
 	});
 
 	it('returns graceful defaults for missing optional properties', () => {
@@ -301,6 +305,8 @@ describe('mapResource', () => {
 		expect(result.imageUrl).toBe('');
 		expect(result.isVideo).toBe(false);
 		expect(result.posterUrl).toBe('');
+		expect(result.featured).toBe(false);
+		expect(result.order).toBe(0);
 	});
 
 	it('returns empty slug for empty title', () => {

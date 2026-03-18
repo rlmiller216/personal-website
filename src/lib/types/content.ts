@@ -73,6 +73,8 @@ export interface Resource {
 	imageUrl: string;
 	isVideo: boolean;
 	posterUrl: string;
+	order: number;
+	featured: boolean;
 }
 
 /** Rich text annotation from Notion. */
