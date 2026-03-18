@@ -30,7 +30,7 @@ export function mapResource(page: PageObjectResponse): Resource {
 		id: page.id,
 		slug: slugify(getTitle(props['Title'])),
 		title: getTitle(props['Title']),
-		description: '',
+		description: getRichText(props['Description']),
 		type: getSelect(props['Type']),
 		category: getSelect(props['Category']),
 		author: getRichText(props['Author']),

@@ -20,10 +20,15 @@
   {/if}
 </svelte:head>
 
-<DetailHeader backHref="/resources" backLabel="All Resources" title={resource.title}>
+<DetailHeader backHref="/resources" backLabel="All Resources" title={resource.title} description={resource.description}>
   {#if resource.type}
     <span class="rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-pill-accent-foreground bg-pill-accent">
       {resource.type}
+    </span>
+  {/if}
+  {#if resource.category}
+    <span class="rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-pill-accent-foreground bg-pill-accent">
+      {resource.category}
     </span>
   {/if}
   {#if resource.author}

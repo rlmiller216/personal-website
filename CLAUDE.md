@@ -57,7 +57,7 @@ Notion databases/pages
 
 **XSS contract:** All rich text rendering uses `renderRichTextToSafeHtml()` (in `notion-render-utils.ts`) which passes ALL user text through `escapeHtml()` before annotation wrapping. Never bypass this for `{@html}` content.
 
-**Detail pages** use `getPageContent()` to render Notion page content below structured metadata. `slugify()` in `content.ts` generates URL-safe slugs from titles.
+**Detail pages** use `getPageContent()` to render Notion page content below structured metadata. `slugify()` in `content.ts` generates URL-safe slugs from titles. All detail page headers follow a standardized structure: title, pills row (Tier-1 category + Tier-2 tags + role/author in one flex-wrap row), and description subtitle — all rendered inside the Deep Twilight header via `DetailHeader`'s children slot and `description` prop.
 
 ## Design System
 
@@ -138,7 +138,7 @@ src/
       StickySection.svelte  → Sticky section header wrapper (homepage, linked title + angular arrow)
       ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage, accepts class prop)
       LetterSidebar.svelte  → Floating RLM sidebar (RAF-driven exponential decay scroll physics) + hamburger menu toggle ($bindable)
-      DetailHeader.svelte   → Shared detail page header (back link, title, badge slot)
+      DetailHeader.svelte   → Shared detail page header (back link, title, pills slot, optional description subtitle)
       NotionBlocks.svelte   → Renders ContentBlock[] as Svelte components
       NotionBlock.svelte    → Block type dispatcher → routes to sub-components
       NotionTextBlock.svelte→ Text blocks: paragraphs, headings, lists, toggles, quotes, callouts
@@ -247,6 +247,7 @@ tests/
 | Property | Type | Purpose |
 |----------|------|---------|
 | Title | Title | Name |
+| Description | Rich text | Short description |
 | Type | Select | Book, Website, Podcast, Course, Newsletter |
 | Category | Select | Science, Philosophy, Food, etc. |
 | Author | Text | Creator |
