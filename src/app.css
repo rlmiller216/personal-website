@@ -139,7 +139,7 @@
 	font-family: 'Bodoni Moda', serif;
 }
 @utility font-body {
-	font-family: 'Raleway', sans-serif;
+	font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 @layer base {
@@ -148,7 +148,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
   h1, h2, h3, h4 {
     font-family: 'Bodoni Moda', serif;
@@ -156,7 +156,7 @@
   /* Thin strokes vanish on small/high-DPI screens — bump all weights on mobile */
   @media (max-width: 767px) {
     body {
-      font-weight: 700;             /* Raleway 400→700 (bold) */
+      font-weight: 700;             /* Plus Jakarta Sans 400→700 (bold) */
     }
     h1, h2, h3, h4, .font-display {
       font-weight: 700;             /* Bodoni 400→700 (bold) */

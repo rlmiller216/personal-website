@@ -34,7 +34,7 @@
 					text-hero dark:text-hero-foreground hover:text-primary transition-colors uppercase tracking-wide"
 			>
 				{#if title}{title} {/if}<span class="text-highlight">{highlightWord}</span>
-				<!-- Sharp angular arrow — matches Raleway's geometric character -->
+				<!-- Sharp angular arrow — matches Plus Jakarta Sans's geometric character -->
 				<svg
 					class="h-9 w-9 md:h-11 md:w-11 text-primary self-center
 						transition-transform group-hover:translate-x-2"
