@@ -42,14 +42,6 @@
 </DetailHeader>
 
 <article class="max-w-6xl mx-auto px-6 py-12 animate-stagger">
-  {#if project.imageUrl}
-    <img
-      src={project.imageUrl}
-      alt={project.title}
-      class="w-full max-h-96 object-cover rounded-lg mb-8 transition-transform duration-300 hover:scale-[1.02]"
-    />
-  {/if}
-
   {#if blocks.length > 0}
     <div class="prose max-w-none">
       <NotionBlocks {blocks} />

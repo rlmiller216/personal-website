@@ -57,7 +57,7 @@ Notion databases/pages
 
 **XSS contract:** All rich text rendering uses `renderRichTextToSafeHtml()` (in `notion-render-utils.ts`) which passes ALL user text through `escapeHtml()` before annotation wrapping. Never bypass this for `{@html}` content.
 
-**Detail pages** use `getPageContent()` to render Notion page content below structured metadata. `slugify()` in `content.ts` generates URL-safe slugs from titles. All detail page headers follow a standardized structure: title, pills row (Tier-1 category + Tier-2 tags + role/author in one flex-wrap row), and description subtitle — all rendered inside the Deep Twilight header via `DetailHeader`'s children slot and `description` prop.
+**Detail pages** use `getPageContent()` to render Notion page content below structured metadata. `slugify()` in `content.ts` generates URL-safe slugs from titles. All detail page headers follow a standardized structure: title, pills row (Tier-1 category + Tier-2 tags + role/author in one flex-wrap row), and description subtitle — all rendered inside the Deep Twilight header via `DetailHeader`'s children slot and `description` prop. **Database `Image` property** = card thumbnails + `og:image` meta tag only — never rendered visually on detail pages. Detail page media comes from Notion page content (via `NotionBlocks`). If Rebecca wants an image/video on a detail page, she adds it as a block in Notion.
 
 ## Design System
 
@@ -363,6 +363,7 @@ Errors are written for humans:
 | Use Neon Chartreuse as text on light bg | Background/highlight only — fails WCAG contrast |
 | Approximate/guess color space conversions | Use exact hex or OKLCH from user. If conversion needed, use programmatic tool — never eyeball |
 | Use `loading="lazy"` on WebGL iframes | Set `loading: 'eager'` in embed-config.ts — iOS Safari breaks WebGL context init with lazy loading |
+| Render database Image on detail pages | Database Image = cards + og:image only. Detail page media comes from NotionBlocks |
 
 ## Known Limitations & Mitigations
 

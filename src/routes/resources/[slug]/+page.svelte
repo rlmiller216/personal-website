@@ -39,46 +39,23 @@
 </DetailHeader>
 
 <article class="max-w-6xl mx-auto px-6 py-12 animate-stagger">
-  <!-- Side-by-side layout: image left, "Why I Love It" + Notion content right -->
-  {#if resource.imageUrl}
-    <div class="flex flex-col sm:flex-row gap-8 mb-8">
-      <img
-        src={resource.imageUrl}
-        alt={resource.title}
-        class="shrink-0 w-full sm:w-56 md:w-64 max-h-80 object-contain rounded-lg self-start"
-      />
-      <div class="flex-1 min-w-0">
-        {#if resource.whyILoveIt}
-          <p class="text-lg text-foreground/90 leading-relaxed">
-            {resource.whyILoveIt}
-          </p>
-        {/if}
-        {#if blocks.length > 0}
-          <div class="prose max-w-none {resource.whyILoveIt ? 'mt-6' : ''}">
-            <NotionBlocks {blocks} />
-          </div>
-        {/if}
-      </div>
-    </div>
-  {:else}
-    {#if resource.whyILoveIt}
-      <blockquote
-        class="border-l-4 border-primary bg-primary/5 py-6 px-8 rounded-r-lg mb-8"
-      >
-        <p class="text-xl text-foreground/90 italic leading-relaxed font-display">
-          {resource.whyILoveIt}
-        </p>
-        <cite class="mt-3 block text-sm text-muted-foreground not-italic">
-          — Why I Love It
-        </cite>
-      </blockquote>
-    {/if}
+  {#if resource.whyILoveIt}
+    <blockquote
+      class="border-l-4 border-primary bg-primary/5 py-6 px-8 rounded-r-lg mb-8"
+    >
+      <p class="text-xl text-foreground/90 italic leading-relaxed font-display">
+        {resource.whyILoveIt}
+      </p>
+      <cite class="mt-3 block text-sm text-muted-foreground not-italic">
+        — Why I Love It
+      </cite>
+    </blockquote>
+  {/if}
 
-    {#if blocks.length > 0}
-      <div class="prose max-w-none">
-        <NotionBlocks {blocks} />
-      </div>
-    {/if}
+  {#if blocks.length > 0}
+    <div class="prose max-w-none">
+      <NotionBlocks {blocks} />
+    </div>
   {/if}
 
   {#if resource.url}
