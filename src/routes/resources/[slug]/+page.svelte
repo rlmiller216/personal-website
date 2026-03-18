@@ -33,7 +33,7 @@
   {/if}
 </DetailHeader>
 
-<article class="max-w-3xl mx-auto px-6 py-12 animate-stagger">
+<article class="max-w-6xl mx-auto px-6 py-12 animate-stagger">
   <!-- Side-by-side layout: image left, "Why I Love It" + Notion content right -->
   {#if resource.imageUrl}
     <div class="flex flex-col sm:flex-row gap-8 mb-8">

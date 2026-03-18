@@ -28,7 +28,7 @@
   {/if}
 </DetailHeader>
 
-<article class="max-w-3xl mx-auto px-6 py-12 animate-stagger">
+<article class="max-w-6xl mx-auto px-6 py-12 animate-stagger">
   {#if tool.tags.length > 0}
     <div class="flex flex-wrap gap-2 mb-8">
       {#each tool.tags as tag}

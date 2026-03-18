@@ -10,7 +10,7 @@
 </script>
 
 <div class="relative -mt-16 pt-16 bg-hero">
-  <div class="max-w-3xl mx-auto px-6 py-8 sm:py-10 animate-stagger">
+  <div class="max-w-6xl mx-auto px-6 py-8 sm:py-10 animate-stagger">
     <!-- Back link — angular arrow, hover slide -->
     <a
       href={backHref}

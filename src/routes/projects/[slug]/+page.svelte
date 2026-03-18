@@ -41,7 +41,7 @@
   {/if}
 </DetailHeader>
 
-<article class="max-w-3xl mx-auto px-6 py-12 animate-stagger">
+<article class="max-w-6xl mx-auto px-6 py-12 animate-stagger">
   {#if project.imageUrl}
     <img
       src={project.imageUrl}
