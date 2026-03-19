@@ -62,7 +62,7 @@
 					id="name"
 					name="name"
 					required
-					class="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm
+					class="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm font-medium
 						focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
 				/>
 			</div>
@@ -74,7 +74,7 @@
 					id="email"
 					name="email"
 					required
-					class="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm
+					class="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm font-medium
 						focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
 				/>
 			</div>
@@ -86,7 +86,7 @@
 					name="message"
 					rows="5"
 					required
-					class="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm
+					class="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm font-medium
 						focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors resize-y"
 				></textarea>
 			</div>

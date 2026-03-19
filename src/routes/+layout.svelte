@@ -95,7 +95,7 @@
 		<nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
 			<a
 				href="/"
-				class="text-3xl font-black tracking-tight uppercase md:invisible text-hero-foreground"
+				class="text-3xl font-extrabold tracking-tight uppercase md:invisible text-hero-foreground"
 			>
 				{data.siteName}
 			</a>
@@ -172,7 +172,7 @@
 					<p class="text-3xl font-bold tracking-tight opacity-80 font-display">
 						Rebecca L Miller, PhD
 					</p>
-					<p class="text-sm opacity-70 mt-1">{data.siteTagline}</p>
+					<p class="text-sm font-medium opacity-70 mt-1">{data.siteTagline}</p>
 				</div>
 				<!-- Social links -->
 				<div class="flex items-center gap-4">
@@ -200,7 +200,7 @@
 						<a href={link.href} class="font-medium text-hero-foreground/70 hover:text-hero-foreground transition-colors">{link.label}</a>
 					{/each}
 				</div>
-				<span class="text-sm opacity-40">&copy; {new Date().getFullYear()} {data.siteName}</span>
+				<span class="text-sm font-medium opacity-40">&copy; {new Date().getFullYear()} {data.siteName}</span>
 			</div>
 		</div>
 	</footer>

@@ -87,7 +87,7 @@
 						{firstProject.title}
 					</h3>
 					{#if firstProject.description}
-						<p class="mt-1 text-sm text-white/80 max-w-lg">{firstProject.description}</p>
+						<p class="mt-1 text-sm font-medium text-white/80 max-w-lg">{firstProject.description}</p>
 					{/if}
 					{#if firstProject.sector.length > 0 || firstProject.tags.length > 0}
 						<div class="mt-2 flex flex-wrap gap-1">

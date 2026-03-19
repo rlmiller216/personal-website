@@ -14,7 +14,7 @@
 
 {#if block.type === 'paragraph'}
 	{#if hasContent(block.richText)}
-		<p class="leading-relaxed">{@html renderRichTextToSafeHtml(block.richText)}</p>
+		<p class="font-medium leading-relaxed">{@html renderRichTextToSafeHtml(block.richText)}</p>
 	{:else}
 		<div class="h-4"></div>
 	{/if}

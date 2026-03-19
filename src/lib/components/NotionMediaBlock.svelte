@@ -18,7 +18,7 @@
 			loading="lazy"
 		/>
 		{#if block.caption.length > 0 && hasContent(block.caption)}
-			<figcaption class="text-sm opacity-60 mt-2 text-center">
+			<figcaption class="text-sm font-medium opacity-60 mt-2 text-center">
 				{@html renderRichTextToSafeHtml(block.caption)}
 			</figcaption>
 		{/if}
@@ -31,7 +31,7 @@
 			<track kind="captions" />
 		</video>
 		{#if block.caption.length > 0 && hasContent(block.caption)}
-			<figcaption class="text-sm opacity-60 mt-2 text-center">
+			<figcaption class="text-sm font-medium opacity-60 mt-2 text-center">
 				{@html renderRichTextToSafeHtml(block.caption)}
 			</figcaption>
 		{/if}
@@ -47,7 +47,7 @@
 			<pre class="bg-hero text-hero-foreground rounded-lg p-4 overflow-x-auto"><code class="text-sm font-mono">{block.richText.map(s => s.text).join('')}</code></pre>
 		{/if}
 		{#if block.caption.length > 0 && hasContent(block.caption)}
-			<p class="text-sm opacity-60 mt-1">{@html renderRichTextToSafeHtml(block.caption)}</p>
+			<p class="text-sm font-medium opacity-60 mt-1">{@html renderRichTextToSafeHtml(block.caption)}</p>
 		{/if}
 	</div>
 
@@ -62,7 +62,7 @@
 			allowfullscreen
 		></iframe>
 		{#if block.caption.length > 0 && hasContent(block.caption)}
-			<p class="text-sm opacity-60 mt-2 text-center">{@html renderRichTextToSafeHtml(block.caption)}</p>
+			<p class="text-sm font-medium opacity-60 mt-2 text-center">{@html renderRichTextToSafeHtml(block.caption)}</p>
 		{/if}
 	</div>
 
@@ -72,7 +72,7 @@
 			<source src={block.url} />
 		</audio>
 		{#if block.caption.length > 0 && hasContent(block.caption)}
-			<figcaption class="text-sm opacity-60 mt-2 text-center">
+			<figcaption class="text-sm font-medium opacity-60 mt-2 text-center">
 				{@html renderRichTextToSafeHtml(block.caption)}
 			</figcaption>
 		{/if}
@@ -100,7 +100,7 @@
 				</div>
 			</object>
 			{#if block.caption.length > 0 && hasContent(block.caption)}
-				<figcaption class="text-sm opacity-60 mt-2 text-center">
+				<figcaption class="text-sm font-medium opacity-60 mt-2 text-center">
 					{@html renderRichTextToSafeHtml(block.caption)}
 				</figcaption>
 			{/if}

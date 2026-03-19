@@ -29,10 +29,10 @@
 			<ArrowRight class="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
 		</h3>
 		{#if resource.author}
-			<p class="text-sm text-muted-foreground">{resource.author}</p>
+			<p class="text-sm font-medium text-muted-foreground">{resource.author}</p>
 		{/if}
 		{#if resource.whyILoveIt}
-			<p class="mt-2 flex-1 text-base italic text-muted-foreground">&ldquo;{resource.whyILoveIt}&rdquo;</p>
+			<p class="mt-2 flex-1 text-base font-medium italic text-muted-foreground">&ldquo;{resource.whyILoveIt}&rdquo;</p>
 		{/if}
 		{#if resource.type || resource.category}
 			<div class="mt-3 flex flex-wrap gap-1">
