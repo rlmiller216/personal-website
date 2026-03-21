@@ -203,6 +203,7 @@ Floating RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in
 - **Gap interpolation:** Single `gap` value interpolated between `spreadGap` and `collapsedGap`, target positions = `[R_TOP, R_TOP+gap, R_TOP+gap*2]` — guarantees equal spacing
 - **`$bindable` menuOpen prop:** Parent binds `sidebarMenuOpen` state. Hamburger button toggles it. X icon shows when open. `aria-expanded` and dynamic `aria-label` for accessibility.
 - **Dark mode:** Sidebar and slide-out panel use `dark:bg-hero` (Deep Twilight) with `dark:text-hero-foreground` for letters/links. Borders switch to `dark:border-white/10`.
+- **Mobile menu styling:** The mobile hamburger dropdown (< md) uses `text-2xl font-bold uppercase tracking-wide` links matching homepage StickySection heading style, with Ultra Violet active text + Neon Chartreuse underline bar.
 
 #### `ThemeToggle.svelte` (~29 LOC)
 
@@ -215,7 +216,7 @@ Simple iterator. Takes `blocks: ContentBlock[]` prop, renders each via `<NotionB
 #### NotionBlock Dispatcher + Sub-Components (~300 LOC total, 5 files)
 
 `NotionBlock.svelte` (~33 LOC) is a thin dispatcher routing blocks to sub-components by type set:
-- `NotionTextBlock.svelte` (~87 LOC) — paragraphs, headings, lists, to_do, toggle, quote, callout
+- `NotionTextBlock.svelte` (~87 LOC) — paragraphs, headings, lists, to_do, toggle, quote, callout. Paragraphs use `font-normal md:font-medium` (400 on mobile, 500 on desktop); lists use `font-normal` (400) to override the blanket mobile 700 boost.
 - `NotionMediaBlock.svelte` (~130 LOC) — images, video, audio, code (Shiki), embed (responsive), bookmark, file, pdf, equation
 - `NotionLayoutBlock.svelte` (~63 LOC) — dividers, tables, column layouts, synced blocks
 
@@ -257,7 +258,7 @@ The visual identity is defined in `app.css` (~240 LOC) using CSS custom properti
 - Neon Chartreuse — highlights (`.text-highlight` utility, tags, callouts)
 - Two additional palette colors for supporting roles
 
-**Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Plus Jakarta Sans (body, weights 400–800). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px) bump weights: body 400→700, headings→800 (Bodoni hairlines need max weight), bold→800 to compensate for thin strokes on small/high-DPI screens.
+**Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Plus Jakarta Sans (body, weights 400–800). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px) bump weights: body 400→700, headings→800 (Bodoni hairlines need max weight), bold→800 to compensate for thin strokes on small/high-DPI screens. Secondary text overrides the blanket 700 boost: card descriptions/captions/footer use `font-medium` (500); Notion paragraphs and list blocks use `font-normal` (400) on mobile, `font-medium` (500) on desktop.
 
 **Animations:** `fadeUp`, `fadeIn`, `gradientShift` keyframes. Stagger animation support for up to 12 children via `--stagger-index` custom property.
 

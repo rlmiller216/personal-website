@@ -201,12 +201,12 @@ For About page — transforming Notion page blocks into rendered HTML.
 
 | Notion Block Type | ContentBlock Type | HTML Output | Recursive? | Notes |
 |---|---|---|---|---|
-| `paragraph` | `paragraph` | `<p>` | No | Empty → spacer div |
+| `paragraph` | `paragraph` | `<p>` | No | Empty → spacer div. `font-normal md:font-medium` (400 mobile, 500 desktop) |
 | `heading_1` | `heading_1` | `<h1>` | No | |
 | `heading_2` | `heading_2` | `<h2>` | No | |
 | `heading_3` | `heading_3` | `<h3>` | No | |
-| `bulleted_list_item` | → grouped into `bulleted_list` | `<ul><li>` | Yes (nested lists) | |
-| `numbered_list_item` | → grouped into `numbered_list` | `<ol><li>` | Yes (nested lists) | |
+| `bulleted_list_item` | → grouped into `bulleted_list` | `<ul><li>` | Yes (nested lists) | `font-normal` (400) overrides mobile 700 boost |
+| `numbered_list_item` | → grouped into `numbered_list` | `<ol><li>` | Yes (nested lists) | `font-normal` (400) overrides mobile 700 boost |
 | `to_do` | `to_do` | `<div>` with checkbox | No | |
 | `toggle` | `toggle` | `<details><summary>` | Yes (children) | |
 | `quote` | `quote` | `<blockquote>` | No | |
