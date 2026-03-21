@@ -14,7 +14,7 @@
 
 {#if block.type === 'paragraph'}
 	{#if hasContent(block.richText)}
-		<p class="font-medium leading-relaxed">{@html renderRichTextToSafeHtml(block.richText)}</p>
+		<p class="font-normal md:font-medium leading-relaxed">{@html renderRichTextToSafeHtml(block.richText)}</p>
 	{:else}
 		<div class="h-4"></div>
 	{/if}
@@ -89,7 +89,7 @@
 	{/if}
 
 {:else if block.type === 'bulleted_list'}
-	<ul class="list-disc pl-6 space-y-1">
+	<ul class="list-disc pl-6 space-y-1 font-normal">
 		{#each block.children as item (item.id)}
 			<li>
 				{@html renderRichTextToSafeHtml(item.richText)}
@@ -101,7 +101,7 @@
 	</ul>
 
 {:else if block.type === 'numbered_list'}
-	<ol class="list-decimal pl-6 space-y-1">
+	<ol class="list-decimal pl-6 space-y-1 font-normal">
 		{#each block.children as item (item.id)}
 			<li>
 				{@html renderRichTextToSafeHtml(item.richText)}

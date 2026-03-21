@@ -75,7 +75,7 @@ Notion databases/pages
 ### Typography
 - **Headings:** Bodoni Moda (Didone serif, variable optical size). Bumped to font-weight 800 (extrabold) on mobile (< 768px) — hairline strokes need max weight on small/high-DPI screens.
 - **Body:** Poppins (geometric sans-serif). Bumped to font-weight 700 (bold) on mobile for better small-screen rendering; bold text bumped to 800 (extrabold). Weights 400–900 loaded from Google Fonts.
-- **Mobile weight overrides:** Secondary text elements use `font-medium` (500) to override the blanket mobile 700 boost. Applies to: card descriptions, Notion paragraphs, media captions, detail header back link + description, footer tagline + copyright, and contact form inputs. This creates visual hierarchy — primary text stays heavy (700/800), supporting text stays lighter (500).
+- **Mobile weight overrides:** Secondary text elements use `font-medium` (500) to override the blanket mobile 700 boost. Applies to: card descriptions, media captions, detail header back link + description, footer tagline + copyright, and contact form inputs. Notion paragraphs and list blocks use `font-normal` (400) on mobile for lighter body text reading. This creates visual hierarchy — primary text stays heavy (700/800), supporting text stays lighter (400–500).
 
 ### Font Utilities
 - `font-display` — applies Bodoni Moda. Use on non-heading elements that need the display font (e.g., footer branding `<p>`).
