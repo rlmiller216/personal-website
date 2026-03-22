@@ -158,6 +158,9 @@
     h1, h2, h3, h4, .font-display {
       font-weight: 800;             /* Bodoni 400→800 (extrabold) — hairlines need max weight */
     }
+    body {
+      font-weight: 300;             /* Poppins default 400→300 on mobile */
+    }
   }
   html {
     scroll-behavior: smooth;
@@ -166,6 +169,17 @@
   ::selection {
     background: oklch(0.54 0.26 285.29 / 25%);
     color: oklch(0.97 0.003 90);
+  }
+}
+
+/* ── Mobile Poppins weight reduction: 500→400, 400→300 ── */
+/* Unlayered to override Tailwind utility classes */
+@media (max-width: 767px) {
+  .font-medium {
+    font-weight: 400;
+  }
+  .font-normal {
+    font-weight: 300;
   }
 }
 

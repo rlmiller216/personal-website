@@ -27,7 +27,7 @@
     </span>
   {/if}
   {#if resource.category}
-    <span class="rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-pill-accent-foreground bg-pill-accent">
+    <span class="rounded-full px-2.5 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">
       {resource.category}
     </span>
   {/if}

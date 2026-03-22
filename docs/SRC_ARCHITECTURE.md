@@ -257,7 +257,7 @@ The visual identity is defined in `app.css` (~240 LOC) using CSS custom properti
 - Neon Chartreuse — highlights (`.text-highlight` utility, tags, callouts)
 - Two additional palette colors for supporting roles
 
-**Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Plus Jakarta Sans (body, weights 400–800). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px) bump weights: body 400→700, headings→800 (Bodoni hairlines need max weight), bold→800 to compensate for thin strokes on small/high-DPI screens.
+**Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Poppins (body, weights 300–900). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px): headings→800 (Bodoni hairlines need max weight), Poppins weights shift down (`font-medium` 500→400, default 400→300) via unlayered CSS overrides.
 
 **Animations:** `fadeUp`, `fadeIn`, `gradientShift` keyframes. Stagger animation support for up to 12 children via `--stagger-index` custom property.
 

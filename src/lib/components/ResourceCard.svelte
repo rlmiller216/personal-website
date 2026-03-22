@@ -28,8 +28,8 @@
 			{resource.title}
 			<ArrowRight class="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
 		</h3>
-		{#if resource.author}
-			<p class="text-sm font-medium text-muted-foreground">{resource.author}</p>
+		{#if resource.description}
+			<p class="text-sm font-medium text-muted-foreground">{resource.description}</p>
 		{/if}
 		{#if resource.whyILoveIt}
 			<p class="mt-2 flex-1 text-base font-medium italic text-muted-foreground">&ldquo;{resource.whyILoveIt}&rdquo;</p>
