@@ -153,16 +153,10 @@
   h1, h2, h3, h4 {
     font-family: 'Bodoni Moda', serif;
   }
-  /* Thin strokes vanish on small/high-DPI screens — bump all weights on mobile */
+  /* Thin Bodoni strokes vanish on small/high-DPI screens — bump heading weights on mobile */
   @media (max-width: 767px) {
-    body {
-      font-weight: 700;             /* Poppins 400→700 (bold) */
-    }
     h1, h2, h3, h4, .font-display {
       font-weight: 800;             /* Bodoni 400→800 (extrabold) — hairlines need max weight */
-    }
-    strong, b, .font-bold {
-      font-weight: 800;             /* bold→extrabold */
     }
   }
   html {

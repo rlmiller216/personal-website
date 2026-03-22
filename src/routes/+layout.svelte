@@ -147,11 +147,14 @@
 				{#each navLinks as link}
 					<a
 						href={link.href}
-						class="py-2 text-sm font-medium transition-colors
+						class="relative py-2 text-2xl font-bold uppercase tracking-wide transition-colors
 							{isActive(link.href) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
 						onclick={() => (mobileMenuOpen = false)}
 					>
 						{link.label}
+						{#if isActive(link.href)}
+							<span class="absolute bottom-1 left-0 right-0 h-0.5 rounded-full bg-secondary"></span>
+						{/if}
 					</a>
 				{/each}
 			</div>
