@@ -7,6 +7,7 @@
 
 import { Client } from '@notionhq/client';
 import { env } from '$env/dynamic/private';
+import { isVideoUrl } from '$lib/types/content';
 import type {
 	PageObjectResponse,
 	BlockObjectResponse,
@@ -95,6 +96,32 @@ export function getFileUrl(property: PageProperty | undefined): string {
 	if (file.type === 'file') return file.file.url;
 	if (file.type === 'external') return file.external.url;
 	return '';
+}
+
+/** Extracts media URL and optional poster from a multi-file Notion property.
+ *  If video + image uploaded together: video → mediaUrl, image → posterUrl.
+ *  If single file: mediaUrl only. Poster shows during video load. */
+export function getMediaFiles(
+	property: PageProperty | undefined
+): { mediaUrl: string; posterUrl: string } {
+	if (!property || property.type !== 'files') return { mediaUrl: '', posterUrl: '' };
+
+	const urls = property.files
+		.map((f) => {
+			if (f.type === 'file') return f.file.url;
+			if (f.type === 'external') return f.external.url;
+			return '';
+		})
+		.filter(Boolean);
+
+	if (urls.length === 0) return { mediaUrl: '', posterUrl: '' };
+	if (urls.length === 1) return { mediaUrl: urls[0], posterUrl: '' };
+
+	const videoUrl = urls.find((u) => isVideoUrl(u));
+	const imageUrl = urls.find((u) => !isVideoUrl(u));
+
+	if (videoUrl) return { mediaUrl: videoUrl, posterUrl: imageUrl || '' };
+	return { mediaUrl: urls[0], posterUrl: '' };
 }
 
 // --- Generic Fetcher ---

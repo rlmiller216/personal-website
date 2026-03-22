@@ -11,6 +11,19 @@ export function slugify(title: string): string {
 		.replace(/^-|-$/g, '');
 }
 
+const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.mov'];
+
+/** True if the URL points to a video file based on extension. */
+export function isVideoUrl(url: string): boolean {
+	if (!url) return false;
+	try {
+		const pathname = new URL(url, 'https://placeholder').pathname.toLowerCase();
+		return VIDEO_EXTENSIONS.some((ext) => pathname.endsWith(ext));
+	} catch {
+		return false;
+	}
+}
+
 /** A professional project from the Projects database. */
 export interface Project {
 	id: string;
@@ -21,6 +34,8 @@ export interface Project {
 	status: string;
 	role: string;
 	imageUrl: string;
+	isVideo: boolean;
+	posterUrl: string;
 	url: string;
 	featured: boolean;
 	order: number;
@@ -39,6 +54,8 @@ export interface Tool {
 	tags: string[];
 	featured: boolean;
 	imageUrl: string;
+	isVideo: boolean;
+	posterUrl: string;
 	order: number;
 }
 
@@ -54,6 +71,10 @@ export interface Resource {
 	url: string;
 	whyILoveIt: string;
 	imageUrl: string;
+	isVideo: boolean;
+	posterUrl: string;
+	order: number;
+	featured: boolean;
 }
 
 /** Rich text annotation from Notion. */
@@ -103,6 +124,7 @@ export interface ContentBlock {
 		| 'table'
 		| 'audio'
 		| 'file'
+		| 'pdf'
 		| 'equation'
 		| 'column_list'
 		| 'synced_block';
@@ -143,6 +165,10 @@ export interface ContentBlock {
 	/** Direct URL to the file. */
 	fileUrl?: string;
 
+	// -- Toggle headings --
+	/** Whether a heading block is toggleable (expands/collapses to show children). */
+	isToggleable?: boolean;
+
 	// -- Embed detection --
 	/** Detected provider (e.g., "youtube", "vimeo"). */
 	embedType?: string;
@@ -150,4 +176,6 @@ export interface ContentBlock {
 	embedAspectRatio?: string;
 	/** CSS min-height value (e.g., "500px"). */
 	embedMinHeight?: string;
+	/** Iframe loading strategy — 'eager' bypasses lazy loading for WebGL embeds that fail on iOS Safari. */
+	embedLoading?: 'lazy' | 'eager';
 }

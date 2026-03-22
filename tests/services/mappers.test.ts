@@ -116,6 +116,8 @@ describe('mapProject', () => {
 		expect(result.status).toBe('Active');
 		expect(result.role).toBe('Lead Scientist');
 		expect(result.imageUrl).toBe('https://s3.aws.com/cover.png');
+		expect(result.isVideo).toBe(false);
+		expect(result.posterUrl).toBe('');
 		expect(result.url).toBe('https://example.com/project');
 		expect(result.featured).toBe(true);
 		expect(result.order).toBe(3);
@@ -137,6 +139,8 @@ describe('mapProject', () => {
 		expect(result.status).toBe('');
 		expect(result.role).toBe('');
 		expect(result.imageUrl).toBe('');
+		expect(result.isVideo).toBe(false);
+		expect(result.posterUrl).toBe('');
 		expect(result.url).toBe('');
 		expect(result.featured).toBe(false);
 		expect(result.order).toBe(0);
@@ -196,6 +200,8 @@ describe('mapTool', () => {
 		expect(result.tags).toEqual(['Python', 'Biology', 'Data']);
 		expect(result.featured).toBe(true);
 		expect(result.imageUrl).toBe('https://s3.aws.com/bioparser.png');
+		expect(result.isVideo).toBe(false);
+		expect(result.posterUrl).toBe('');
 		expect(result.order).toBe(2);
 	});
 
@@ -216,6 +222,8 @@ describe('mapTool', () => {
 		expect(result.tags).toEqual([]);
 		expect(result.featured).toBe(false);
 		expect(result.imageUrl).toBe('');
+		expect(result.isVideo).toBe(false);
+		expect(result.posterUrl).toBe('');
 		expect(result.order).toBe(0);
 	});
 
@@ -250,12 +258,15 @@ describe('mapResource', () => {
 	it('maps complete properties correctly', () => {
 		const page = makePage('res-1', {
 			'Title': mockTitle('The Selfish Gene'),
+			'Description': mockRichText('A foundational text on evolutionary biology'),
 			'Type': mockSelect('Book'),
 			'Category': mockSelect('Science'),
 			'Author': mockRichText('Richard Dawkins'),
 			'URL': mockUrl('https://example.com/book'),
 			'Why I Love It': mockRichText('Changed how I think about evolution'),
-			'Image': mockFiles('https://s3.aws.com/book-cover.jpg')
+			'Image': mockFiles('https://s3.aws.com/book-cover.jpg'),
+			'Featured': mockCheckbox(true),
+			'Order': mockNumber(5)
 		});
 
 		const result = mapResource(page);
@@ -263,13 +274,17 @@ describe('mapResource', () => {
 		expect(result.id).toBe('res-1');
 		expect(result.title).toBe('The Selfish Gene');
 		expect(result.slug).toBe('the-selfish-gene');
-		expect(result.description).toBe('');
+		expect(result.description).toBe('A foundational text on evolutionary biology');
 		expect(result.type).toBe('Book');
 		expect(result.category).toBe('Science');
 		expect(result.author).toBe('Richard Dawkins');
 		expect(result.url).toBe('https://example.com/book');
 		expect(result.whyILoveIt).toBe('Changed how I think about evolution');
 		expect(result.imageUrl).toBe('https://s3.aws.com/book-cover.jpg');
+		expect(result.isVideo).toBe(false);
+		expect(result.posterUrl).toBe('');
+		expect(result.featured).toBe(true);
+		expect(result.order).toBe(5);
 	});
 
 	it('returns graceful defaults for missing optional properties', () => {
@@ -289,6 +304,10 @@ describe('mapResource', () => {
 		expect(result.url).toBe('');
 		expect(result.whyILoveIt).toBe('');
 		expect(result.imageUrl).toBe('');
+		expect(result.isVideo).toBe(false);
+		expect(result.posterUrl).toBe('');
+		expect(result.featured).toBe(false);
+		expect(result.order).toBe(0);
 	});
 
 	it('returns empty slug for empty title', () => {

@@ -15,7 +15,7 @@
 - [x] **Scroll-aware responsive navigation** — desktop nav bar + mobile hamburger menu
 - [x] **Scroll-collapsing RLM letter sidebar** — R fixed, L+M animate on scroll, responsive md/lg sizing
 - [x] **Page header styling** — consistent header treatment across all pages
-- [x] **Footer redesign** — updated layout and styling with Raleway RLM branding
+- [x] **Footer redesign** — updated layout and styling with Plus Jakarta Sans RLM branding
 - [ ] **Notion as CMS** — all content fetched from Notion API at build time
 - [ ] **Static site generation** — adapter-static produces pure HTML
 - [ ] **Netlify deployment** — free hosting, auto-deploys on push
@@ -32,7 +32,7 @@
 - [x] ~~**Hourly rebuilds**~~ — Not viable on free tier (300 credits/month, ~15/deploy). Using push-triggered + manual dashboard deploys instead
 - [ ] **Featured items on homepage** — checkbox-driven from Notion databases
 - [x] **Design system with custom color palette** — cohesive typography, color, spacing via CSS variables
-- [x] **Google Fonts integration (Bodoni Moda + Raleway)** — distinctive typography pairing
+- [x] **Google Fonts integration (Bodoni Moda + Plus Jakarta Sans)** — distinctive typography pairing
 - [ ] **Page load animations** — staggered reveals for delight
 - [x] **"Scientific Warmth" aesthetic** — distinctive, not generic AI design
 - [x] **Card hover animations / micro-interactions** — subtle feedback on interactive elements

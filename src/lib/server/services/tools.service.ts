@@ -17,15 +17,16 @@ import {
 	getUrl,
 	getMultiSelect,
 	getCheckbox,
-	getFileUrl,
+	getMediaFiles,
 	getNumber
 } from './notion.service';
-import { downloadItemImages } from './image-cache';
+import { downloadItemMedia } from './image-cache';
 
 const MODULE = '[tools]';
 
 export function mapTool(page: PageObjectResponse): Tool {
 	const props = page.properties;
+	const media = getMediaFiles(props['Files & media']);
 	return {
 		id: page.id,
 		slug: slugify(getTitle(props['Title'])),
@@ -36,7 +37,9 @@ export function mapTool(page: PageObjectResponse): Tool {
 		demoUrl: getUrl(props['Demo URL']),
 		tags: getMultiSelect(props['Tags']),
 		featured: getCheckbox(props['Featured']),
-		imageUrl: getFileUrl(props['Files & media']),
+		imageUrl: media.mediaUrl,
+		isVideo: false,
+		posterUrl: media.posterUrl,
 		order: getNumber(props['Order'])
 	};
 }
@@ -53,7 +56,7 @@ async function fetchAllTools(): Promise<Tool[]> {
 		[{ property: 'Order', direction: 'ascending' }]);
 
 	warnSlugCollisions(results, MODULE);
-	await downloadItemImages(results);
+	await downloadItemMedia(results);
 
 	return results;
 }
@@ -74,6 +77,6 @@ export async function getFeaturedTools(): Promise<Tool[]> {
 		property: 'Featured',
 		checkbox: { equals: true }
 	});
-	await downloadItemImages(results);
+	await downloadItemMedia(results);
 	return results;
 }

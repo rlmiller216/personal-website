@@ -190,7 +190,7 @@ For About page — transforming Notion page blocks into rendered HTML.
 │ <NotionBlocks>   │   Iterates blocks, renders each via <NotionBlock>
 │ <NotionBlock>    │   Dispatcher → routes to sub-components:
 │                  │     NotionTextBlock: paragraphs, headings, lists, toggles
-│                  │     NotionMediaBlock: images, code (Shiki), embeds, audio, files
+│                  │     NotionMediaBlock: images, code (Shiki), embeds, audio, files, PDFs
 │                  │     NotionLayoutBlock: tables, column grids, synced blocks
 │                  │   renderRichTextToSafeHtml() → XSS-safe HTML with annotations
 │                  │   Recursive for nested children (toggle, nested lists)
@@ -201,12 +201,12 @@ For About page — transforming Notion page blocks into rendered HTML.
 
 | Notion Block Type | ContentBlock Type | HTML Output | Recursive? | Notes |
 |---|---|---|---|---|
-| `paragraph` | `paragraph` | `<p>` | No | Empty → spacer div |
+| `paragraph` | `paragraph` | `<p>` | No | Empty → spacer div. `font-normal md:font-medium` (400 mobile, 500 desktop) |
 | `heading_1` | `heading_1` | `<h1>` | No | |
 | `heading_2` | `heading_2` | `<h2>` | No | |
 | `heading_3` | `heading_3` | `<h3>` | No | |
-| `bulleted_list_item` | → grouped into `bulleted_list` | `<ul><li>` | Yes (nested lists) | |
-| `numbered_list_item` | → grouped into `numbered_list` | `<ol><li>` | Yes (nested lists) | |
+| `bulleted_list_item` | → grouped into `bulleted_list` | `<ul><li>` | Yes (nested lists) | `font-normal` (400) overrides mobile 700 boost |
+| `numbered_list_item` | → grouped into `numbered_list` | `<ol><li>` | Yes (nested lists) | `font-normal` (400) overrides mobile 700 boost |
 | `to_do` | `to_do` | `<div>` with checkbox | No | |
 | `toggle` | `toggle` | `<details><summary>` | Yes (children) | |
 | `quote` | `quote` | `<blockquote>` | No | |
@@ -219,7 +219,8 @@ For About page — transforming Notion page blocks into rendered HTML.
 | `video` | `video` or → `embed` | `<video>` or `<iframe>` | No | YouTube/Vimeo → embed type |
 | `table` | `table` | `<table>` with optional `<thead>` | No* | Custom child-fetch for table_row cells |
 | `audio` | `audio` | `<audio controls>` | No | |
-| `file` | `file` | Download link | No | Skips if no URL |
+| `file` | `file` | Download link | No | S3 URLs cached via `downloadNotionFile()` |
+| `pdf` | `pdf` | `<object>` PDF viewer + fallback link | No | S3 URLs cached via `downloadNotionFile()` |
 | `column_list` | `column_list` | Responsive grid | Yes (columns) | Sequential child fetching |
 | `synced_block` | `synced_block` | Transparent wrapper | Yes (children) | Resolves synced_from source |
 | `equation` | `equation` | Monospace/italic `<div>` | No | No KaTeX (styled fallback) |

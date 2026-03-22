@@ -19,13 +19,14 @@ npx svelte-check     # type checking
 | Layer | Choice | Why |
 |-------|--------|-----|
 | Framework | SvelteKit + adapter-static | Static output, component-based DX, Svelte 5 runes |
-| Styling | Tailwind CSS 4 + shadcn-svelte | CSS-based config, accessible components out of the box |
+| Styling | Tailwind CSS 4 | CSS-based config, utility-first styling |
 | CMS | Notion API (@notionhq/client) | Rebecca already uses Notion daily. Edit there → site rebuilds |
 | Hosting | Netlify (free tier) | Static hosting, auto-deploys on push to `main` |
 | Contact Form | Formspree | adapter-static can't do server-side form handling |
-| Typography | Bodoni Moda + Raleway (Google Fonts) | Didone serif headings + geometric sans body |
-| Icons | Lucide | Standard per Development Bible |
+| Typography | Bodoni Moda + Poppins (Google Fonts) | Didone serif headings + geometric sans body |
+| Icons | Lucide + Phosphor (phosphor-svelte) | Lucide for UI icons (arrows, sun/moon); Phosphor filled for social/brand icons (GitHub, LinkedIn, envelope) |
 | Syntax Highlighting | Shiki (dev only) | Build-time code highlighting, dual-theme dark mode via CSS variables, 0 client JS |
+| Image Conversion | heic-convert (dev only) | Build-time HEIC→JPEG for iPhone uploads via Notion, 0 client JS |
 
 ## Architecture
 
@@ -48,15 +49,15 @@ Notion databases/pages
 
 **Notion blocks → Svelte components** (NOT `{@html}` strings). Server transforms API blocks into serializable `ContentBlock[]`, then `<NotionBlocks>` renders them as styled Svelte components. This enables per-block Tailwind styling and eliminates XSS risk.
 
-**NotionBlock dispatcher pattern:** `NotionBlock.svelte` is a thin dispatcher (~33 lines) that routes blocks to three sub-components by type: `NotionTextBlock` (paragraphs, headings, lists, toggles, quotes, callouts), `NotionMediaBlock` (images, video, audio, code, embeds, bookmarks, files, equations), and `NotionLayoutBlock` (dividers, tables, column layouts, synced blocks). Circular import (NotionTextBlock → NotionBlock) enables recursive rendering of nested lists/toggles — Svelte 5 handles this via lazy resolution.
+**NotionBlock dispatcher pattern:** `NotionBlock.svelte` is a thin dispatcher (~33 lines) that routes blocks to three sub-components by type: `NotionTextBlock` (paragraphs, headings, toggle headings, lists, toggles, quotes, callouts), `NotionMediaBlock` (images, video, audio, code, embeds, bookmarks, files, equations), and `NotionLayoutBlock` (dividers, tables, column layouts, synced blocks). Circular import (NotionTextBlock → NotionBlock) enables recursive rendering of nested lists/toggles/toggle headings — Svelte 5 handles this via lazy resolution.
 
-**Smart embed detection:** Embed and video blocks are analyzed via `getEmbedConfig()` (in `embed-config.ts`) to detect providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and set responsive aspect ratios and min-heights. Embed min-height uses `min(configured, 70vh)` to prevent overflow on mobile viewports. YouTube/Vimeo video blocks are automatically converted to embed type to prevent broken `<video>` tags. Mol* embeds use a `snapshot-url` parameter to load pre-configured 3D protein visualizations from `.molx` session files in `static/molstar/`. Requires CORS headers on Netlify (`static/_headers` sets `Access-Control-Allow-Origin: *` for `/molstar/*`).
+**Smart embed detection:** Embed and video blocks are analyzed via `getEmbedConfig()` (in `embed-config.ts`) to detect providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and set responsive aspect ratios, min-heights, and loading strategy. Embed min-height uses `min(configured, 70vh)` to prevent overflow on mobile viewports. YouTube/Vimeo video blocks are automatically converted to embed type to prevent broken `<video>` tags. Mol* embeds use a `snapshot-url` parameter to load pre-configured 3D protein visualizations from `.molx` session files in `static/molstar/`. Requires CORS headers on Netlify (`static/_headers` sets `Access-Control-Allow-Origin: *` for `/molstar/*`). Mol* embeds use `loading="eager"` (not lazy) because iOS Safari's lazy loading breaks WebGL context initialization in iframes — the browser never retries after the initial failed visibility check.
 
 **Build-time syntax highlighting:** Code blocks are highlighted via Shiki at build time with dual-theme output (github-light/github-dark) using CSS variables. The Shiki highlighter uses a promise-cached singleton pattern (same as `createCachedFetcher`). Notion-to-Shiki language mapping handles display name differences. Unknown languages fall back to plaintext.
 
 **XSS contract:** All rich text rendering uses `renderRichTextToSafeHtml()` (in `notion-render-utils.ts`) which passes ALL user text through `escapeHtml()` before annotation wrapping. Never bypass this for `{@html}` content.
 
-**Detail pages** use `getPageContent()` to render Notion page content below structured metadata. `slugify()` in `content.ts` generates URL-safe slugs from titles.
+**Detail pages** use `getPageContent()` to render Notion page content below structured metadata. `slugify()` in `content.ts` generates URL-safe slugs from titles. All detail page headers follow a standardized structure: title, pills row (Tier-1 category + Tier-2 tags + role/author in one flex-wrap row), and description subtitle — all rendered inside the Deep Twilight header via `DetailHeader`'s children slot and `description` prop. Article content uses compact top padding (`pt-2 sm:pt-6`) with `[&>*:first-child]:mt-0` on the prose container to eliminate the first heading's top margin — keeps the header-to-content transition tight. **Database `Image` property** = card thumbnails + `og:image` meta tag only — never rendered visually on detail pages. Detail page media comes from Notion page content (via `NotionBlocks`). If Rebecca wants an image/video on a detail page, she adds it as a block in Notion.
 
 ## Design System
 
@@ -66,59 +67,64 @@ Notion databases/pages
 | `#6D3BFF` | Ultra Violet | Primary — links, buttons, active states |
 | `#F6F5F4` | White Smoke | Light background |
 | `#0D0D0D` | Onyx | Body text, dark mode base |
-| `#DFFF5C` | Lime Yellow | Secondary — highlights, CTAs, energy |
-| `#1D2440` | Space Indigo | Dark background — hero, footer, dark mode |
+| `#eeff5d` | Neon Chartreuse | Secondary — highlights, CTAs, energy |
+| `#050950` | Deep Twilight | Dark background — hero, footer, dark mode |
 | `#E8E0F3` | Pill Accent | Solid light purple tier-1 pill background (default) |
 | `#F2EDF7` | Pill Accent Light | Lighter variant used on `.bg-card` (white) backgrounds |
 
 ### Typography
-- **Headings:** Bodoni Moda (Didone serif, variable optical size). Bumped to font-weight 700 on mobile (< 768px) — hairline strokes vanish on small/high-DPI screens.
-- **Body:** Raleway (geometric sans-serif). Bumped to font-weight 500 on mobile; bold text bumped to 800 (extrabold). Weights 400–800 loaded from Google Fonts.
+- **Headings:** Bodoni Moda (Didone serif, variable optical size). Bumped to font-weight 800 (extrabold) on mobile (< 768px) — hairline strokes need max weight on small/high-DPI screens.
+- **Body:** Poppins (geometric sans-serif). Bumped to font-weight 700 (bold) on mobile for better small-screen rendering; bold text bumped to 800 (extrabold). Weights 400–900 loaded from Google Fonts.
+- **Mobile weight overrides:** Secondary text elements use `font-medium` (500) to override the blanket mobile 700 boost. Applies to: card descriptions, media captions, detail header back link + description, footer tagline + copyright, and contact form inputs. Notion paragraphs and list blocks use `font-normal` (400) on mobile for lighter body text reading. This creates visual hierarchy — primary text stays heavy (700/800), supporting text stays lighter (400–500).
 
 ### Font Utilities
 - `font-display` — applies Bodoni Moda. Use on non-heading elements that need the display font (e.g., footer branding `<p>`).
-- `font-body` — applies Raleway. Use on heading elements (`<h1>`–`<h4>`) that need to override the base Bodoni Moda rule.
-- Headings get Bodoni Moda from base CSS (`@layer base`). Body text gets Raleway from `body`. No inline `style="font-family:..."` — use utility classes instead.
+- `font-body` — applies Poppins. Use on heading elements (`<h1>`–`<h4>`) that need to override the base Bodoni Moda rule.
+- Headings get Bodoni Moda from base CSS (`@layer base`). Body text gets Poppins from `body`. No inline `style="font-family:..."` — use utility classes instead.
 
 ### Card Border Patterns
-- ProjectCard: `border-b-4 border-b-secondary` (Lime Yellow bottom)
+- ProjectCard: `border-b-4 border-b-secondary` (Neon Chartreuse bottom)
 - ToolCard: `border border-border` (subtle border, image-forward card with category badge, used on /open-source subpage)
 - ToolListItem: `border-l-4 border-l-primary` (Ultra Violet left, homepage Open Source cards)
-- ResourceCard: `border border-border border-b-4 border-b-secondary` (Lime Yellow bottom, matches ProjectCard)
+- ResourceCard: `border border-border border-b-4 border-b-secondary` (Neon Chartreuse bottom, matches ProjectCard)
 
 ### Two-Tier Pill System
 - **Tier-1** (category/sector/type): `font-semibold uppercase tracking-wider text-pill-accent-foreground bg-pill-accent` — solid light purple background via `--pill-accent` CSS variable
-- **Tier-2** (tags): `font-medium bg-secondary text-secondary-foreground` — Lime Yellow
+- **Tier-2** (tags): `font-medium bg-secondary text-secondary-foreground` — Neon Chartreuse
 - **Contextual pill color**: `--pill-accent` defaults to `#E8E0F3` (oklch 0.919 0.027 305), overridden to lighter `#F2EDF7` inside `.bg-card` elements
 - **Homepage pill size**: `rounded-full px-2 py-px text-[0.65rem] gap-1` (standardized across all cards)
 - **Detail page pill size**: `rounded-full px-2.5 py-0.5 text-xs gap-2` (slightly larger for readability)
 
 ### Key Patterns
 - `overflow-x: hidden` on `html` — prevents horizontal bounce on mobile from elements slightly exceeding viewport width
-- OKLCH design tokens in `app.css` with light/dark mode (`--hero`, `--hero-foreground` for Space Indigo sections)
+- Hex + OKLCH design tokens in `app.css` with light/dark mode. Brand-critical colors use hex directly (`#050950` Deep Twilight, `#eeff5d` Neon Chartreuse) to prevent OKLCH approximation drift. Dark mode variants use `color-mix()` (e.g., `color-mix(in oklch, #050950 85%, white)`). `--hero`/`--hero-foreground` tokens power Deep Twilight sections.
 - **Floating RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top (0px md, -12px lg), L and M drift toward it on scroll via exponential decay interpolation in a RAF loop. Each letter has a different damping rate (R=8, L=5, M=3) creating a cascading wave where R arrives first and M trails behind. Collapse range extends 1.8× beyond hero height for a slow, cinematic feel. Responsive two-tier sizing: 68px/60px font at md, 80px/72px font at lg. Hidden on mobile.
-- **Non-fixed desktop nav**: nav scrolls away naturally on desktop (`md:relative md:z-10`) so sticky section headers own the top of the viewport. Transparent at top of every page (all headers extend behind nav via `-mt-16 pt-16`), solid on scroll. Mobile nav stays fixed.
-- **MCA-style sticky section headers** on homepage: each section's heading sticks at `top-16` (mobile, below fixed nav) or `top-0` (desktop). Title is a link with bold angular Ultra Violet arrow. No shadow on sticky headers.
-- **Angular icon convention**: all custom SVGs use `stroke-linecap="square"` + `stroke-linejoin="miter"` to match Raleway's geometric character. Applies to hamburger, section arrows, and close icons.
-- **Sidebar hamburger menu**: large angular icon (52px lg, 36px md) matching RLM letter color and width. Opens slide-out nav (w-80) with bold uppercase Raleway links, top-aligned with R. Panel is `bg-white` / `dark:bg-hero` (Space Indigo in dark mode). fly/fade Svelte transitions, Escape dismisses, mutual exclusion with mobile menu.
-- **Dark mode sidebar/nav**: LetterSidebar, slide-out panel, and scrolled nav all use `dark:bg-hero` (Space Indigo) with `dark:text-hero-foreground` for letters and links. Borders switch to `dark:border-white/10`.
-- Space Indigo page headers on all content pages with `-mt-16 pt-16` nav overlap, `text-4xl sm:text-5xl lg:text-6xl` Bodoni Moda headings, compact `py-8 sm:py-10` padding
-- Lime Yellow `.text-highlight` marker underline effect on last word of every page heading
+- **Non-fixed nav**: nav scrolls away naturally on ALL screen sizes (`relative z-10 bg-transparent`). Always transparent with light text — all page headers extend behind nav via `-mt-16 pt-16 bg-hero`. Footer nav links serve as persistent navigation once the header scrolls away on mobile.
+- **MCA-style sticky section headers** on homepage: each section's heading sticks at `top-0` on all screen sizes. Title is a link with bold angular Ultra Violet arrow. No shadow on sticky headers.
+- **Angular icon convention**: all custom SVGs use `stroke-linecap="square"` + `stroke-linejoin="miter"` to match Poppins's geometric character. Applies to hamburger, section arrows, and close icons.
+- **Sidebar hamburger menu** (md+): large angular icon (52px lg, 36px md) matching RLM letter color and width. Opens slide-out nav (w-80) with bold uppercase Poppins links, top-aligned with R. Panel is `bg-white` / `dark:bg-hero` (Deep Twilight in dark mode). fly/fade Svelte transitions, Escape dismisses, mutual exclusion with mobile menu.
+- **Mobile hamburger menu** (< md): dropdown below nav with `text-2xl font-bold uppercase tracking-wide` links matching homepage StickySection heading style. Active link shows Ultra Violet text + Neon Chartreuse underline bar (`bg-secondary`). Inactive links are muted gray.
+- **Dark mode sidebar/nav**: LetterSidebar and slide-out panel use `dark:bg-hero` (Deep Twilight) with `dark:text-hero-foreground` for letters and links. Borders switch to `dark:border-white/10`.
+- Deep Twilight page headers on all content pages with `-mt-16 pt-16` nav overlap, `text-4xl sm:text-5xl lg:text-6xl` Bodoni Moda headings, compact `py-8 sm:py-10` padding
+- Neon Chartreuse `.text-highlight` marker underline effect on last word of every page heading
 - Stagger fade-up animations (up to 12 children), gated behind `prefers-reduced-motion`
 - Cards always link to internal detail pages; external URLs shown as CTA buttons on detail pages
-- **Hero headline typography**: 3-part typographic split (lead / bridge / highlight). BRIDGE_WORDS (`for`, `the`, `of`, `and`, etc.) render smaller and faded as visual connectors between lead word and highlight. `text-4xl sm:text-5xl md:text-6xl lg:text-[5.5rem]` with `leading-[1]` for tight line spacing. Asymmetric padding shifts content upward (`pt-20 pb-28` → `lg:pt-32 lg:pb-48`).
-- **Card layout order**: All homepage cards follow Title → Description → Tags (at bottom). Role/position NOT shown on homepage cards (too busy). Detail pages show role in Lime Yellow below sector/tags.
+- **Hero headline typography**: 3-part typographic split (lead / bridge / highlight). BRIDGE_WORDS (`for`, `the`, `of`, `and`, etc.) render smaller and faded as visual connectors between lead word and highlight. `text-5xl md:text-6xl lg:text-[5.5rem]` with `leading-[1]` for tight line spacing. Asymmetric padding shifts content upward (`pt-20 pb-28` → `lg:pt-32 lg:pb-48`).
+- **Card layout order**: All homepage cards follow Title → Description → Tags (at bottom). Role/position NOT shown on homepage cards (too busy). Detail pages show role in Neon Chartreuse below sector/tags.
 - Card hovers: translate-up + shadow + purple title highlight + arrow reveal (all card types)
-- **Feature card** for first project on homepage: full-width image with Space Indigo gradient overlay, hover scale. Falls back to standard grid if project has no image.
-- **Varied card layouts per section**: Projects use feature card + grid (Lime Yellow bottom), Open Source uses image cards with Ultra Violet left border, Toolkit uses ResourceCard grid (Lime Yellow bottom).
+- **Feature card** for first project on homepage: full-width image with Deep Twilight gradient overlay, hover scale. Falls back to standard grid if project has no image.
+- **Varied card layouts per section**: Projects use feature card + grid (Neon Chartreuse bottom), Open Source uses image cards with Ultra Violet left border, Toolkit uses ResourceCard grid (Neon Chartreuse bottom).
 - Homepage section banding: muted → white → muted (first section gets warm beige)
-- **Footer**: Space Indigo background, Bodoni Moda "Rebecca L Miller, PhD" branding, "Science for Good" tagline, land acknowledgement in Bodoni Moda (`#c3bdb8` at 70% opacity, `text-base`), nav links match header styling (`font-medium text-hero-foreground/70 hover:text-hero-foreground`)
+- **Autoplay video cards**: Cards support `<video autoplay loop muted playsinline>` for mp4/webm thumbnails. `CardMedia.svelte` handles video/image detection, poster frame from multi-file Notion properties, and `prefers-reduced-motion` pause (same pattern as LetterSidebar). Detection via `isVideoUrl()` on resolved local paths. Video content guidance: short clips (5-15s), < 10MB, mp4/webm preferred; `.mov` has partial browser support.
+- **Footer**: Deep Twilight background, Bodoni Moda "Rebecca L Miller, PhD" branding (`font-bold`, 700), "Science for Good" tagline (`font-medium`, 500), land acknowledgement in Bodoni Moda (`#c3bdb8` at 70% opacity, `text-base`), nav links match header styling (`font-medium text-hero-foreground/70 hover:text-hero-foreground`), copyright (`font-medium`, 500)
+- **Nav logo**: `text-3xl font-extrabold` (800) on mobile, invisible on md+ (RLM sidebar replaces it)
 
 ### Accessibility Constraints
-- **Lime Yellow on light bg: ~1.3:1 -- NEVER use as text.** Background/highlight only.
+- **Neon Chartreuse on light bg: ~1.3:1 -- NEVER use as text.** Background/highlight only.
 - Ultra Violet on White Smoke: ~4.7:1 -- OK for large text; use Onyx for body text
 - Onyx on White Smoke: ~18:1 -- excellent for body text
-- Lime Yellow on Space Indigo: ~10:1 -- excellent
+- Neon Chartreuse on Deep Twilight: ~10:1 -- excellent
+- Video cards respect `prefers-reduced-motion`: CardMedia pauses video when reduced motion is preferred
 
 ## Project Structure
 
@@ -126,36 +132,36 @@ Notion databases/pages
 src/
   lib/
     components/
-      ui/                   → shadcn-svelte (auto-generated, don't edit)
       ProjectCard.svelte    → Project display card
       ToolCard.svelte       → Open source tool card (used on /open-source subpage)
       ToolListItem.svelte   → Tool image card for homepage (Ultra Violet left border, hover arrow)
+      CardMedia.svelte      → Shared card media (video/image with poster + reduced-motion pause)
       ResourceCard.svelte   → Resource card
       StickySection.svelte  → Sticky section header wrapper (homepage, linked title + angular arrow)
       ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage, accepts class prop)
       LetterSidebar.svelte  → Floating RLM sidebar (RAF-driven exponential decay scroll physics) + hamburger menu toggle ($bindable)
-      DetailHeader.svelte   → Shared detail page header (back link, title, badge slot)
+      DetailHeader.svelte   → Shared detail page header (back link, title, pills slot, optional description subtitle)
       NotionBlocks.svelte   → Renders ContentBlock[] as Svelte components
       NotionBlock.svelte    → Block type dispatcher → routes to sub-components
       NotionTextBlock.svelte→ Text blocks: paragraphs, headings, lists, toggles, quotes, callouts
-      NotionMediaBlock.svelte→ Media blocks: images, video, audio, code, embeds, bookmarks, files, equations
+      NotionMediaBlock.svelte→ Media blocks: images, video, audio, code, embeds, bookmarks, files, PDFs, equations
       NotionLayoutBlock.svelte→ Layout blocks: dividers, tables, column layouts, synced blocks
       notion-render-utils.ts→ renderRichTextToSafeHtml(), escapeHtml(), hasContent()
     server/
       services/
-        notion.service.ts   → Notion client + generic fetcher + property extractors (incl. getSelectOrMulti) + createCachedFetcher + warnSlugCollisions
+        notion.service.ts   → Notion client + generic fetcher + property extractors (incl. getSelectOrMulti, getMediaFiles) + createCachedFetcher + warnSlugCollisions
         page-content.ts     → getPageContent() — combines getPageBlocks() + transformBlocks()
         projects.service.ts → Project mapper + queries (uses createCachedFetcher)
         tools.service.ts    → Tool mapper + queries (uses createCachedFetcher)
         resources.service.ts→ Resource mapper + queries (uses createCachedFetcher)
         about.service.ts    → About page fetcher (uses getPageContent)
-        image-cache.ts      → Build-time Notion image downloader (dedup, hash, fallback)
-        notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[] (22+ block types)
+        image-cache.ts      → Build-time Notion media downloader (images + video → static/images/, PDFs/files → static/files/, dedup, hash, HEIC→JPEG, fallback)
+        notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[] (23+ block types incl. pdf)
         notion-block-utils.ts→ Shared transform helpers: extractRichText, extractMediaUrl, groupListItems
         embed-config.ts     → URL pattern → embed provider/aspect-ratio detection
         code-highlight.ts   → Shiki syntax highlighting (promise-cached singleton, dual-theme)
     types/
-      content.ts            → Project, Tool, Resource, ContentBlock interfaces + slugify()
+      content.ts            → Project, Tool, Resource, ContentBlock interfaces + slugify() + isVideoUrl()
   routes/
     +layout.svelte          → Shared nav + footer + SEO meta + LetterSidebar
     +layout.server.ts       → Site metadata from env vars
@@ -172,23 +178,21 @@ src/
     contact/
     +error.svelte           → Runtime error page
 static/
-  favicon.svg
   robots.txt
-  404.html                  → Static 404 fallback (adapter-static)
   molstar/                  → Mol* 3D viewer session files (.molx)
   _headers                  → Netlify custom headers (CORS for /molstar/*)
 tests/
   services/
     notion.service.test.ts
-    image-cache.test.ts     → Image download, dedup, hash, fallback tests
-    notion-blocks.test.ts   → Block transform tests (22+ block types, smart embeds, Shiki)
+    image-cache.test.ts     → Image, video + file download, dedup, hash, content-type validation tests
+    notion-blocks.test.ts   → Block transform tests (23+ block types incl. pdf, smart embeds, Shiki)
     notion-block-utils.test.ts → Shared block utilities (extractRichText, groupListItems)
     mappers.test.ts         → Tests for mapProject, mapTool, mapResource
     slug-collisions.test.ts → Tests for warnSlugCollisions
     embed-config.test.ts    → Embed provider detection (YouTube, Miro, Mol*, etc.)
     code-highlight.test.ts  → Shiki highlighting (language mapping, fallbacks)
   types/
-    content.test.ts         → slugify() and type interface tests
+    content.test.ts         → slugify(), isVideoUrl(), and type interface tests
   components/
     notion-render-utils.test.ts → XSS-safe rich text rendering
     float-physics.test.ts       → Exponential decay interpolation (smoothDamp)
@@ -220,7 +224,7 @@ tests/
 | Sector | Select/Multi-select | Product, Paper, Patent, Prototype (read via `getSelectOrMulti()`) |
 | Status | Select | Active, Completed, Archived |
 | Role | Text | Your role |
-| Image | Files | Cover image |
+| Image | Files | Cover image or video. Upload video + thumbnail for poster support. |
 | URL | URL | Link to project |
 | Featured | Checkbox | Show on homepage? |
 | Order | Number | Display order |
@@ -243,12 +247,15 @@ tests/
 | Property | Type | Purpose |
 |----------|------|---------|
 | Title | Title | Name |
+| Description | Rich text | Short description |
 | Type | Select | Book, Website, Podcast, Course, Newsletter |
 | Category | Select | Science, Philosophy, Food, etc. |
 | Author | Text | Creator |
 | URL | URL | Link |
 | Why I Love It | Rich text | Personal recommendation |
 | Image | Files | Cover image |
+| Featured | Checkbox | Show on homepage? |
+| Order | Number | Display order |
 
 ### Notion SDK v5
 - Uses `dataSources.query()` with `data_source_id` (NOT the removed `databases.query()`)
@@ -296,11 +303,11 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 137 tests across 11 files: `notion.service.test.ts` (30) + `notion-blocks.test.ts` (24) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (5) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (13 — download, dedup, hash, Content-Type validation)
+- 163 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (30) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (21 — image + video + file download, dedup, hash, content-type validation)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs
-- Block transform tests cover 22+ block types including smart embed detection, video→embed conversion, table custom child-fetch, column list, synced blocks, and Shiki highlighting
+- Block transform tests cover 23+ block types including PDF blocks, toggle headings, smart embed detection, video→embed conversion, table custom child-fetch, column list, synced blocks, and Shiki highlighting
 - Mock Notion SDK responses — no live API calls in tests
 - Run: `npm test` or `npx vitest run`
 
@@ -353,12 +360,15 @@ Errors are written for humans:
 | `utils.ts` / `helpers.ts` | Name by domain |
 | 5 identical fetcher modules | Generic fetcher + type-specific mappers |
 | Separate backend | adapter-static. Formspree for forms. |
-| Use Lime Yellow as text on light bg | Background/highlight only — fails WCAG contrast |
+| Use Neon Chartreuse as text on light bg | Background/highlight only — fails WCAG contrast |
+| Approximate/guess color space conversions | Use exact hex or OKLCH from user. If conversion needed, use programmatic tool — never eyeball |
+| Use `loading="lazy"` on WebGL iframes | Set `loading: 'eager'` in embed-config.ts — iOS Safari breaks WebGL context init with lazy loading |
+| Render database Image on detail pages | Database Image = cards + og:image only. Detail page media comes from NotionBlocks |
 
 ## Known Limitations & Mitigations
 
-### Image Caching (Build-Time Download)
-Notion S3 image URLs expire after ~1 hour. At build time, `image-cache.ts` downloads all Notion images to `static/images/` and rewrites URLs to permanent `/images/{hash}.ext` paths. Non-image S3 files (PDFs, audio) pass through unchanged. The dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp` copies images to `build/images/` (Vite snapshots `static/` before prerender runs). `static/images/` is gitignored.
+### Media Caching (Build-Time Download)
+Notion S3 signed URLs expire after ~1 hour. At build time, `image-cache.ts` downloads all Notion S3 files: images and videos to `static/images/` and other files (PDFs, docs, etc.) to `static/files/`. Both rewrite to permanent `/{dir}/{hash}.ext` paths. A shared `downloadS3File()` function handles both paths with a content-type safelist (rejects S3 XML/HTML error pages). Videos (mp4, webm, mov) are cached alongside images in `static/images/`. HEIC images (iPhone uploads via Notion) are auto-detected by magic bytes and converted to JPEG via `heic-convert`. The dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp -f` copies file contents (not dirs) from `static/images/*` and `static/files/*` to `build/` — using `*` glob avoids nested directories when Vite's snapshot already created the target dir. Both directories are gitignored. The `handleHttpError` in `svelte.config.js` ignores 404s for `/images/` and `/files/` paths during prerender (files are downloaded mid-prerender, after Vite's snapshot).
 
 ### Netlify Free Tier Limits (300 credits/month)
 Each production deploy costs ~15 credits. The free tier allows ~20 deploys/month. **Do not enable scheduled build hooks** — even a 6-hourly hook would consume 2,700 credits/month. Use push-triggered deploys only, plus manual "Trigger deploy" from the Netlify dashboard for content refreshes.
@@ -368,11 +378,10 @@ Uses CSS-based configuration (`@import "tailwindcss"`) instead of v3's JS config
 
 ### CLI Quirks
 - `npx sv create` and `npx sv add` require clean git working directory or `--skip-preflight`
-- `npx shadcn-svelte init` prompts for lib alias — pass `--lib-alias '$lib'` to skip
 - Tailwind CSS 4 setup: install `tailwindcss` + `@tailwindcss/vite`, add plugin to `vite.config.ts`, use `@import 'tailwindcss'` in `app.css`
 
 ### Google Fonts via CDN
-Bodoni Moda and Raleway load from Google Fonts CDN. Potential FOUC on slow connections. If this becomes a problem, self-host the font files in `static/fonts/`.
+Bodoni Moda and Poppins load from Google Fonts CDN. Potential FOUC on slow connections. If this becomes a problem, self-host the font files in `static/fonts/`.
 
 ### Slugs Derived from Titles
 Slugs are generated at build time from Notion titles via `slugify()`. If Rebecca renames an item in Notion, old URLs break after the next build. No redirect system exists yet.

@@ -20,7 +20,8 @@ vi.mock('$lib/server/services/code-highlight', () => ({
 
 // Mock image cache — passthrough (returns URL unchanged)
 vi.mock('$lib/server/services/image-cache', () => ({
-	downloadNotionImage: vi.fn((url: string) => Promise.resolve(url))
+	downloadNotionImage: vi.fn((url: string) => Promise.resolve(url)),
+	downloadNotionFile: vi.fn((url: string) => Promise.resolve(url))
 }));
 
 const { transformBlocks } = await import('$lib/server/services/notion-blocks');
@@ -52,9 +53,11 @@ function paragraphBlock(text: string) {
 	return mockBlock('paragraph', { paragraph: { rich_text: mockRichText(text) } });
 }
 
-function headingBlock(level: 1 | 2 | 3, text: string) {
+function headingBlock(level: 1 | 2 | 3, text: string, isToggleable?: boolean) {
 	const key = `heading_${level}`;
-	return mockBlock(key, { [key]: { rich_text: mockRichText(text) } });
+	const headingData: Record<string, unknown> = { rich_text: mockRichText(text) };
+	if (isToggleable !== undefined) headingData.is_toggleable = isToggleable;
+	return mockBlock(key, { [key]: headingData });
 }
 
 function bulletedListItem(text: string) {
@@ -369,6 +372,23 @@ describe('transformBlocks', () => {
 		expect(result[0].fileName).toBe('My document');
 	});
 
+	it('transforms pdf block', async () => {
+		const blocks = [mockBlock('pdf', {
+			pdf: {
+				type: 'external',
+				external: { url: 'https://example.com/paper.pdf' },
+				caption: mockRichText('Research paper')
+			}
+		})];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('pdf');
+		expect(result[0].fileUrl).toBe('https://example.com/paper.pdf');
+		expect(result[0].fileName).toBe('Research paper');
+		expect(result[0].caption).toHaveLength(1);
+	});
+
 	it('transforms column_list block', async () => {
 		// First call returns column blocks, subsequent calls return column children
 		mockGetChildBlocks
@@ -433,5 +453,78 @@ describe('transformBlocks', () => {
 		expect(result).toHaveLength(1);
 		expect(result[0].type).toBe('equation');
 		expect(result[0].expression).toBe('E = mc^2');
+	});
+
+	it('transforms toggle heading with children', async () => {
+		mockGetChildBlocks.mockResolvedValueOnce([
+			{ id: 'child-p', type: 'paragraph', has_children: false, paragraph: { rich_text: mockRichText('Hidden content') } }
+		]);
+		const blocks = [headingBlock(2, 'Toggle Section', true)];
+		// Mark has_children since the block has nested content
+		(blocks[0] as Record<string, unknown>).has_children = true;
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('heading_2');
+		expect(result[0].isToggleable).toBe(true);
+		expect(result[0].richText[0].text).toBe('Toggle Section');
+		expect(result[0].children).toHaveLength(1);
+		expect(result[0].children[0].richText[0].text).toBe('Hidden content');
+	});
+
+	it('transforms empty toggle heading (no children yet)', async () => {
+		const blocks = [headingBlock(1, 'Empty Toggle', true)];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('heading_1');
+		expect(result[0].isToggleable).toBe(true);
+		expect(result[0].children).toEqual([]);
+	});
+
+	it('treats heading with is_toggleable=false as regular heading', async () => {
+		const blocks = [headingBlock(3, 'Normal Heading', false)];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('heading_3');
+		expect(result[0].isToggleable).toBe(false);
+		expect(result[0].children).toEqual([]);
+	});
+
+	it('treats heading with undefined is_toggleable as non-toggleable', async () => {
+		// headingBlock without isToggleable param omits the property entirely
+		const blocks = [headingBlock(2, 'Legacy Heading')];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('heading_2');
+		expect(result[0].isToggleable).toBe(false);
+		expect(result[0].children).toEqual([]);
+	});
+
+	it('transforms toggle headings at all levels', async () => {
+		mockGetChildBlocks
+			.mockResolvedValueOnce([{ id: 'c1', type: 'paragraph', has_children: false, paragraph: { rich_text: mockRichText('Child 1') } }])
+			.mockResolvedValueOnce([{ id: 'c2', type: 'paragraph', has_children: false, paragraph: { rich_text: mockRichText('Child 2') } }])
+			.mockResolvedValueOnce([{ id: 'c3', type: 'paragraph', has_children: false, paragraph: { rich_text: mockRichText('Child 3') } }]);
+
+		const h1 = headingBlock(1, 'H1 Toggle', true);
+		(h1 as Record<string, unknown>).has_children = true;
+		const h2 = headingBlock(2, 'H2 Toggle', true);
+		(h2 as Record<string, unknown>).has_children = true;
+		const h3 = headingBlock(3, 'H3 Toggle', true);
+		(h3 as Record<string, unknown>).has_children = true;
+
+		const result = await transformBlocks([h1, h2, h3] as never[]);
+
+		expect(result).toHaveLength(3);
+		for (const block of result) {
+			expect(block.isToggleable).toBe(true);
+			expect(block.children).toHaveLength(1);
+		}
+		expect(result[0].type).toBe('heading_1');
+		expect(result[1].type).toBe('heading_2');
+		expect(result[2].type).toBe('heading_3');
 	});
 });

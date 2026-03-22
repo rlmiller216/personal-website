@@ -53,6 +53,7 @@ describe('getEmbedConfig', () => {
 		expect(config.provider).toBe('molstar');
 		expect(config.aspectRatio).toBe('1/1');
 		expect(config.minHeight).toBe('500px');
+		expect(config.loading).toBe('eager');
 	});
 
 	it('returns generic config for unknown URLs', () => {
@@ -60,6 +61,7 @@ describe('getEmbedConfig', () => {
 		expect(config.provider).toBe('generic');
 		expect(config.aspectRatio).toBe('16/9');
 		expect(config.minHeight).toBe('400px');
+		expect(config.loading).toBeUndefined();
 	});
 
 	it('returns generic config for empty string', () => {

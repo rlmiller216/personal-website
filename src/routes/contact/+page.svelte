@@ -32,7 +32,7 @@
 	<title>Contact — {data.siteName}</title>
 </svelte:head>
 
-<!-- Page header — Space Indigo, overlaps transparent nav -->
+<!-- Page header — Deep Twilight, overlaps transparent nav -->
 <div class="relative -mt-16 pt-16 bg-hero">
 	<div class="max-w-6xl mx-auto px-6 py-8 sm:py-10">
 		<h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-hero-foreground tracking-tight leading-tight">Get in <span class="text-highlight">Touch</span></h1>
@@ -62,7 +62,7 @@
 					id="name"
 					name="name"
 					required
-					class="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm
+					class="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm font-medium
 						focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
 				/>
 			</div>
@@ -74,7 +74,7 @@
 					id="email"
 					name="email"
 					required
-					class="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm
+					class="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm font-medium
 						focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
 				/>
 			</div>
@@ -86,7 +86,7 @@
 					name="message"
 					rows="5"
 					required
-					class="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm
+					class="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm font-medium
 						focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors resize-y"
 				></textarea>
 			</div>

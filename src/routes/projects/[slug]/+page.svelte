@@ -23,7 +23,7 @@
   {/if}
 </svelte:head>
 
-<DetailHeader backHref="/projects" backLabel="All Projects" title={project.title}>
+<DetailHeader backHref="/projects" backLabel="All Projects" title={project.title} description={project.description}>
   {#each project.sector as s}
     <span class="rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-pill-accent-foreground bg-pill-accent">
       {s}
@@ -41,23 +41,9 @@
   {/if}
 </DetailHeader>
 
-<article class="max-w-3xl mx-auto px-6 py-12 animate-stagger">
-  {#if project.imageUrl}
-    <img
-      src={project.imageUrl}
-      alt={project.title}
-      class="w-full max-h-96 object-cover rounded-lg mb-8 transition-transform duration-300 hover:scale-[1.02]"
-    />
-  {/if}
-
-  {#if project.description}
-    <p class="text-lg text-muted-foreground leading-relaxed mb-8">
-      {project.description}
-    </p>
-  {/if}
-
+<article class="max-w-6xl mx-auto px-6 pt-2 sm:pt-6 pb-12 animate-stagger">
   {#if blocks.length > 0}
-    <div class="prose max-w-none">
+    <div class="prose max-w-none [&>*:first-child]:mt-0">
       <NotionBlocks {blocks} />
     </div>
   {/if}

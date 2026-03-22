@@ -8,7 +8,7 @@ Map of everything under `src/`, how it connects, and where to find things.
 
 ```
 src/
-├── app.css                               # Design system: OKLCH color tokens, typography, animations (~215 LOC)
+├── app.css                               # Design system: color tokens (hex + OKLCH), typography, animations (~240 LOC)
 ├── app.d.ts                              # SvelteKit type augmentations (App namespace)
 ├── app.html                              # HTML shell + Google Fonts preconnect + dark-mode flash prevention (~20 LOC)
 │
@@ -20,43 +20,45 @@ src/
 │   │   └── favicon.svg                   # R monogram SVG favicon
 │   │
 │   ├── types/
-│   │   └── content.ts                    # Domain interfaces: Project, Tool, Resource, ContentBlock
+│   │   └── content.ts                    # Domain interfaces: Project, Tool, Resource, ContentBlock + isVideoUrl() helper
 │   │
 │   ├── components/
 │   │   ├── ProjectCard.svelte            # Project card: hover translate-up, Ultra Violet overlay (~45 LOC)
 │   │   ├── ToolCard.svelte               # Tool card: image-forward, category badge, hover shadow (~40 LOC, used on /open-source)
 │   │   ├── ToolListItem.svelte           # Tool image card: Ultra Violet left border, hover arrow (~45 LOC, homepage)
-│   │   ├── ResourceCard.svelte           # Resource card: Lime Yellow bottom border, hover arrow (~45 LOC)
-│   │   ├── StickySection.svelte          # Sticky section header: IntersectionObserver shadow, "View all →" (~70 LOC)
+│   │   ├── ResourceCard.svelte           # Resource card: Neon Chartreuse bottom border, hover arrow (~45 LOC)
+│   │   ├── CardMedia.svelte              # Shared card media — renders <video> or <img> with poster + reduced-motion pause
+│   │   ├── StickySection.svelte          # Sticky section header: linked title + angular arrow (~54 LOC)
 │   │   ├── ThemeToggle.svelte            # Dark mode toggle: Sun/Moon icons, localStorage, class prop (~29 LOC)
 │   │   ├── LetterSidebar.svelte          # Floating RLM sidebar (RAF-driven scroll physics) + hamburger toggle (~170 LOC)
+│   │   ├── DetailHeader.svelte           # Shared detail page header: back link, title, badge slot (~40 LOC)
 │   │   ├── NotionBlocks.svelte           # Iterates ContentBlock[] → renders each via NotionBlock
 │   │   ├── NotionBlock.svelte            # Block type dispatcher → routes to sub-components (~33 LOC)
 │   │   ├── NotionTextBlock.svelte        # Text blocks: paragraphs, headings, lists, toggles, quotes, callouts (~87 LOC)
-│   │   ├── NotionMediaBlock.svelte       # Media blocks: images, video, audio, code, embeds, bookmarks, files, equations (~114 LOC)
+│   │   ├── NotionMediaBlock.svelte       # Media blocks: images, video, audio, code, embeds, bookmarks, files, PDFs, equations (~130 LOC)
 │   │   ├── NotionLayoutBlock.svelte      # Layout blocks: dividers, tables, column layouts, synced blocks (~63 LOC)
 │   │   ├── notion-render-utils.ts        # renderRichTextToSafeHtml(), escapeHtml(), hasContent() (~46 LOC)
 │   │   └── ui/                           # shadcn-svelte auto-generated components
 │   │
 │   └── server/
 │       └── services/
-│           ├── notion.service.ts         # Notion API client, property extractors, generic fetcher, createCachedFetcher, warnSlugCollisions
+│           ├── notion.service.ts         # Notion API client, property extractors (incl. getMediaFiles), generic fetcher, createCachedFetcher, warnSlugCollisions (~263 LOC)
 │           ├── page-content.ts           # getPageContent() — combines getPageBlocks() + transformBlocks()
 │           ├── notion-blocks.ts          # Block transformer: Notion API → ContentBlock[] (22+ types, ~230 LOC)
 │           ├── notion-block-utils.ts     # Shared helpers: extractRichText, extractMediaUrl, groupListItems (~85 LOC)
 │           ├── embed-config.ts           # URL pattern → embed provider/aspect-ratio detection (~53 LOC)
 │           ├── code-highlight.ts         # Shiki syntax highlighting: promise-cached, dual-theme (~82 LOC)
-│           ├── image-cache.ts           # Build-time Notion image downloader: dedup Map, hash, fallback (~95 LOC)
+│           ├── image-cache.ts           # Build-time Notion file downloader: images + videos → static/images/, PDFs/files → static/files/, HEIC→JPEG conversion, dedup, hash. downloadItemMedia (renamed from downloadItemImages) (~148 LOC)
 │           ├── projects.service.ts       # Project mapper + queries (uses createCachedFetcher)
 │           ├── tools.service.ts          # Tool mapper + queries (uses createCachedFetcher)
 │           ├── resources.service.ts      # Resource mapper + queries (uses createCachedFetcher, groupByType)
 │           └── about.service.ts          # About page fetcher (uses getPageContent)
 │
 └── routes/
-    ├── +layout.svelte                    # Root layout: LetterSidebar + slide-out overlay, scroll-aware nav, ThemeToggle, Space Indigo footer w/ land acknowledgement (~226 LOC)
+    ├── +layout.svelte                    # Root layout: LetterSidebar + slide-out overlay, non-fixed nav, ThemeToggle, Deep Twilight footer w/ land acknowledgement (~206 LOC)
     ├── +layout.server.ts                 # Loads site metadata from RM_* env vars
     ├── +layout.ts                        # export const prerender = true (all routes static)
-    ├── +page.svelte                      # Home: Space Indigo hero with 3-part headline, feature card + grid, stagger animations (~145 LOC)
+    ├── +page.svelte                      # Home: Deep Twilight hero with 3-part headline, feature card + grid, stagger animations (~145 LOC)
     ├── +page.server.ts                   # Fetches featured items from all Notion databases
     ├── +error.svelte                     # Branded error page (404/500)
     ├── about/
@@ -96,7 +98,7 @@ Pure TypeScript interfaces with zero dependencies. Defines the contract between 
 
 Server-only modules that run at build time. Fetches data from the Notion API and transforms it into typed objects for Svelte routes.
 
-#### `notion.service.ts` — Core Client (223 LOC)
+#### `notion.service.ts` — Core Client (~263 LOC)
 
 The single source of truth for all Notion API interactions.
 
@@ -111,6 +113,7 @@ The single source of truth for all Notion API interactions.
 | `getCheckbox` | `(property) → boolean` | Extract checkbox state |
 | `getNumber` | `(property) → number` | Extract number value |
 | `getFileUrl` | `(property) → string` | Extract first file/external URL |
+| `getMediaFiles` | `(property) → {url, name}[]` | Extract all file URLs from files property (images + videos) |
 | `queryAllPages` | `(dataSourceId, sorts?, filter?) → PageObjectResponse[]` | Paginated data source query |
 | `fetchAndMap<T>` | `(dataSourceId, mapper, sorts?, filter?) → T[]` | Query + map in one call |
 | `getPageBlocks` | `(pageId) → BlockObjectResponse[]` | Paginated block fetching |
@@ -141,9 +144,9 @@ Transforms Notion API `BlockObjectResponse[]` into serializable `ContentBlock[]`
 - `notion-block-utils.ts` — `extractRichText()`, `extractMediaUrl()`, `createBaseBlock()`, `groupListItems()`
 - `embed-config.ts` — `getEmbedConfig()` detects embed providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and returns aspect ratios
 - `code-highlight.ts` — `highlightCode()` Shiki-based build-time syntax highlighting
-- `image-cache.ts` — `downloadNotionImage()`, `downloadItemImages()`, `isNotionS3Url()`, `hashUrlToFilename()`. Downloads Notion S3 images to `static/images/` at build time, deduplicates via promise Map, falls back to original URL on failure
+- `image-cache.ts` — `downloadNotionImage()`, `downloadNotionFile()`, `downloadItemMedia()` (renamed from `downloadItemImages`), `isNotionS3Url()`, `hashUrlToFilename()`. Downloads Notion S3 images and videos (mp4/webm/mov) to `static/images/` and files (PDFs, etc.) to `static/files/` at build time. Auto-detects HEIC images (iPhone uploads) via magic bytes and converts to JPEG via `heic-convert`. Shared `downloadS3File()` internal with content-type safelist (includes `video/*`). Deduplicates via promise Map, falls back to original URL on failure.
 
-**Supported block types:** paragraph, heading_1/2/3, bulleted_list_item, numbered_list_item, to_do, toggle, quote, callout, divider, image, code, bookmark, embed, video, table, audio, file, column_list, synced_block, equation
+**Supported block types:** paragraph, heading_1/2/3, bulleted_list_item, numbered_list_item, to_do, toggle, quote, callout, divider, image, code, bookmark, embed, video, table, audio, file, pdf, column_list, synced_block, equation
 
 **Special handling:**
 - **Tables:** Custom child-fetch path (table_row blocks bypass `transformBlocks` to avoid being dropped as unsupported)
@@ -151,16 +154,17 @@ Transforms Notion API `BlockObjectResponse[]` into serializable `ContentBlock[]`
 - **Synced blocks:** Resolve `synced_from.block_id` for references vs own `block.id` for sources
 - **Column lists:** Sequential child fetching to avoid Notion API rate limits
 
-#### Content Fetcher Services (215 LOC total, 5 files)
+#### Content Fetcher Services (~283 LOC total, 5 files)
 
 Thin mappers over `fetchAndMap<T>()`. Each owns one domain type.
 
 | Service | LOC | Exports |
 |---|---|---|
-| `projects.service.ts` | 63 | `getAllProjects()`, `getFeaturedProjects()` |
-| `tools.service.ts` | 75 | `getAllTools()`, `getFeaturedTools()`, `getToolBySlug()` |
-| `resources.service.ts` | 52 | `getAllResources()`, `groupByType()` |
-| `about.service.ts` | 33 | `getAboutContent()` |
+| `projects.service.ts` | ~88 | `getAllProjects()`, `getFeaturedProjects()` |
+| `tools.service.ts` | ~79 | `getAllTools()`, `getFeaturedTools()`, `getToolBySlug()` |
+| `resources.service.ts` | ~70 | `getAllResources()`, `groupByType()` |
+| `about.service.ts` | ~30 | `getAboutContent()` |
+| `page-content.ts` | ~16 | `getPageContent()` |
 
 **Shared pattern (database services):**
 ```
@@ -187,7 +191,7 @@ Svelte components for rendering content. Card components receive typed props; No
 
 #### `LetterSidebar.svelte` (~145 LOC)
 
-Floating RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in Raleway uppercase are vertically spread on the homepage hero, then drift to a tight stacked monogram as the user scrolls — each letter at a different rate, creating a cascading wave effect. R stays fixed at the top; L and M float toward it via exponential decay interpolation (`1 - Math.exp(-rate * dt)`) in a RAF loop. Hamburger button at bottom toggles a slide-out nav overlay (state managed by parent via `$bindable`).
+Floating RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in Plus Jakarta Sans uppercase are vertically spread on the homepage hero, then drift to a tight stacked monogram as the user scrolls — each letter at a different rate, creating a cascading wave effect. R stays fixed at the top; L and M float toward it via exponential decay interpolation (`1 - Math.exp(-rate * dt)`) in a RAF loop. Hamburger button at bottom toggles a slide-out nav overlay (state managed by parent via `$bindable`).
 
 **Key patterns:**
 - **Exponential decay scroll physics:** Letters drift toward scroll-derived targets at different rates (R=8, L=5, M=3) via `requestAnimationFrame` loop. Higher rate = snappier response. Creates a cascading wave where R arrives first and M trails behind.
@@ -198,11 +202,12 @@ Floating RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in
 - **`prefers-reduced-motion`:** Forces `heroHeight=0` → letters always collapsed, snap to targets on every scroll (no RAF)
 - **Gap interpolation:** Single `gap` value interpolated between `spreadGap` and `collapsedGap`, target positions = `[R_TOP, R_TOP+gap, R_TOP+gap*2]` — guarantees equal spacing
 - **`$bindable` menuOpen prop:** Parent binds `sidebarMenuOpen` state. Hamburger button toggles it. X icon shows when open. `aria-expanded` and dynamic `aria-label` for accessibility.
-- **Dark mode:** Sidebar, slide-out panel, and scrolled nav use `dark:bg-hero` (Space Indigo) with `dark:text-hero-foreground` for letters/links. Borders switch to `dark:border-white/10`.
+- **Dark mode:** Sidebar and slide-out panel use `dark:bg-hero` (Deep Twilight) with `dark:text-hero-foreground` for letters/links. Borders switch to `dark:border-white/10`.
+- **Mobile menu styling:** The mobile hamburger dropdown (< md) uses `text-2xl font-bold uppercase tracking-wide` links matching homepage StickySection heading style, with Ultra Violet active text + Neon Chartreuse underline bar.
 
 #### `ThemeToggle.svelte` (~29 LOC)
 
-Dark mode toggle using Lucide Sun/Moon icons. Uses Svelte 5 `$state` for theme tracking. Persists preference to `localStorage` and applies `.dark` class on `<html>`. Accepts optional `class` prop for scroll-aware color overrides (light text on dark hero, dark text on solid nav).
+Dark mode toggle using Lucide Sun/Moon icons. Uses Svelte 5 `$state` for theme tracking. Persists preference to `localStorage` and applies `.dark` class on `<html>`. Accepts optional `class` prop for contextual color overrides (light text on dark hero backgrounds).
 
 #### `NotionBlocks.svelte` (16 LOC)
 
@@ -211,8 +216,8 @@ Simple iterator. Takes `blocks: ContentBlock[]` prop, renders each via `<NotionB
 #### NotionBlock Dispatcher + Sub-Components (~300 LOC total, 5 files)
 
 `NotionBlock.svelte` (~33 LOC) is a thin dispatcher routing blocks to sub-components by type set:
-- `NotionTextBlock.svelte` (~87 LOC) — paragraphs, headings, lists, to_do, toggle, quote, callout
-- `NotionMediaBlock.svelte` (~114 LOC) — images, video, audio, code (Shiki), embed (responsive), bookmark, file, equation
+- `NotionTextBlock.svelte` (~87 LOC) — paragraphs, headings, lists, to_do, toggle, quote, callout. Paragraphs use `font-normal md:font-medium` (400 on mobile, 500 on desktop); lists use `font-normal` (400) to override the blanket mobile 700 boost.
+- `NotionMediaBlock.svelte` (~130 LOC) — images, video, audio, code (Shiki), embed (responsive), bookmark, file, pdf, equation
 - `NotionLayoutBlock.svelte` (~63 LOC) — dividers, tables, column layouts, synced blocks
 
 Shared rendering utilities in `notion-render-utils.ts` (~46 LOC):
@@ -245,15 +250,15 @@ All 7 pages are fully wired to Notion data. Each route has a `+page.server.ts` (
 
 ### Design System (`app.css`, `app.html`)
 
-The visual identity is defined in `app.css` (~165 LOC) using CSS custom properties with OKLCH color space.
+The visual identity is defined in `app.css` (~240 LOC) using CSS custom properties with hex values and OKLCH color space.
 
 **Color palette (5 custom colors, light + dark tokens):**
-- Space Indigo — primary backgrounds (hero, nav, footer, page headers)
+- Deep Twilight — primary backgrounds (hero, nav, footer, page headers)
 - Ultra Violet — accents (borders, overlays, links, quotes)
-- Lime Yellow — highlights (`.text-highlight` utility, tags, callouts)
+- Neon Chartreuse — highlights (`.text-highlight` utility, tags, callouts)
 - Two additional palette colors for supporting roles
 
-**Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Raleway (body, weights 400–800). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px) bump all weights: body 400→500, headings→700, bold→800 to compensate for thin strokes on small/high-DPI screens.
+**Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Plus Jakarta Sans (body, weights 400–800). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px) bump weights: body 400→700, headings→800 (Bodoni hairlines need max weight), bold→800 to compensate for thin strokes on small/high-DPI screens. Secondary text overrides the blanket 700 boost: card descriptions/captions/footer use `font-medium` (500); Notion paragraphs and list blocks use `font-normal` (400) on mobile, `font-medium` (500) on desktop.
 
 **Animations:** `fadeUp`, `fadeIn`, `gradientShift` keyframes. Stagger animation support for up to 12 children via `--stagger-index` custom property.
 
@@ -272,7 +277,7 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
                                  │
                         ┌────────▼────────┐
                         │ notion.service  │ ← Client init, property extractors,
-                        │     (223 LOC)   │   queryAllPages, fetchAndMap, getPageBlocks
+                        │    (~263 LOC)   │   queryAllPages, fetchAndMap, getPageBlocks
                         └──┬──────────┬───┘
                            │          │
               ┌────────────┘          └──────────────┐
@@ -292,7 +297,7 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
    │  Page Services      │   │       Svelte Components                 │
    │  about (33)         │   │  NotionBlock (33) → dispatcher          │
    │                     │   │    ├── NotionTextBlock (87)             │
-   └──────────┬──────────┘   │    ├── NotionMediaBlock (114)           │
+   └──────────┬──────────┘   │    ├── NotionMediaBlock (130)           │
               │              │    ├── NotionLayoutBlock (63)            │
               │              │    └── notion-render-utils (46)          │
               │              └────────────────────┬────────────────────┘
@@ -320,7 +325,7 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
 
 **External dependencies (runtime):**
 - `@lucide/svelte` — icon components (Github, Linkedin, Mail, Sun, Moon, ArrowRight, Send)
-- Google Fonts CDN — Bodoni Moda (variable) + Raleway, loaded via `<link>` in `app.html`
+- Google Fonts CDN — Bodoni Moda (variable) + Plus Jakarta Sans, loaded via `<link>` in `app.html`
 
 ---
 
@@ -329,15 +334,15 @@ The visual identity is defined in `app.css` (~165 LOC) using CSS custom properti
 | Module | LOC | Files |
 |---|---|---|
 | Notion block transformer + utils | ~450 | 4 (notion-blocks, block-utils, embed-config, code-highlight) |
-| Notion client + fetcher | 223 | 1 |
+| Notion client + fetcher | ~263 | 1 |
 | NotionBlock dispatcher + sub-components | ~340 | 5 (dispatcher, 3 sub-components, render-utils) |
 | Card components + ThemeToggle + LetterSidebar | ~240 | 5 |
-| Design system (app.css + app.html) | ~185 | 2 |
+| Design system (app.css + app.html) | ~260 | 2 |
 | Content types | ~149 | 1 |
-| Content fetcher services | 201 | 4 |
+| Content fetcher services | ~283 | 5 |
 | Routes (pages + layouts) | ~550 | 21 |
 | Utilities + config | 27 | 3 |
-| **Tests** | **~1,000** | **10** |
+| **Tests** | **~1,000** | **11** |
 | **Total** | **~3,450** | **54** |
 
-> Tests are ~30% of total LOC. 137 tests across 11 files covering 22+ block types, image caching, float physics, XSS safety, and all service mappers.
+> Tests are ~30% of total LOC. 144 tests across 11 files covering 23+ block types (incl. pdf), image + file caching, float physics, XSS safety, and all service mappers.

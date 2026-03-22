@@ -18,7 +18,7 @@
 			loading="lazy"
 		/>
 		{#if block.caption.length > 0 && hasContent(block.caption)}
-			<figcaption class="text-sm opacity-60 mt-2 text-center">
+			<figcaption class="text-sm font-medium opacity-60 mt-2 text-center">
 				{@html renderRichTextToSafeHtml(block.caption)}
 			</figcaption>
 		{/if}
@@ -31,7 +31,7 @@
 			<track kind="captions" />
 		</video>
 		{#if block.caption.length > 0 && hasContent(block.caption)}
-			<figcaption class="text-sm opacity-60 mt-2 text-center">
+			<figcaption class="text-sm font-medium opacity-60 mt-2 text-center">
 				{@html renderRichTextToSafeHtml(block.caption)}
 			</figcaption>
 		{/if}
@@ -47,7 +47,7 @@
 			<pre class="bg-hero text-hero-foreground rounded-lg p-4 overflow-x-auto"><code class="text-sm font-mono">{block.richText.map(s => s.text).join('')}</code></pre>
 		{/if}
 		{#if block.caption.length > 0 && hasContent(block.caption)}
-			<p class="text-sm opacity-60 mt-1">{@html renderRichTextToSafeHtml(block.caption)}</p>
+			<p class="text-sm font-medium opacity-60 mt-1">{@html renderRichTextToSafeHtml(block.caption)}</p>
 		{/if}
 	</div>
 
@@ -58,11 +58,11 @@
 			title="Embedded content"
 			class="w-full rounded-lg border {block.embedType ? `embed-${block.embedType}` : ''}"
 			style="aspect-ratio: {block.embedAspectRatio || '16/9'}; min-height: min({block.embedMinHeight || '315px'}, 70vh)"
-			loading="lazy"
+			loading={block.embedLoading || 'lazy'}
 			allowfullscreen
 		></iframe>
 		{#if block.caption.length > 0 && hasContent(block.caption)}
-			<p class="text-sm opacity-60 mt-2 text-center">{@html renderRichTextToSafeHtml(block.caption)}</p>
+			<p class="text-sm font-medium opacity-60 mt-2 text-center">{@html renderRichTextToSafeHtml(block.caption)}</p>
 		{/if}
 	</div>
 
@@ -72,11 +72,40 @@
 			<source src={block.url} />
 		</audio>
 		{#if block.caption.length > 0 && hasContent(block.caption)}
-			<figcaption class="text-sm opacity-60 mt-2 text-center">
+			<figcaption class="text-sm font-medium opacity-60 mt-2 text-center">
 				{@html renderRichTextToSafeHtml(block.caption)}
 			</figcaption>
 		{/if}
 	</figure>
+
+{:else if block.type === 'pdf'}
+	{#if block.fileUrl}
+		<figure class="my-6">
+			<object
+				data={block.fileUrl}
+				type="application/pdf"
+				class="w-full rounded-lg border border-border"
+				style="height: min(80vh, 800px)"
+				title={block.fileName || 'PDF document'}
+			>
+				<!-- Fallback for browsers that can't embed PDFs -->
+				<div class="p-6 text-center">
+					<p class="text-muted-foreground mb-3">PDF preview not available in this browser.</p>
+					<a
+						href={block.fileUrl}
+						class="inline-flex items-center gap-2 text-primary underline decoration-1 underline-offset-2 hover:opacity-70 transition-opacity"
+						target="_blank"
+						rel="noopener noreferrer"
+					>Open PDF: {block.fileName || 'Document.pdf'}</a>
+				</div>
+			</object>
+			{#if block.caption.length > 0 && hasContent(block.caption)}
+				<figcaption class="text-sm font-medium opacity-60 mt-2 text-center">
+					{@html renderRichTextToSafeHtml(block.caption)}
+				</figcaption>
+			{/if}
+		</figure>
+	{/if}
 
 {:else if block.type === 'file'}
 	{#if block.fileUrl}

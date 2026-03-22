@@ -19,14 +19,15 @@ import {
 	getUrl,
 	getCheckbox,
 	getNumber,
-	getFileUrl
+	getMediaFiles
 } from './notion.service';
-import { downloadItemImages } from './image-cache';
+import { downloadItemMedia } from './image-cache';
 
 const MODULE = '[projects]';
 
 export function mapProject(page: PageObjectResponse): Project {
 	const props = page.properties;
+	const media = getMediaFiles(props['Image']);
 	return {
 		id: page.id,
 		slug: slugify(getTitle(props['Title'])),
@@ -35,7 +36,9 @@ export function mapProject(page: PageObjectResponse): Project {
 		sector: getSelectOrMulti(props['Sector']),
 		status: getSelect(props['Status']),
 		role: getRichText(props['Role']),
-		imageUrl: getFileUrl(props['Image']),
+		imageUrl: media.mediaUrl,
+		isVideo: false,
+		posterUrl: media.posterUrl,
 		url: getUrl(props['URL']),
 		featured: getCheckbox(props['Featured']),
 		order: getNumber(props['Order']),
@@ -59,7 +62,7 @@ async function fetchAllProjects(): Promise<Project[]> {
 	});
 
 	warnSlugCollisions(results, MODULE);
-	await downloadItemImages(results);
+	await downloadItemMedia(results);
 
 	return results;
 }
@@ -83,6 +86,6 @@ export async function getFeaturedProjects(): Promise<Project[]> {
 			{ property: 'Status', select: { does_not_equal: 'Archived' } }
 		]
 	});
-	await downloadItemImages(results);
+	await downloadItemMedia(results);
 	return results;
 }

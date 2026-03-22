@@ -2,20 +2,38 @@
 //
 // Runs at build time in +page.server.ts. Handles:
 // - Rich text extraction with annotations
-// - Recursive child block fetching (toggles, nested lists)
+// - Recursive child block fetching (toggles, toggle headings, nested lists)
 // - Consecutive list item grouping into parent list blocks
 // - Image URL extraction from both file and external sources
 //
 // Called by: about.service.ts, project/tool/resource detail routes
 // Depends on: notion.service.ts for child block fetching, notion-block-utils.ts for shared helpers
 
-import type { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import type { BlockObjectResponse, RichTextItemResponse } from '@notionhq/client/build/src/api-endpoints';
 import type { ContentBlock } from '$lib/types/content';
 import { getChildBlocks } from './notion.service';
 import { extractRichText, extractMediaUrl, createBaseBlock, groupListItems } from './notion-block-utils';
 import { getEmbedConfig } from './embed-config';
 import { highlightCode } from './code-highlight';
-import { downloadNotionImage } from './image-cache';
+import { downloadNotionImage, downloadNotionFile } from './image-cache';
+
+/** Shared heading transform — handles both regular and toggleable headings. */
+async function transformHeading(
+	block: BlockObjectResponse,
+	headingData: { rich_text: RichTextItemResponse[]; is_toggleable?: boolean },
+	type: ContentBlock['type']
+): Promise<ContentBlock> {
+	const isToggleable = headingData.is_toggleable ?? false;
+	return {
+		...createBaseBlock(block.id),
+		type,
+		richText: extractRichText(headingData.rich_text),
+		isToggleable,
+		children: isToggleable && block.has_children
+			? await fetchAndTransformChildren(block.id)
+			: []
+	};
+}
 
 /** Converts a single Notion block to a ContentBlock. */
 async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentBlock | null> {
@@ -25,14 +43,9 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 		case 'paragraph':
 			return { ...base, type: 'paragraph', richText: extractRichText(block.paragraph.rich_text) };
 
-		case 'heading_1':
-			return { ...base, type: 'heading_1', richText: extractRichText(block.heading_1.rich_text) };
-
-		case 'heading_2':
-			return { ...base, type: 'heading_2', richText: extractRichText(block.heading_2.rich_text) };
-
-		case 'heading_3':
-			return { ...base, type: 'heading_3', richText: extractRichText(block.heading_3.rich_text) };
+		case 'heading_1': return transformHeading(block, block.heading_1, 'heading_1');
+		case 'heading_2': return transformHeading(block, block.heading_2, 'heading_2');
+		case 'heading_3': return transformHeading(block, block.heading_3, 'heading_3');
 
 		case 'bulleted_list_item':
 			return {
@@ -117,7 +130,8 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 				caption: extractRichText(block.embed.caption),
 				embedType: embedConfig.provider,
 				embedAspectRatio: embedConfig.aspectRatio,
-				embedMinHeight: embedConfig.minHeight
+				embedMinHeight: embedConfig.minHeight,
+				embedLoading: embedConfig.loading
 			};
 		}
 
@@ -133,7 +147,8 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 					caption: extractRichText(block.video.caption),
 					embedType: videoConfig.provider,
 					embedAspectRatio: videoConfig.aspectRatio,
-					embedMinHeight: videoConfig.minHeight
+					embedMinHeight: videoConfig.minHeight,
+					embedLoading: videoConfig.loading
 				};
 			}
 			return {
@@ -168,15 +183,32 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 				caption: extractRichText(block.audio.caption)
 			};
 
-		case 'file':
+		case 'file': {
+			const rawFileUrl = extractMediaUrl(block.file);
+			const cachedFileUrl = await downloadNotionFile(rawFileUrl);
 			return {
 				...base,
 				type: 'file',
-				fileUrl: extractMediaUrl(block.file),
+				fileUrl: cachedFileUrl,
 				fileName: block.file.caption?.length
 					? extractRichText(block.file.caption).map((s) => s.text).join('')
 					: block.file.name ?? 'Download file'
 			};
+		}
+
+		case 'pdf': {
+			const rawPdfUrl = extractMediaUrl(block.pdf);
+			const cachedPdfUrl = await downloadNotionFile(rawPdfUrl);
+			return {
+				...base,
+				type: 'pdf',
+				fileUrl: cachedPdfUrl,
+				fileName: block.pdf.caption?.length
+					? extractRichText(block.pdf.caption).map((s) => s.text).join('')
+					: 'Document.pdf',
+				caption: extractRichText(block.pdf.caption)
+			};
+		}
 
 		case 'column_list': {
 			const columnBlocks = await getChildBlocks(block.id);

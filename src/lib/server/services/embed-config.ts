@@ -8,6 +8,8 @@ export interface EmbedConfig {
 	provider: string;
 	aspectRatio: string;
 	minHeight: string;
+	/** Iframe loading strategy — 'eager' for WebGL-heavy embeds that fail with lazy loading on iOS Safari. */
+	loading?: 'lazy' | 'eager';
 }
 
 /** URL patterns mapped to their embed configuration. */
@@ -38,7 +40,7 @@ const EMBED_PATTERNS: Array<{ test: RegExp; config: EmbedConfig }> = [
 	},
 	{
 		test: /molstar\.org/i,
-		config: { provider: 'molstar', aspectRatio: '1/1', minHeight: '500px' }
+		config: { provider: 'molstar', aspectRatio: '1/1', minHeight: '500px', loading: 'eager' }
 	}
 ];
 

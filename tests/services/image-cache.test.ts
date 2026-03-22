@@ -21,7 +21,7 @@ vi.mock('node:fs/promises', () => ({
 }));
 
 // Import AFTER mocks are set up
-const { isNotionS3Url, hashUrlToFilename, downloadNotionImage } = await import(
+const { isNotionS3Url, hashUrlToFilename, downloadNotionImage, downloadNotionFile } = await import(
 	'$lib/server/services/image-cache'
 );
 
@@ -77,6 +77,16 @@ describe('hashUrlToFilename', () => {
 		expect(hashUrlToFilename('https://example.com/path/image.png?q=1')).toMatch(/\.png$/);
 		expect(hashUrlToFilename('https://example.com/path/image.webp?q=1')).toMatch(/\.webp$/);
 		expect(hashUrlToFilename('https://example.com/path/image.jpg?q=1')).toMatch(/\.jpg$/);
+	});
+
+	it('preserves .mp4, .webm, .mov video extensions', () => {
+		expect(hashUrlToFilename('https://example.com/path/clip.mp4?q=1')).toMatch(/\.mp4$/);
+		expect(hashUrlToFilename('https://example.com/path/clip.webm?q=1')).toMatch(/\.webm$/);
+		expect(hashUrlToFilename('https://example.com/path/clip.mov?q=1')).toMatch(/\.mov$/);
+	});
+
+	it('preserves .pdf extension', () => {
+		expect(hashUrlToFilename('https://example.com/path/paper.pdf?q=1')).toMatch(/\.pdf$/);
 	});
 
 	it('defaults to .jpg when no recognizable extension', () => {
@@ -172,5 +182,77 @@ describe('downloadNotionImage', () => {
 
 		expect(result).toMatch(/^\/images\/[a-f0-9]{12}\.jpg$/);
 		expect(fetchMock).not.toHaveBeenCalled();
+	});
+
+	it('accepts video/mp4 content-type and writes file', async () => {
+		mockFetchOk('video/mp4');
+
+		const result = await downloadNotionImage(
+			'https://prod-files-secure.s3.us-west-2.amazonaws.com/w/b/clip.mp4?X-Amz-Expires=3600'
+		);
+
+		expect(mockWriteFile).toHaveBeenCalledOnce();
+		expect(result).toMatch(/^\/images\/[a-f0-9]{12}\.mp4$/);
+	});
+});
+
+// --- File download tests (PDFs, etc.) ---
+
+describe('downloadNotionFile', () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+		vi.unstubAllGlobals();
+		mockExistsSync.mockReturnValue(false);
+		mockWriteFile.mockResolvedValue(undefined);
+	});
+
+	it('returns original URL for non-S3 URLs (passthrough)', async () => {
+		const url = 'https://example.com/paper.pdf';
+		const result = await downloadNotionFile(url);
+		expect(result).toBe(url);
+	});
+
+	it('returns original URL for empty string', async () => {
+		const result = await downloadNotionFile('');
+		expect(result).toBe('');
+	});
+
+	it('fetches S3 URL, writes file, returns /files/{hash}.pdf', async () => {
+		const fetchMock = mockFetchOk('application/pdf');
+
+		const result = await downloadNotionFile(
+			'https://prod-files-secure.s3.us-west-2.amazonaws.com/w/b/paper.pdf?X-Amz-Expires=3600'
+		);
+
+		expect(fetchMock).toHaveBeenCalledOnce();
+		expect(mockWriteFile).toHaveBeenCalledOnce();
+		expect(result).toMatch(/^\/files\/[a-f0-9]{12}\.pdf$/);
+	});
+
+	it('returns original URL on fetch failure', async () => {
+		mockFetchFail();
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+		const result = await downloadNotionFile(
+			'https://prod-files-secure.s3.us-west-2.amazonaws.com/w/b/fail.pdf?X-Amz-Expires=3600'
+		);
+
+		expect(result).toContain('prod-files-secure');
+		expect(warnSpy).toHaveBeenCalled();
+		warnSpy.mockRestore();
+	});
+
+	it('rejects XML error pages (S3 error response)', async () => {
+		mockFetchOk('application/xml');
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+		const result = await downloadNotionFile(
+			'https://prod-files-secure.s3.us-west-2.amazonaws.com/w/b/error.pdf?X-Amz-Expires=3600'
+		);
+
+		expect(result).toContain('prod-files-secure');
+		expect(mockWriteFile).not.toHaveBeenCalled();
+		expect(warnSpy).toHaveBeenCalled();
+		warnSpy.mockRestore();
 	});
 });

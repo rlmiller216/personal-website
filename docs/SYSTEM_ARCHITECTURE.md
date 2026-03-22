@@ -48,13 +48,14 @@ A **build-time static site** that pulls content from Notion databases and pages 
 
 ```
 Personal Website v0.1.0
-├── src/lib/server/services/  ~724 LOC — Notion API client, data fetchers, block transformer
-├── src/lib/components/       ~193 LOC — Notion content renderers (Svelte 5)
-├── src/lib/types/             ~98 LOC — Domain type definitions
-├── src/routes/                ~13 LOC — Page routes (placeholders, expanding in Chunk 3-4)
-├── tests/                    ~446 LOC — Vitest unit tests (36 tests)
+├── src/lib/server/services/  ~870 LOC — Notion API client, data fetchers, block transformer, image cache
+├── src/lib/components/       ~660 LOC — Cards, NotionBlock renderers, LetterSidebar, ThemeToggle
+├── src/lib/types/            ~149 LOC — Domain type definitions
+├── src/routes/               ~550 LOC — 9 page routes + layouts + error page
+├── src/app.css               ~240 LOC — Design system tokens, typography, animations
+├── tests/                  ~1,000 LOC — Vitest unit tests (144 tests across 11 files)
 ├── docs/                              — Architecture docs + product requirements
-└── static/                            — Favicon, robots.txt
+└── static/                            — Favicon, robots.txt, 404, Mol* sessions, Netlify headers
 ```
 
 ---
@@ -179,9 +180,9 @@ All configuration is in `.env` (never committed). `.env.example` documents the c
 
 ## 5. Known Limitations & Risks
 
-### 5.1 Notion Image URLs (Cached at Build Time)
+### 5.1 Notion S3 Files (Cached at Build Time)
 
-Notion-hosted images (type `"file"`) use signed S3 URLs that expire in ~1 hour. At build time, `image-cache.ts` downloads all Notion images to `static/images/` and rewrites URLs to permanent `/images/{hash}.ext` paths. A dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp` copies images to `build/images/` (Vite snapshots `static/` before prerender runs). `static/images/` is gitignored.
+Notion-hosted files (type `"file"`) use signed S3 URLs that expire in ~1 hour. At build time, `image-cache.ts` downloads all Notion S3 files: images and videos (mp4/webm/mov) to `static/images/` and other files (PDFs, docs, etc.) to `static/files/`. Both are rewritten to permanent `/{dir}/{hash}.ext` paths. HEIC images (common from iPhone uploads via Notion) are auto-detected by magic bytes and converted to JPEG via `heic-convert`. A shared `downloadS3File()` function handles both paths with a content-type safelist (`image/*`, `video/*`, `application/pdf`, etc. — rejects S3 XML/HTML error pages). The main entry point is `downloadItemMedia()` (renamed from `downloadItemImages`), which processes all media files for a content item. A dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `cp -f` copies file contents from `static/images/*` and `static/files/*` to `build/` — uses glob (`*`) instead of `cp -r` to avoid nested directories when Vite's static snapshot already created the target. Both `static/images/` and `static/files/` are gitignored.
 
 ### 5.2 Notion SDK v5 Breaking Changes
 
@@ -276,17 +277,17 @@ Five-color OKLCH palette mapped to CSS custom properties in `app.css`:
 | `--color-primary` | Ultra Violet | Brand accent, interactive elements |
 | `--color-secondary` | White Smoke | Light backgrounds, cards |
 | `--color-foreground` | Onyx | Primary text |
-| `--color-accent` | Lime Yellow | Highlights, CTAs |
-| `--color-deep` | Space Indigo | Dark backgrounds, headers |
+| `--color-accent` | Neon Chartreuse | Highlights, CTAs |
+| `--color-deep` | Deep Twilight | Dark backgrounds, headers |
 
-All colors are defined as OKLCH values for perceptual uniformity. Tailwind consumes them via `@theme` inline mapping, producing utility classes like `bg-primary`, `text-foreground`, etc.
+Colors use hex values for brand-critical accuracy (OKLCH approximations caused color drift). Tailwind consumes them via `@theme` inline mapping, producing utility classes like `bg-primary`, `text-foreground`, etc.
 
 ### 8.2 Typography
 
 | Role | Typeface | Source |
 |---|---|---|
 | Headings | Bodoni Moda | Google Fonts CDN |
-| Body | Raleway | Google Fonts CDN |
+| Body | Plus Jakarta Sans | Google Fonts CDN |
 
 Font links are loaded in `app.html` `<head>`. Tailwind `@theme` maps `--font-heading` and `--font-body` to utility classes.
 
