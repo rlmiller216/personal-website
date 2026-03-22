@@ -74,8 +74,8 @@ Notion databases/pages
 
 ### Typography
 - **Headings:** Bodoni Moda (Didone serif, variable optical size). Bumped to font-weight 800 (extrabold) on mobile (< 768px) — hairline strokes need max weight on small/high-DPI screens.
-- **Body:** Poppins (geometric sans-serif). Bumped to font-weight 700 (bold) on mobile for better small-screen rendering; bold text bumped to 800 (extrabold). Weights 400–900 loaded from Google Fonts.
-- **Mobile weight overrides:** Secondary text elements use `font-medium` (500) to override the blanket mobile 700 boost. Applies to: card descriptions, Notion paragraphs, media captions, detail header back link + description, footer tagline + copyright, and contact form inputs. This creates visual hierarchy — primary text stays heavy (700/800), supporting text stays lighter (500).
+- **Body:** Poppins (geometric sans-serif). Weights 300–900 loaded from Google Fonts.
+- **Mobile weight reduction:** On mobile (< 768px), Poppins weights shift down: `font-medium` (500) → 400, default body (400) → 300, `font-normal` (400) → 300. Implemented via unlayered CSS overrides that beat Tailwind utilities. Secondary text elements use `font-medium` (500 desktop / 400 mobile). Applies to: card descriptions, Notion paragraphs, media captions, detail header back link + description, footer tagline + copyright, and contact form inputs.
 
 ### Font Utilities
 - `font-display` — applies Bodoni Moda. Use on non-heading elements that need the display font (e.g., footer branding `<p>`).
@@ -115,7 +115,7 @@ Notion databases/pages
 - **Varied card layouts per section**: Projects use feature card + grid (Neon Chartreuse bottom), Open Source uses image cards with Ultra Violet left border, Toolkit uses ResourceCard grid (Neon Chartreuse bottom).
 - Homepage section banding: muted → white → muted (first section gets warm beige)
 - **Autoplay video cards**: Cards support `<video autoplay loop muted playsinline>` for mp4/webm thumbnails. `CardMedia.svelte` handles video/image detection, poster frame from multi-file Notion properties, and `prefers-reduced-motion` pause (same pattern as LetterSidebar). Detection via `isVideoUrl()` on resolved local paths. Video content guidance: short clips (5-15s), < 10MB, mp4/webm preferred; `.mov` has partial browser support.
-- **Footer**: Deep Twilight background, Bodoni Moda "Rebecca L Miller, PhD" branding (`font-bold`, 700), "Science for Good" tagline (`font-medium`, 500), land acknowledgement in Bodoni Moda (`#c3bdb8` at 70% opacity, `text-base`), nav links match header styling (`font-medium text-hero-foreground/70 hover:text-hero-foreground`), copyright (`font-medium`, 500)
+- **Footer**: Deep Twilight background, Bodoni Moda "Rebecca L Miller, PhD" branding (`font-bold`, 700), "Science for Good" tagline (`font-medium`, 500 desktop / 400 mobile), land acknowledgement in Bodoni Moda (`#c3bdb8` at 70% opacity, `text-base`), nav links match header styling (`font-medium text-hero-foreground/70 hover:text-hero-foreground`), copyright (`font-medium`, 500 desktop / 400 mobile)
 - **Nav logo**: `text-3xl font-extrabold` (800) on mobile, invisible on md+ (RLM sidebar replaces it)
 
 ### Accessibility Constraints
