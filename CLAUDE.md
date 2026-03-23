@@ -156,7 +156,7 @@ src/
         about.service.ts    → About page fetcher (uses getPageContent)
         image-cache.ts      → Build-time Notion media downloader (images + video → static/images/, PDFs/files → static/files/, dedup, hash, HEIC→JPEG, fallback)
         notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[] (23+ block types incl. pdf)
-        notion-block-utils.ts→ Shared transform helpers: extractRichText, extractMediaUrl, groupListItems
+        notion-block-utils.ts→ Shared transform helpers: extractRichText (with normalizeHref), extractMediaUrl, groupListItems
         embed-config.ts     → URL pattern → embed provider/aspect-ratio detection
         code-highlight.ts   → Shiki syntax highlighting (promise-cached singleton, dual-theme)
     types/
@@ -185,7 +185,7 @@ tests/
     notion.service.test.ts
     image-cache.test.ts     → Image, video + file download, dedup, hash, content-type validation tests
     notion-blocks.test.ts   → Block transform tests (23+ block types incl. pdf, smart embeds, Shiki)
-    notion-block-utils.test.ts → Shared block utilities (extractRichText, groupListItems)
+    notion-block-utils.test.ts → Shared block utilities (extractRichText, normalizeHref, groupListItems)
     mappers.test.ts         → Tests for mapProject, mapTool, mapResource
     slug-collisions.test.ts → Tests for warnSlugCollisions
     embed-config.test.ts    → Embed provider detection (YouTube, Miro, Mol*, etc.)
@@ -267,6 +267,7 @@ tests/
 - Integration must have **Read content** capability checked (not checked by default on new internal integrations)
 - The `sorts` parameter in `dataSources.query()` must be an **array** of sort objects, not a single object (e.g., `[{ property: 'Order', direction: 'ascending' }]`)
 - **Filter mismatch danger:** Featured queries must include the same Status filter as their `getAll` counterparts. If `getFeaturedX()` returns items excluded by `getAllX()`, the homepage links to detail pages that don't exist → prerender 404. Use compound `{ and: [...] }` filters.
+- **Internal page links:** Notion `@mention` links to other pages render as `href="/<32-hex-char-page-id>"`. `normalizeHref()` in `notion-block-utils.ts` rewrites these to `https://notion.so/<id>` to prevent prerenderer 404s.
 
 ## Environment Variables
 
@@ -302,7 +303,7 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 163 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (30) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (21 — image + video + file download, dedup, hash, content-type validation)
+- 164 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (30) + `notion-block-utils.test.ts` (11) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (21 — image + video + file download, dedup, hash, content-type validation)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs
