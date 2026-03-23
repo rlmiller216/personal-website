@@ -34,6 +34,18 @@ describe('extractRichText', () => {
 		const result = extractRichText(items);
 		expect(result[0].href).toBe('https://example.com');
 	});
+
+	it('rewrites Notion internal page links to external URLs', () => {
+		const items = [{
+			plain_text: 'linked page',
+			annotations: { bold: false, italic: false, strikethrough: false, underline: false, code: false, color: 'default' as const },
+			href: '/325e5dbc4add80388b3ed2a90dbaba81',
+			type: 'text' as const,
+			text: { content: 'linked page', link: { url: '/325e5dbc4add80388b3ed2a90dbaba81' } }
+		}];
+		const result = extractRichText(items);
+		expect(result[0].href).toBe('https://notion.so/325e5dbc4add80388b3ed2a90dbaba81');
+	});
 });
 
 describe('extractMediaUrl', () => {

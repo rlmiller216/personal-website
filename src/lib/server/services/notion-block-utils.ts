@@ -9,6 +9,16 @@
 import type { RichTextItemResponse } from '@notionhq/client/build/src/api-endpoints';
 import type { ContentBlock, RichTextSpan } from '$lib/types/content';
 
+/** Matches Notion internal page links: /<32 hex chars> with optional query/fragment. */
+const NOTION_PAGE_HREF = /^\/[0-9a-f]{32}\b/;
+
+/** Rewrites Notion internal page links to external Notion URLs. */
+function normalizeHref(href: string | null): string | null {
+	if (!href) return null;
+	if (NOTION_PAGE_HREF.test(href)) return `https://notion.so${href}`;
+	return href;
+}
+
 /** Converts Notion rich text items to our serializable RichTextSpan[]. */
 export function extractRichText(richTextItems: RichTextItemResponse[]): RichTextSpan[] {
 	return richTextItems.map((item) => ({
@@ -21,7 +31,7 @@ export function extractRichText(richTextItems: RichTextItemResponse[]): RichText
 			code: item.annotations.code,
 			color: item.annotations.color
 		},
-		href: item.href
+		href: normalizeHref(item.href)
 	}));
 }
 
