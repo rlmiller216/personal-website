@@ -13,6 +13,8 @@ const config = {
 				// Files downloaded during prerender land in static/ but miss
 				// Vite's earlier snapshot. Post-build cp handles this.
 				if (path.startsWith('/images/') || path.startsWith('/files/')) return;
+				// Notion internal page links (raw page IDs) — not routable
+				if (/^\/[0-9a-f]{32}\b/.test(path)) return;
 				throw new Error(message);
 			}
 		}
