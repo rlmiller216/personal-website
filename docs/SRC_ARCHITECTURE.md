@@ -90,7 +90,7 @@ Pure TypeScript interfaces with zero dependencies. Defines the contract between 
 | `Project` | title, description, sector (string[]), status, role, imageUrl, url, featured, order, tags | projects.service.ts, ProjectCard.svelte |
 | `Tool` | title, description, category, githubUrl, demoUrl, tags, featured, imageUrl, order | tools.service.ts, ToolCard.svelte, ToolListItem.svelte |
 | `Resource` | title, description, type, category, author, url, whyILoveIt, imageUrl | resources.service.ts, ResourceCard.svelte |
-| `ContentBlock` | id, type, richText, children, url, caption, language, checked, icon | notion-blocks.ts, NotionBlock.svelte |
+| `ContentBlock` | id, type, richText, children, url, caption, language, checked, icon, imageWidth? | notion-blocks.ts, NotionBlock.svelte |
 | `RichTextSpan` | text, annotations, href | ContentBlock.richText[], NotionBlock.svelte |
 | `RichTextAnnotation` | bold, italic, strikethrough, underline, code, color | RichTextSpan.annotations |
 
@@ -139,6 +139,7 @@ Transforms Notion API `BlockObjectResponse[]` into serializable `ContentBlock[]`
 **Internal functions:**
 - `blockToContentBlock()` — switch on 22+ block types, returns null for unsupported
 - `fetchAndTransformChildren()` — recursive child block resolution
+- `parseImageWidth()` — strips `[w:N]` prefix from image captions, returns width percentage (1–100) + cleaned caption. Enables Notion-side image width control without touching code.
 
 **Helper modules (extracted to keep file focused):**
 - `notion-block-utils.ts` — `extractRichText()`, `extractMediaUrl()`, `createBaseBlock()`, `groupListItems()`
@@ -153,6 +154,7 @@ Transforms Notion API `BlockObjectResponse[]` into serializable `ContentBlock[]`
 - **Video blocks:** YouTube/Vimeo URLs auto-convert to embed type with responsive aspect ratios
 - **Synced blocks:** Resolve `synced_from.block_id` for references vs own `block.id` for sources
 - **Column lists:** Sequential child fetching to avoid Notion API rate limits
+- **Image width:** `[w:N]` prefix in caption sets `imageWidth` (1–100) on the block; `NotionMediaBlock` applies it as `width: N%` on the `<figure>`, centered. No prefix = full container width (default, no change to existing images).
 
 #### Content Fetcher Services (~283 LOC total, 5 files)
 
@@ -227,6 +229,7 @@ Shared rendering utilities in `notion-render-utils.ts` (~46 LOC):
 - Circular import: `NotionTextBlock` → `NotionBlock` (dispatcher) for recursive nested lists/toggles. Svelte 5 handles via lazy resolution.
 - Code blocks prefer `highlightedHtml` (Shiki output) with fallback to plain `<pre><code>`
 - Embeds use responsive `aspect-ratio` CSS from `embedAspectRatio` field + provider-specific CSS classes
+- Images support optional `imageWidth` (percentage) applied as inline `width` + auto margins on `<figure>`; set via `[w:N]` caption prefix in Notion
 - Tables render with optional `<thead>` based on `hasHeader`, cells via `renderRichTextToSafeHtml()`
 - Column lists render as responsive grid: `grid-cols-1 sm:grid-cols-{n}`
 - Empty state handling: files, equations, and embeds skip rendering if primary data is empty
@@ -344,4 +347,4 @@ The visual identity is defined in `app.css` (~240 LOC) using CSS custom properti
 | **Tests** | **~1,000** | **11** |
 | **Total** | **~3,450** | **54** |
 
-> Tests are ~30% of total LOC. 144 tests across 11 files covering 23+ block types (incl. pdf), image + file caching, float physics, XSS safety, and all service mappers.
+> Tests are ~30% of total LOC. 169 tests across 11 files covering 23+ block types (incl. pdf), image + file caching, float physics, XSS safety, all service mappers, and image caption width hint parsing.

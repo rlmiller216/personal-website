@@ -46,6 +46,7 @@ Notion databases/pages
 - `createCachedFetcher<T>()` — generic promise-based cache factory used by all 3 data services. Safe under concurrent adapter-static `load()` calls.
 - `warnSlugCollisions()` — detects empty/duplicate slugs at build time. Used by all 3 data services.
 - `getPageContent()` (in `page-content.ts`) — convenience function combining `getPageBlocks()` + `transformBlocks()`. Used by detail routes and about.service. Lives in a separate file to avoid circular dependency (`notion-blocks.ts` → `notion.service.ts`).
+- `parseImageWidth()` (in `notion-blocks.ts`, private) — strips `[w:N]` prefix from image captions, returns width percentage (1–100) + cleaned caption. Lets Rebecca control image width from Notion by typing `[w:50]` at the start of any image caption.
 
 **Notion blocks → Svelte components** (NOT `{@html}` strings). Server transforms API blocks into serializable `ContentBlock[]`, then `<NotionBlocks>` renders them as styled Svelte components. This enables per-block Tailwind styling and eliminates XSS risk.
 
@@ -155,7 +156,7 @@ src/
         resources.service.ts→ Resource mapper + queries (uses createCachedFetcher)
         about.service.ts    → About page fetcher (uses getPageContent)
         image-cache.ts      → Build-time Notion media downloader (images + video → static/images/, PDFs/files → static/files/, dedup, hash, HEIC→JPEG, fallback)
-        notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[] (23+ block types incl. pdf)
+        notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[] (23+ block types incl. pdf); parseImageWidth() for [w:N] caption sizing
         notion-block-utils.ts→ Shared transform helpers: extractRichText, extractMediaUrl, groupListItems
         embed-config.ts     → URL pattern → embed provider/aspect-ratio detection
         code-highlight.ts   → Shiki syntax highlighting (promise-cached singleton, dual-theme)
@@ -302,11 +303,11 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 163 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (30) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (21 — image + video + file download, dedup, hash, content-type validation)
+- 169 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (35) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (21 — image + video + file download, dedup, hash, content-type validation)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs
-- Block transform tests cover 23+ block types including PDF blocks, toggle headings, smart embed detection, video→embed conversion, table custom child-fetch, column list, synced blocks, and Shiki highlighting
+- Block transform tests cover 23+ block types including PDF blocks, toggle headings, smart embed detection, video→embed conversion, table custom child-fetch, column list, synced blocks, Shiki highlighting, and image caption width hints (`[w:N]`)
 - Mock Notion SDK responses — no live API calls in tests
 - Run: `npm test` or `npx vitest run`
 
@@ -363,6 +364,7 @@ Errors are written for humans:
 | Approximate/guess color space conversions | Use exact hex or OKLCH from user. If conversion needed, use programmatic tool — never eyeball |
 | Use `loading="lazy"` on WebGL iframes | Set `loading: 'eager'` in embed-config.ts — iOS Safari breaks WebGL context init with lazy loading |
 | Render database Image on detail pages | Database Image = cards + og:image only. Detail page media comes from NotionBlocks |
+| Hardcode image sizes in components | Use `[w:N]` caption prefix in Notion (e.g. `[w:50] caption text`) — parsed at build time, stripped from display |
 
 ## Known Limitations & Mitigations
 

@@ -37,6 +37,8 @@
 - [x] **"Scientific Warmth" aesthetic** — distinctive, not generic AI design
 - [x] **Card hover animations / micro-interactions** — subtle feedback on interactive elements
 
+- [x] **Caption-based image width control** — type `[w:50]` at the start of any image caption in Notion to render it at 50% width (or any 1–100%); hint is stripped from display. Default = full width.
+
 ## Could Have (Nice Extras)
 
 - [x] **Dark mode support** — toggle with persistent preference

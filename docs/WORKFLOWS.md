@@ -42,6 +42,7 @@ The primary workflow. Rebecca edits content in Notion; the website rebuilds to r
 | Open Source tools | Open Source database → add/edit rows | `tools.service.ts` fetches and maps |
 | Resources | Resources database → add/edit rows | `resources.service.ts` fetches and maps |
 | About page | About page → edit blocks | `about.service.ts` fetches blocks → transforms |
+| Image width | Add `[w:50]` to start of any image caption | `parseImageWidth()` strips hint, sets `imageWidth` on block; image renders at that % width, centered |
 
 ### Latency
 
@@ -164,6 +165,7 @@ For About page — transforming Notion page blocks into rendered HTML.
 │                  │       → switch on block.type (22+ types)
 │                  │       → extractRichText() for text content
 │                  │       → extractMediaUrl() for images/video/audio
+│                  │       → parseImageWidth() strips [w:N] from image captions
 │                  │       → getEmbedConfig() for embed provider detection
 │                  │       → highlightCode() for Shiki syntax highlighting
 │                  │       → custom child-fetch for tables (table_row cells)
@@ -212,7 +214,7 @@ For About page — transforming Notion page blocks into rendered HTML.
 | `quote` | `quote` | `<blockquote>` | No | |
 | `callout` | `callout` | `<div>` with icon + text | No | |
 | `divider` | `divider` | `<hr>` | No | |
-| `image` | `image` | `<figure><img>` + `<figcaption>` | No | lazy loading |
+| `image` | `image` | `<figure><img>` + `<figcaption>` | No | lazy loading; `[w:N]` caption prefix sets width % (1–100), centered |
 | `code` | `code` | `<pre><code>` or Shiki HTML | No | Shiki dual-theme, plaintext fallback |
 | `bookmark` | `bookmark` | `<a>` card | No | |
 | `embed` | `embed` | `<iframe>` with aspect-ratio | No | Smart provider detection (YouTube, Miro, etc.) |
