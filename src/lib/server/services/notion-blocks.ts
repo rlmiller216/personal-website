@@ -17,6 +17,22 @@ import { getEmbedConfig } from './embed-config';
 import { highlightCode } from './code-highlight';
 import { downloadNotionImage, downloadNotionFile } from './image-cache';
 
+import type { RichTextSpan } from '$lib/types/content';
+
+/**
+ * Strips [w:N] from the start of the first caption span.
+ * Returns the width percentage (1–100) and the cleaned caption array.
+ * Used to let Rebecca control image width from Notion by prefixing captions.
+ */
+function parseImageWidth(caption: RichTextSpan[]): { imageWidth: number | undefined; caption: RichTextSpan[] } {
+	if (caption.length === 0) return { imageWidth: undefined, caption };
+	const match = caption[0].text.match(/^\[w:(\d+)\]\s*/);
+	if (!match) return { imageWidth: undefined, caption };
+	const pct = Math.min(100, Math.max(1, parseInt(match[1], 10)));
+	const cleaned = [{ ...caption[0], text: caption[0].text.slice(match[0].length) }, ...caption.slice(1)];
+	return { imageWidth: pct, caption: cleaned };
+}
+
 /** Shared heading transform — handles both regular and toggleable headings. */
 async function transformHeading(
 	block: BlockObjectResponse,
@@ -96,7 +112,9 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 		case 'image': {
 			const rawUrl = extractMediaUrl(block.image);
 			const localUrl = await downloadNotionImage(rawUrl);
-			return { ...base, type: 'image', url: localUrl, caption: extractRichText(block.image.caption) };
+			const rawCaption = extractRichText(block.image.caption);
+			const { imageWidth, caption } = parseImageWidth(rawCaption);
+			return { ...base, type: 'image', url: localUrl, caption, imageWidth };
 		}
 
 		case 'code': {

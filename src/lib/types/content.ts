@@ -169,6 +169,10 @@ export interface ContentBlock {
 	/** Whether a heading block is toggleable (expands/collapses to show children). */
 	isToggleable?: boolean;
 
+	// -- Image sizing --
+	/** Image width as a percentage of the content column (1–100). Set via [w:N] caption prefix in Notion. */
+	imageWidth?: number;
+
 	// -- Embed detection --
 	/** Detected provider (e.g., "youtube", "vimeo"). */
 	embedType?: string;

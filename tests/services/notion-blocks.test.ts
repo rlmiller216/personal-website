@@ -209,6 +209,46 @@ describe('transformBlocks', () => {
 		expect(result[0].caption[0].text).toBe('A nice photo');
 	});
 
+	describe('image caption width hint [w:N]', () => {
+		it('parses [w:50] from caption and strips the hint', async () => {
+			const blocks = [imageBlock('https://example.com/photo.jpg', '[w:50]')];
+			const result = await transformBlocks(blocks as never[]);
+
+			expect(result[0].imageWidth).toBe(50);
+			expect(result[0].caption[0].text).toBe('');
+		});
+
+		it('parses [w:50] with trailing caption text', async () => {
+			const blocks = [imageBlock('https://example.com/photo.jpg', '[w:50] A half-width photo')];
+			const result = await transformBlocks(blocks as never[]);
+
+			expect(result[0].imageWidth).toBe(50);
+			expect(result[0].caption[0].text).toBe('A half-width photo');
+		});
+
+		it('leaves imageWidth undefined when no hint present', async () => {
+			const blocks = [imageBlock('https://example.com/photo.jpg', 'Just a caption')];
+			const result = await transformBlocks(blocks as never[]);
+
+			expect(result[0].imageWidth).toBeUndefined();
+			expect(result[0].caption[0].text).toBe('Just a caption');
+		});
+
+		it('clamps width above 100 to 100', async () => {
+			const blocks = [imageBlock('https://example.com/photo.jpg', '[w:150]')];
+			const result = await transformBlocks(blocks as never[]);
+
+			expect(result[0].imageWidth).toBe(100);
+		});
+
+		it('clamps width below 1 to 1', async () => {
+			const blocks = [imageBlock('https://example.com/photo.jpg', '[w:0]')];
+			const result = await transformBlocks(blocks as never[]);
+
+			expect(result[0].imageWidth).toBe(1);
+		});
+	});
+
 	it('transforms a code block with syntax highlighting', async () => {
 		const blocks = [codeBlock('const x = 1;', 'javascript')];
 		const result = await transformBlocks(blocks as never[]);

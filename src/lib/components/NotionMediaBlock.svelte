@@ -10,11 +10,12 @@
 </script>
 
 {#if block.type === 'image'}
-	<figure class="my-6">
+	{@const widthStyle = block.imageWidth ? `width: ${block.imageWidth}%; margin-left: auto; margin-right: auto;` : ''}
+	<figure class="my-6" style={widthStyle}>
 		<img
 			src={block.url}
 			alt={block.caption.map(s => s.text).join('') || 'Image'}
-			class="rounded-lg max-w-full shadow-sm border border-border"
+			class="rounded-lg max-w-full shadow-sm border border-border{block.imageWidth ? ' w-full' : ''}"
 			loading="lazy"
 		/>
 		{#if block.caption.length > 0 && hasContent(block.caption)}
