@@ -11,7 +11,7 @@
 	let { block }: Props = $props();
 
 	const TEXT_TYPES = new Set([
-		'paragraph', 'heading_1', 'heading_2', 'heading_3',
+		'paragraph', 'heading_1', 'heading_2', 'heading_3', 'heading_4',
 		'bulleted_list', 'numbered_list', 'bulleted_list_item', 'numbered_list_item',
 		'to_do', 'toggle', 'quote', 'callout'
 	]);

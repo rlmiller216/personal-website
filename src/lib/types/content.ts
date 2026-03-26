@@ -107,6 +107,7 @@ export interface ContentBlock {
 		| 'heading_1'
 		| 'heading_2'
 		| 'heading_3'
+		| 'heading_4'
 		| 'bulleted_list'
 		| 'numbered_list'
 		| 'bulleted_list_item'

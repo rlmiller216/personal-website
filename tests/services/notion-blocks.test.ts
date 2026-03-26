@@ -53,7 +53,7 @@ function paragraphBlock(text: string) {
 	return mockBlock('paragraph', { paragraph: { rich_text: mockRichText(text) } });
 }
 
-function headingBlock(level: 1 | 2 | 3, text: string, isToggleable?: boolean) {
+function headingBlock(level: 1 | 2 | 3 | 4, text: string, isToggleable?: boolean) {
 	const key = `heading_${level}`;
 	const headingData: Record<string, unknown> = { rich_text: mockRichText(text) };
 	if (isToggleable !== undefined) headingData.is_toggleable = isToggleable;
@@ -125,15 +125,18 @@ describe('transformBlocks', () => {
 		const blocks = [
 			headingBlock(1, 'Main Title'),
 			headingBlock(2, 'Section'),
-			headingBlock(3, 'Subsection')
+			headingBlock(3, 'Subsection'),
+			headingBlock(4, 'Detail')
 		];
 		const result = await transformBlocks(blocks as never[]);
 
-		expect(result).toHaveLength(3);
+		expect(result).toHaveLength(4);
 		expect(result[0].type).toBe('heading_1');
 		expect(result[0].richText[0].text).toBe('Main Title');
 		expect(result[1].type).toBe('heading_2');
 		expect(result[2].type).toBe('heading_3');
+		expect(result[3].type).toBe('heading_4');
+		expect(result[3].richText[0].text).toBe('Detail');
 	});
 
 	it('groups consecutive bulleted list items', async () => {
@@ -507,7 +510,8 @@ describe('transformBlocks', () => {
 		mockGetChildBlocks
 			.mockResolvedValueOnce([{ id: 'c1', type: 'paragraph', has_children: false, paragraph: { rich_text: mockRichText('Child 1') } }])
 			.mockResolvedValueOnce([{ id: 'c2', type: 'paragraph', has_children: false, paragraph: { rich_text: mockRichText('Child 2') } }])
-			.mockResolvedValueOnce([{ id: 'c3', type: 'paragraph', has_children: false, paragraph: { rich_text: mockRichText('Child 3') } }]);
+			.mockResolvedValueOnce([{ id: 'c3', type: 'paragraph', has_children: false, paragraph: { rich_text: mockRichText('Child 3') } }])
+			.mockResolvedValueOnce([{ id: 'c4', type: 'paragraph', has_children: false, paragraph: { rich_text: mockRichText('Child 4') } }]);
 
 		const h1 = headingBlock(1, 'H1 Toggle', true);
 		(h1 as Record<string, unknown>).has_children = true;
@@ -515,10 +519,12 @@ describe('transformBlocks', () => {
 		(h2 as Record<string, unknown>).has_children = true;
 		const h3 = headingBlock(3, 'H3 Toggle', true);
 		(h3 as Record<string, unknown>).has_children = true;
+		const h4 = headingBlock(4, 'H4 Toggle', true);
+		(h4 as Record<string, unknown>).has_children = true;
 
-		const result = await transformBlocks([h1, h2, h3] as never[]);
+		const result = await transformBlocks([h1, h2, h3, h4] as never[]);
 
-		expect(result).toHaveLength(3);
+		expect(result).toHaveLength(4);
 		for (const block of result) {
 			expect(block.isToggleable).toBe(true);
 			expect(block.children).toHaveLength(1);
@@ -526,5 +532,32 @@ describe('transformBlocks', () => {
 		expect(result[0].type).toBe('heading_1');
 		expect(result[1].type).toBe('heading_2');
 		expect(result[2].type).toBe('heading_3');
+		expect(result[3].type).toBe('heading_4');
+	});
+
+	it('transforms toggle heading_4 with children', async () => {
+		mockGetChildBlocks.mockResolvedValueOnce([
+			{ id: 'child-h4', type: 'paragraph', has_children: false, paragraph: { rich_text: mockRichText('H4 hidden content') } }
+		]);
+		const blocks = [headingBlock(4, 'Toggle Detail', true)];
+		(blocks[0] as Record<string, unknown>).has_children = true;
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('heading_4');
+		expect(result[0].isToggleable).toBe(true);
+		expect(result[0].richText[0].text).toBe('Toggle Detail');
+		expect(result[0].children).toHaveLength(1);
+		expect(result[0].children[0].richText[0].text).toBe('H4 hidden content');
+	});
+
+	it('treats heading_4 with is_toggleable=false as regular heading', async () => {
+		const blocks = [headingBlock(4, 'Plain H4', false)];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].type).toBe('heading_4');
+		expect(result[0].isToggleable).toBe(false);
+		expect(result[0].children).toEqual([]);
 	});
 });

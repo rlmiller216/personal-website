@@ -46,6 +46,8 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 		case 'heading_1': return transformHeading(block, block.heading_1, 'heading_1');
 		case 'heading_2': return transformHeading(block, block.heading_2, 'heading_2');
 		case 'heading_3': return transformHeading(block, block.heading_3, 'heading_3');
+		// heading_4 is a recent Notion addition; cast needed until SDK types catch up
+		case 'heading_4': return transformHeading(block, (block as never as { heading_4: { rich_text: RichTextItemResponse[]; is_toggleable?: boolean } }).heading_4, 'heading_4');
 
 		case 'bulleted_list_item':
 			return {
