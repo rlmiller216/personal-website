@@ -10,7 +10,8 @@
       "Bash(mkdir -p ~/.claude/skills/design)",
       "Bash(brew list:*)",
       "Read(//usr/local/bin/**)",
-      "Read(//opt/homebrew/bin/**)"
+      "Read(//opt/homebrew/bin/**)",
+      "mcp__3fc4570e-837e-4195-b528-bd5b5a0805e1__notion-update-page"
     ]
   }
 }
