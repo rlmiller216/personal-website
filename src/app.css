@@ -28,7 +28,7 @@
   --ring: oklch(0.54 0.26 285.29);                  /* Ultra Violet */
   --chart-1: oklch(0.54 0.26 285.29);               /* Ultra Violet */
   --chart-2: #eeff5d;               /* Neon Chartreuse */
-  --chart-3: #050950;                              /* Deep Twilight */
+  --chart-3: #1D2440;                              /* Space Indigo */
   --chart-4: oklch(0.646 0.222 41.116);
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: oklch(0.97 0.003 90);
@@ -39,27 +39,27 @@
   --sidebar-accent-foreground: oklch(0.54 0.26 285.29);
   --sidebar-border: oklch(0.14 0 0 / 10%);
   --sidebar-ring: oklch(0.54 0.26 285.29);
-  /* Design system: Deep Twilight for hero/footer dark sections */
-  --hero: #050950;                                /* Deep Twilight — oklch(0.21 0.12 267.46) */
+  /* Design system: Space Indigo for hero/footer dark sections */
+  --hero: #1D2440;                                /* Space Indigo — oklch(0.22 0.05 270) */
   --hero-foreground: oklch(0.97 0.003 90);       /* White Smoke */
   /* Solid pill background — looks identical on light and dark backgrounds */
   --pill-accent: oklch(0.919 0.027 305);          /* #E8E0F3 solid light purple (default) */
   --pill-accent-foreground: oklch(0.54 0.26 285.29); /* Ultra Violet text */
 }
 
-/* ── Dark mode: Deep Twilight base, Ultra Violet primary, Neon Chartreuse accents ── */
+/* ── Dark mode: Space Indigo base, Ultra Violet primary, Neon Chartreuse accents ── */
 .dark {
-  --background: #050950;                          /* Deep Twilight */
+  --background: #1D2440;                          /* Space Indigo */
   --foreground: oklch(0.97 0.003 90);            /* White Smoke */
-  --card: color-mix(in oklch, #050950 85%, white);/* Deep Twilight lightened */
+  --card: color-mix(in oklch, #1D2440 85%, white);/* Space Indigo lightened */
   --card-foreground: oklch(0.97 0.003 90);
-  --popover: color-mix(in oklch, #050950 85%, white);
+  --popover: color-mix(in oklch, #1D2440 85%, white);
   --popover-foreground: oklch(0.97 0.003 90);
   --primary: oklch(0.54 0.26 285.29);               /* Ultra Violet — same (brand anchor) */
   --primary-foreground: oklch(0.97 0.003 90);
   --secondary: color-mix(in srgb, #eeff5d 70%, transparent); /* Neon Chartreuse at 70% */
   --secondary-foreground: oklch(0.14 0 0);
-  --muted: color-mix(in oklch, #050950 78%, white);/* Deep Twilight lighter */
+  --muted: color-mix(in oklch, #1D2440 78%, white);/* Space Indigo lighter */
   --muted-foreground: oklch(0.97 0.003 90 / 60%); /* White Smoke at 60% */
   --accent: oklch(0.54 0.26 285.29 / 15%);          /* Ultra Violet at 15% */
   --accent-foreground: #eeff5d;     /* Neon Chartreuse */
@@ -72,7 +72,7 @@
   --chart-3: oklch(0.97 0.003 90);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: #050950;
+  --sidebar: #1D2440;
   --sidebar-foreground: oklch(0.97 0.003 90);
   --sidebar-primary: oklch(0.62 0.26 285.29);
   --sidebar-primary-foreground: oklch(0.97 0.003 90);
@@ -80,7 +80,7 @@
   --sidebar-accent-foreground: #eeff5d;
   --sidebar-border: oklch(0.97 0.003 90 / 10%);
   --sidebar-ring: oklch(0.54 0.26 285.29);
-  --hero: color-mix(in oklch, #050950 85%, black);/* Darker Deep Twilight for hero in dark mode */
+  --hero: color-mix(in oklch, #1D2440 85%, black);/* Darker Space Indigo for hero in dark mode */
   --hero-foreground: oklch(0.97 0.003 90);
   --pill-accent: oklch(0.919 0.027 305);          /* #E8E0F3 same default in dark mode */
   --pill-accent-foreground: oklch(0.54 0.26 285.29);

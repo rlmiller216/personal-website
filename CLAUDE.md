@@ -57,7 +57,7 @@ Notion databases/pages
 
 **XSS contract:** All rich text rendering uses `renderRichTextToSafeHtml()` (in `notion-render-utils.ts`) which passes ALL user text through `escapeHtml()` before annotation wrapping. Never bypass this for `{@html}` content.
 
-**Detail pages** use `getPageContent()` to render Notion page content below structured metadata. `slugify()` in `content.ts` generates URL-safe slugs from titles. All detail page headers follow a standardized structure: title, pills row (Tier-1 category + Tier-2 tags + role/author in one flex-wrap row), and description subtitle — all rendered inside the Deep Twilight header via `DetailHeader`'s children slot and `description` prop. **Database `Image` property** = card thumbnails + `og:image` meta tag only — never rendered visually on detail pages. Detail page media comes from Notion page content (via `NotionBlocks`). If Rebecca wants an image/video on a detail page, she adds it as a block in Notion.
+**Detail pages** use `getPageContent()` to render Notion page content below structured metadata. `slugify()` in `content.ts` generates URL-safe slugs from titles. All detail page headers follow a standardized structure: title, pills row (Tier-1 category + Tier-2 tags + role/author in one flex-wrap row), and description subtitle — all rendered inside the Space Indigo header via `DetailHeader`'s children slot and `description` prop. **Database `Image` property** = card thumbnails + `og:image` meta tag only — never rendered visually on detail pages. Detail page media comes from Notion page content (via `NotionBlocks`). If Rebecca wants an image/video on a detail page, she adds it as a block in Notion.
 
 ## Design System
 
@@ -68,7 +68,7 @@ Notion databases/pages
 | `#F6F5F4` | White Smoke | Light background |
 | `#0D0D0D` | Onyx | Body text, dark mode base |
 | `#eeff5d` | Neon Chartreuse | Secondary — highlights, CTAs, energy |
-| `#050950` | Deep Twilight | Dark background — hero, footer, dark mode |
+| `#1D2440` | Space Indigo | Dark background — hero, footer, dark mode |
 | `#E8E0F3` | Pill Accent | Solid light purple tier-1 pill background (default) |
 | `#F2EDF7` | Pill Accent Light | Lighter variant used on `.bg-card` (white) backgrounds |
 
@@ -97,32 +97,32 @@ Notion databases/pages
 
 ### Key Patterns
 - `overflow-x: hidden` on `html` — prevents horizontal bounce on mobile from elements slightly exceeding viewport width
-- Hex + OKLCH design tokens in `app.css` with light/dark mode. Brand-critical colors use hex directly (`#050950` Deep Twilight, `#eeff5d` Neon Chartreuse) to prevent OKLCH approximation drift. Dark mode variants use `color-mix()` (e.g., `color-mix(in oklch, #050950 85%, white)`). `--hero`/`--hero-foreground` tokens power Deep Twilight sections.
+- Hex + OKLCH design tokens in `app.css` with light/dark mode. Brand-critical colors use hex directly (`#1D2440` Space Indigo, `#eeff5d` Neon Chartreuse) to prevent OKLCH approximation drift. Dark mode variants use `color-mix()` (e.g., `color-mix(in oklch, #1D2440 85%, white)`). `--hero`/`--hero-foreground` tokens power Space Indigo sections.
 - **Floating RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top (0px md, -12px lg), L and M drift toward it on scroll via exponential decay interpolation in a RAF loop. Each letter has a different damping rate (R=8, L=5, M=3) creating a cascading wave where R arrives first and M trails behind. Collapse range extends 1.8× beyond hero height for a slow, cinematic feel. Responsive two-tier sizing: 68px/60px font at md, 80px/72px font at lg. Hidden on mobile.
 - **Non-fixed nav**: nav scrolls away naturally on ALL screen sizes (`relative z-10 bg-transparent`). Always transparent with light text — all page headers extend behind nav via `-mt-16 pt-16 bg-hero`. Footer nav links serve as persistent navigation once the header scrolls away on mobile.
 - **MCA-style sticky section headers** on homepage: each section's heading sticks at `top-0` on all screen sizes. Title is a link with bold angular Ultra Violet arrow. No shadow on sticky headers.
 - **Angular icon convention**: all custom SVGs use `stroke-linecap="square"` + `stroke-linejoin="miter"` to match Poppins's geometric character. Applies to hamburger, section arrows, and close icons.
-- **Sidebar hamburger menu**: large angular icon (52px lg, 36px md) matching RLM letter color and width. Opens slide-out nav (w-80) with bold uppercase Poppins links, top-aligned with R. Panel is `bg-white` / `dark:bg-hero` (Deep Twilight in dark mode). fly/fade Svelte transitions, Escape dismisses, mutual exclusion with mobile menu.
-- **Dark mode sidebar/nav**: LetterSidebar and slide-out panel use `dark:bg-hero` (Deep Twilight) with `dark:text-hero-foreground` for letters and links. Borders switch to `dark:border-white/10`.
-- Deep Twilight page headers on all content pages with `-mt-16 pt-16` nav overlap, `text-4xl sm:text-5xl lg:text-6xl` Bodoni Moda headings, compact `py-8 sm:py-10` padding
+- **Sidebar hamburger menu**: large angular icon (52px lg, 36px md) matching RLM letter color and width. Opens slide-out nav (w-80) with bold uppercase Poppins links, top-aligned with R. Panel is `bg-white` / `dark:bg-hero` (Space Indigo in dark mode). fly/fade Svelte transitions, Escape dismisses, mutual exclusion with mobile menu.
+- **Dark mode sidebar/nav**: LetterSidebar and slide-out panel use `dark:bg-hero` (Space Indigo) with `dark:text-hero-foreground` for letters and links. Borders switch to `dark:border-white/10`.
+- Space Indigo page headers on all content pages with `-mt-16 pt-16` nav overlap, `text-4xl sm:text-5xl lg:text-6xl` Bodoni Moda headings, compact `py-8 sm:py-10` padding
 - Neon Chartreuse `.text-highlight` marker underline effect on last word of every page heading
 - Stagger fade-up animations (up to 12 children), gated behind `prefers-reduced-motion`
 - Cards always link to internal detail pages; external URLs shown as CTA buttons on detail pages
 - **Hero headline typography**: 3-part typographic split (lead / bridge / highlight). BRIDGE_WORDS (`for`, `the`, `of`, `and`, etc.) render smaller and faded as visual connectors between lead word and highlight. `text-5xl md:text-6xl lg:text-[5.5rem]` with `leading-[1]` for tight line spacing. Asymmetric padding shifts content upward (`pt-20 pb-28` → `lg:pt-32 lg:pb-48`).
 - **Card layout order**: All homepage cards follow Title → Description → Tags (at bottom). Role/position NOT shown on homepage cards (too busy). Detail pages show role in Neon Chartreuse below sector/tags.
 - Card hovers: translate-up + shadow + purple title highlight + arrow reveal (all card types)
-- **Feature card** for first project on homepage: full-width image with Deep Twilight gradient overlay, hover scale. Falls back to standard grid if project has no image.
+- **Feature card** for first project on homepage: full-width image with Space Indigo gradient overlay, hover scale. Falls back to standard grid if project has no image.
 - **Varied card layouts per section**: Projects use feature card + grid (Neon Chartreuse bottom), Open Source uses image cards with Ultra Violet left border, Toolkit uses ResourceCard grid (Neon Chartreuse bottom).
 - Homepage section banding: muted → white → muted (first section gets warm beige)
 - **Autoplay video cards**: Cards support `<video autoplay loop muted playsinline>` for mp4/webm thumbnails. `CardMedia.svelte` handles video/image detection, poster frame from multi-file Notion properties, and `prefers-reduced-motion` pause (same pattern as LetterSidebar). Detection via `isVideoUrl()` on resolved local paths. Video content guidance: short clips (5-15s), < 10MB, mp4/webm preferred; `.mov` has partial browser support.
-- **Footer**: Deep Twilight background, Bodoni Moda "Rebecca L Miller, PhD" branding (`font-bold`, 700), "Science for Good" tagline (`font-medium`, 500 desktop / 400 mobile), land acknowledgement in Bodoni Moda (`#c3bdb8` at 70% opacity, `text-base`), nav links match header styling (`font-medium text-hero-foreground/70 hover:text-hero-foreground`), copyright (`font-medium`, 500 desktop / 400 mobile)
+- **Footer**: Space Indigo background, Bodoni Moda "Rebecca L Miller, PhD" branding (`font-bold`, 700), "Science for Good" tagline (`font-medium`, 500 desktop / 400 mobile), land acknowledgement in Bodoni Moda (`#c3bdb8` at 70% opacity, `text-base`), nav links match header styling (`font-medium text-hero-foreground/70 hover:text-hero-foreground`), copyright (`font-medium`, 500 desktop / 400 mobile)
 - **Nav logo**: `text-3xl font-extrabold` (800) on mobile, invisible on md+ (RLM sidebar replaces it)
 
 ### Accessibility Constraints
 - **Neon Chartreuse on light bg: ~1.3:1 -- NEVER use as text.** Background/highlight only.
 - Ultra Violet on White Smoke: ~4.7:1 -- OK for large text; use Onyx for body text
 - Onyx on White Smoke: ~18:1 -- excellent for body text
-- Neon Chartreuse on Deep Twilight: ~10:1 -- excellent
+- Neon Chartreuse on Space Indigo: ~10:1 -- excellent
 - Video cards respect `prefers-reduced-motion`: CardMedia pauses video when reduced motion is preferred
 
 ## Project Structure
