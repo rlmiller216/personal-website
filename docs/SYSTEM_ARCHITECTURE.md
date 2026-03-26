@@ -278,7 +278,7 @@ Five-color OKLCH palette mapped to CSS custom properties in `app.css`:
 | `--color-secondary` | White Smoke | Light backgrounds, cards |
 | `--color-foreground` | Onyx | Primary text |
 | `--color-accent` | Neon Chartreuse | Highlights, CTAs |
-| `--color-deep` | Deep Twilight | Dark backgrounds, headers |
+| `--color-deep` | Space Indigo | Dark backgrounds, headers |
 
 Colors use hex values for brand-critical accuracy (OKLCH approximations caused color drift). Tailwind consumes them via `@theme` inline mapping, producing utility classes like `bg-primary`, `text-foreground`, etc.
 

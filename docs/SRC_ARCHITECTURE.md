@@ -55,10 +55,10 @@ src/
 │           └── about.service.ts          # About page fetcher (uses getPageContent)
 │
 └── routes/
-    ├── +layout.svelte                    # Root layout: LetterSidebar + slide-out overlay, non-fixed nav, ThemeToggle, Deep Twilight footer w/ land acknowledgement (~206 LOC)
+    ├── +layout.svelte                    # Root layout: LetterSidebar + slide-out overlay, non-fixed nav, ThemeToggle, Space Indigo footer w/ land acknowledgement (~206 LOC)
     ├── +layout.server.ts                 # Loads site metadata from RM_* env vars
     ├── +layout.ts                        # export const prerender = true (all routes static)
-    ├── +page.svelte                      # Home: Deep Twilight hero with 3-part headline, feature card + grid, stagger animations (~145 LOC)
+    ├── +page.svelte                      # Home: Space Indigo hero with 3-part headline, feature card + grid, stagger animations (~145 LOC)
     ├── +page.server.ts                   # Fetches featured items from all Notion databases
     ├── +error.svelte                     # Branded error page (404/500)
     ├── about/
@@ -202,7 +202,7 @@ Floating RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in
 - **`prefers-reduced-motion`:** Forces `heroHeight=0` → letters always collapsed, snap to targets on every scroll (no RAF)
 - **Gap interpolation:** Single `gap` value interpolated between `spreadGap` and `collapsedGap`, target positions = `[R_TOP, R_TOP+gap, R_TOP+gap*2]` — guarantees equal spacing
 - **`$bindable` menuOpen prop:** Parent binds `sidebarMenuOpen` state. Hamburger button toggles it. X icon shows when open. `aria-expanded` and dynamic `aria-label` for accessibility.
-- **Dark mode:** Sidebar and slide-out panel use `dark:bg-hero` (Deep Twilight) with `dark:text-hero-foreground` for letters/links. Borders switch to `dark:border-white/10`.
+- **Dark mode:** Sidebar and slide-out panel use `dark:bg-hero` (Space Indigo) with `dark:text-hero-foreground` for letters/links. Borders switch to `dark:border-white/10`.
 
 #### `ThemeToggle.svelte` (~29 LOC)
 
@@ -252,7 +252,7 @@ All 7 pages are fully wired to Notion data. Each route has a `+page.server.ts` (
 The visual identity is defined in `app.css` (~240 LOC) using CSS custom properties with hex values and OKLCH color space.
 
 **Color palette (5 custom colors, light + dark tokens):**
-- Deep Twilight — primary backgrounds (hero, nav, footer, page headers)
+- Space Indigo — primary backgrounds (hero, nav, footer, page headers)
 - Ultra Violet — accents (borders, overlays, links, quotes)
 - Neon Chartreuse — highlights (`.text-highlight` utility, tags, callouts)
 - Two additional palette colors for supporting roles
