@@ -88,6 +88,29 @@
 		<h3 class="text-xl font-semibold mt-4 mb-2">{@html renderRichTextToSafeHtml(block.richText)}</h3>
 	{/if}
 
+{:else if block.type === 'heading_4'}
+	{#if block.isToggleable}
+		<details class="mt-3 mb-1 group">
+			<summary class="cursor-pointer text-lg font-semibold font-display
+				list-none [&::-webkit-details-marker]:hidden
+				hover:opacity-70 transition-opacity">
+				<span class="flex items-center gap-2">
+					<svg class="w-3.5 h-3.5 flex-shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><path d="M6 3l5 5-5 5"/></svg>
+					<span>{@html renderRichTextToSafeHtml(block.richText)}</span>
+				</span>
+			</summary>
+			{#if block.children.length > 0}
+				<div class="pl-5 mt-2 space-y-2">
+					{#each block.children as child (child.id)}
+						<NotionBlock block={child} />
+					{/each}
+				</div>
+			{/if}
+		</details>
+	{:else}
+		<h4 class="text-lg font-semibold mt-3 mb-1">{@html renderRichTextToSafeHtml(block.richText)}</h4>
+	{/if}
+
 {:else if block.type === 'bulleted_list'}
 	<ul class="list-disc pl-6 space-y-1">
 		{#each block.children as item (item.id)}
