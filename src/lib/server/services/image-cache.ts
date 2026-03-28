@@ -74,6 +74,9 @@ export function hashUrlToFilename(url: string): string {
  * Non-S3 URLs pass through unchanged. Failures fall back to the original URL.
  */
 export async function downloadNotionImage(url: string): Promise<string> {
+	if (url && !isNotionS3Url(url) && url.startsWith('http')) {
+		console.warn(`${MODULE} external image URL (not cached): ${url}`);
+	}
 	return downloadS3File(url, IMAGE_DIR, '/images/', () => {
 		if (!imageDirEnsured) { mkdirSync(IMAGE_DIR, { recursive: true }); imageDirEnsured = true; }
 	});

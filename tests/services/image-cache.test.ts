@@ -194,6 +194,26 @@ describe('downloadNotionImage', () => {
 		expect(mockWriteFile).toHaveBeenCalledOnce();
 		expect(result).toMatch(/^\/images\/[a-f0-9]{12}\.mp4$/);
 	});
+
+	it('warns about non-S3 external URLs that are not cached', async () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		await downloadNotionImage('https://claude.com/download');
+		expect(spy).toHaveBeenCalledWith(
+			expect.stringContaining('external image URL (not cached)')
+		);
+		spy.mockRestore();
+	});
+
+	it('does not warn about S3 URLs', async () => {
+		mockFetchOk();
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		await downloadNotionImage(S3_URL);
+		const externalWarnings = spy.mock.calls.filter(
+			(args) => String(args[0]).includes('not cached')
+		);
+		expect(externalWarnings).toHaveLength(0);
+		spy.mockRestore();
+	});
 });
 
 // --- File download tests (PDFs, etc.) ---
