@@ -7,16 +7,31 @@
 	}
 
 	let { block }: Props = $props();
+	let imageError = $state(false);
 </script>
 
 {#if block.type === 'image'}
+	{@const altText = block.caption.map(s => s.text).join('') || 'Image'}
 	<figure class="my-6">
-		<img
-			src={block.url}
-			alt={block.caption.map(s => s.text).join('') || 'Image'}
-			class="rounded-lg max-w-full shadow-sm border border-border"
-			loading="lazy"
-		/>
+		{#if !imageError}
+			<img
+				src={block.url}
+				alt={altText}
+				class="rounded-lg max-w-full shadow-sm border border-border"
+				loading="lazy"
+				onerror={() => { imageError = true; }}
+			/>
+		{:else}
+			<div class="rounded-lg border border-dashed border-border bg-muted/30
+				flex items-center justify-center gap-2 px-6 py-12 text-muted-foreground/60">
+				<svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+					stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter">
+					<rect x="3" y="3" width="18" height="18" rx="2" />
+					<path d="m3 16 5-5 4 4 4-4 5 5" />
+				</svg>
+				<span class="text-sm">{altText}</span>
+			</div>
+		{/if}
 		{#if block.caption.length > 0 && hasContent(block.caption)}
 			<figcaption class="text-sm opacity-60 mt-2 text-center">
 				{@html renderRichTextToSafeHtml(block.caption)}
