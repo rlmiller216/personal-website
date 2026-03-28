@@ -261,6 +261,7 @@ describe('mapResource', () => {
 			'Description': mockRichText('A foundational text on evolutionary biology'),
 			'Type': mockSelect('Book'),
 			'Category': mockSelect('Science'),
+			'Status': mockSelect('Active'),
 			'Author': mockRichText('Richard Dawkins'),
 			'URL': mockUrl('https://example.com/book'),
 			'Why I Love It': mockRichText('Changed how I think about evolution'),
@@ -277,6 +278,7 @@ describe('mapResource', () => {
 		expect(result.description).toBe('A foundational text on evolutionary biology');
 		expect(result.type).toBe('Book');
 		expect(result.category).toBe('Science');
+		expect(result.status).toBe('Active');
 		expect(result.author).toBe('Richard Dawkins');
 		expect(result.url).toBe('https://example.com/book');
 		expect(result.whyILoveIt).toBe('Changed how I think about evolution');
@@ -300,6 +302,7 @@ describe('mapResource', () => {
 		expect(result.description).toBe('');
 		expect(result.type).toBe('');
 		expect(result.category).toBe('');
+		expect(result.status).toBe('');
 		expect(result.author).toBe('');
 		expect(result.url).toBe('');
 		expect(result.whyILoveIt).toBe('');

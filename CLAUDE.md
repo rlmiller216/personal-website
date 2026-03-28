@@ -74,7 +74,7 @@ Notion databases/pages
 
 ### Typography
 - **Headings:** Bodoni Moda (Didone serif, variable optical size). Bumped to font-weight 800 (extrabold) on mobile (< 768px) — hairline strokes need max weight on small/high-DPI screens.
-- **Body:** Poppins (geometric sans-serif). Bumped to font-weight 700 (bold) on mobile for better small-screen rendering; bold text bumped to 800 (extrabold). Weights 400–900 loaded from Google Fonts.
+- **Body:** Poppins (geometric sans-serif). On mobile (< 768px), headings bumped to 800 (extrabold) and bold text to 800 (extrabold) — no blanket body weight override. Weights 400–900 loaded from Google Fonts.
 - **Mobile weight overrides:** Secondary text elements use `font-medium` (500) to override the blanket mobile 700 boost. Applies to: card descriptions, Notion paragraphs, media captions, detail header back link + description, footer tagline + copyright, and contact form inputs. This creates visual hierarchy — primary text stays heavy (700/800), supporting text stays lighter (500).
 
 ### Font Utilities
@@ -249,6 +249,7 @@ tests/
 | Description | Rich text | Short description |
 | Type | Select | Book, Website, Podcast, Course, Newsletter |
 | Category | Select | Science, Philosophy, Food, etc. |
+| Status | Select | Active, Archived |
 | Author | Text | Creator |
 | URL | URL | Link |
 | Why I Love It | Rich text | Personal recommendation |
@@ -302,7 +303,7 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 163 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (30) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (21 — image + video + file download, dedup, hash, content-type validation)
+- 165 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (30) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (21 — image + video + file download, dedup, hash, content-type validation)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs

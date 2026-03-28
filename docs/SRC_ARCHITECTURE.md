@@ -89,7 +89,7 @@ Pure TypeScript interfaces with zero dependencies. Defines the contract between 
 |---|---|---|
 | `Project` | title, description, sector (string[]), status, role, imageUrl, url, featured, order, tags | projects.service.ts, ProjectCard.svelte |
 | `Tool` | title, description, category, githubUrl, demoUrl, tags, featured, imageUrl, order | tools.service.ts, ToolCard.svelte, ToolListItem.svelte |
-| `Resource` | title, description, type, category, author, url, whyILoveIt, imageUrl | resources.service.ts, ResourceCard.svelte |
+| `Resource` | title, description, type, category, status, author, url, whyILoveIt, imageUrl | resources.service.ts, ResourceCard.svelte |
 | `ContentBlock` | id, type, richText, children, url, caption, language, checked, icon | notion-blocks.ts, NotionBlock.svelte |
 | `RichTextSpan` | text, annotations, href | ContentBlock.richText[], NotionBlock.svelte |
 | `RichTextAnnotation` | bold, italic, strikethrough, underline, code, color | RichTextSpan.annotations |
@@ -162,7 +162,7 @@ Thin mappers over `fetchAndMap<T>()`. Each owns one domain type.
 |---|---|---|
 | `projects.service.ts` | ~88 | `getAllProjects()`, `getFeaturedProjects()` |
 | `tools.service.ts` | ~79 | `getAllTools()`, `getFeaturedTools()`, `getToolBySlug()` |
-| `resources.service.ts` | ~70 | `getAllResources()`, `groupByType()` |
+| `resources.service.ts` | ~74 | `getAllResources()`, `getFeaturedResources()`, `getResourceBySlug()` |
 | `about.service.ts` | ~30 | `getAboutContent()` |
 | `page-content.ts` | ~16 | `getPageContent()` |
 
