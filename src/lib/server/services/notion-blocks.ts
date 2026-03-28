@@ -12,7 +12,7 @@
 import type { BlockObjectResponse, RichTextItemResponse } from '@notionhq/client/build/src/api-endpoints';
 import type { ContentBlock } from '$lib/types/content';
 import { getChildBlocks } from './notion.service';
-import { extractRichText, extractMediaUrl, createBaseBlock, groupListItems } from './notion-block-utils';
+import { extractRichText, extractMediaUrl, createBaseBlock, groupListItems, parseWidthDirective } from './notion-block-utils';
 import { getEmbedConfig } from './embed-config';
 import { highlightCode } from './code-highlight';
 import { downloadNotionImage, downloadNotionFile } from './image-cache';
@@ -98,7 +98,9 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 		case 'image': {
 			const rawUrl = extractMediaUrl(block.image);
 			const localUrl = await downloadNotionImage(rawUrl);
-			return { ...base, type: 'image', url: localUrl, caption: extractRichText(block.image.caption) };
+			const rawCaption = extractRichText(block.image.caption);
+			const { width, caption } = parseWidthDirective(rawCaption);
+			return { ...base, type: 'image', url: localUrl, caption, imageWidth: width };
 		}
 
 		case 'code': {

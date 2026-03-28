@@ -93,3 +93,21 @@ export function groupListItems(blocks: ContentBlock[]): ContentBlock[] {
 
 	return grouped;
 }
+
+const WIDTH_DIRECTIVE = /\[w:\s*(\d+)\]/i;
+
+/** Extracts a [w:XX] width directive from caption spans, stripping it from the text. */
+export function parseWidthDirective(caption: RichTextSpan[]): { width: number | undefined; caption: RichTextSpan[] } {
+	for (let i = 0; i < caption.length; i++) {
+		const match = caption[i].text.match(WIDTH_DIRECTIVE);
+		if (match) {
+			const width = parseInt(match[1], 10);
+			const cleaned = caption.map((s, idx) => {
+				if (idx !== i) return s;
+				return { ...s, text: s.text.replace(WIDTH_DIRECTIVE, '').replace(/  +/g, ' ').trim() };
+			});
+			return { width, caption: cleaned };
+		}
+	}
+	return { width: undefined, caption };
+}

@@ -12,7 +12,11 @@
 
 {#if block.type === 'image'}
 	{@const altText = block.caption.map(s => s.text).join('') || 'Image'}
-	<figure class="my-6">
+	<figure
+		class="my-6"
+		class:mx-auto={block.imageWidth}
+		style={block.imageWidth ? `max-width: ${block.imageWidth}%` : undefined}
+	>
 		{#if !imageError}
 			<img
 				src={block.url}
