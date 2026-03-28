@@ -114,6 +114,7 @@ Notion databases/pages
 - **Feature card** for first project on homepage: full-width image with Space Indigo gradient overlay, hover scale. Falls back to standard grid if project has no image.
 - **Varied card layouts per section**: Projects use feature card + grid (Neon Chartreuse bottom), Open Source uses image cards with Ultra Violet left border, Toolkit uses ResourceCard grid (Neon Chartreuse bottom).
 - Homepage section banding: muted → white → muted (first section gets warm beige)
+- **Image error fallback**: Broken `<img>` in NotionMediaBlock shows a dashed-border placeholder with alt text instead of the browser's broken-image icon. Uses Svelte 5 `$state` + `onerror`. Maintains layout space in grid contexts. Angular SVG icon matches `stroke-linecap:square` convention.
 - **Autoplay video cards**: Cards support `<video autoplay loop muted playsinline>` for mp4/webm thumbnails. `CardMedia.svelte` handles video/image detection, poster frame from multi-file Notion properties, and `prefers-reduced-motion` pause (same pattern as LetterSidebar). Detection via `isVideoUrl()` on resolved local paths. Video content guidance: short clips (5-15s), < 10MB, mp4/webm preferred; `.mov` has partial browser support.
 - **Footer**: Space Indigo background, Bodoni Moda "Rebecca L Miller, PhD" branding (`font-bold`, 700), "Science for Good" tagline (`font-medium`, 500 desktop / 400 mobile), land acknowledgement in Bodoni Moda (`#c3bdb8` at 70% opacity, `text-base`), nav links match header styling (`font-medium text-hero-foreground/70 hover:text-hero-foreground`), copyright (`font-medium`, 500 desktop / 400 mobile)
 - **Nav logo**: `text-3xl font-extrabold` (800) on mobile, invisible on md+ (RLM sidebar replaces it)
@@ -154,7 +155,7 @@ src/
         tools.service.ts    → Tool mapper + queries (uses createCachedFetcher)
         resources.service.ts→ Resource mapper + queries (uses createCachedFetcher)
         about.service.ts    → About page fetcher (uses getPageContent)
-        image-cache.ts      → Build-time Notion media downloader (images + video → static/images/, PDFs/files → static/files/, dedup, hash, HEIC→JPEG, fallback)
+        image-cache.ts      → Build-time Notion media downloader (images + video → static/images/, PDFs/files → static/files/, dedup, hash, HEIC→JPEG, external URL warning, fallback)
         notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[] (23+ block types incl. pdf)
         notion-block-utils.ts→ Shared transform helpers: extractRichText, extractMediaUrl, groupListItems
         embed-config.ts     → URL pattern → embed provider/aspect-ratio detection
@@ -183,7 +184,7 @@ static/
 tests/
   services/
     notion.service.test.ts
-    image-cache.test.ts     → Image, video + file download, dedup, hash, content-type validation tests
+    image-cache.test.ts     → Image, video + file download, dedup, hash, content-type validation, external URL warning tests
     notion-blocks.test.ts   → Block transform tests (23+ block types incl. pdf, smart embeds, Shiki)
     notion-block-utils.test.ts → Shared block utilities (extractRichText, groupListItems)
     mappers.test.ts         → Tests for mapProject, mapTool, mapResource
@@ -302,7 +303,7 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 163 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (30) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (21 — image + video + file download, dedup, hash, content-type validation)
+- 165 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (30) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (23 — image + video + file download, dedup, hash, content-type validation, external URL warning)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs
