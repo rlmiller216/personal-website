@@ -36,14 +36,17 @@
 <svelte:head>
 	<title>{data.siteName}</title>
 	<meta name="description" content={data.siteTagline} />
+	<meta property="og:title" content={data.siteName} />
 	<meta property="og:site_name" content={data.siteName} />
 	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://rlmiller.netlify.app" />
 	<meta property="og:description" content={data.siteTagline} />
-	<meta property="og:image" content="https://rlmiller.netlify.app/og-image.png" />
+	<meta property="og:image" content="https://rlmiller.netlify.app/og-image.jpg" />
+	<meta property="og:image:type" content="image/jpeg" />
 	<meta property="og:image:width" content="1200" />
-	<meta property="og:image:height" content="630" />
+	<meta property="og:image:height" content="627" />
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:image" content="https://rlmiller.netlify.app/og-image.png" />
+	<meta name="twitter:image" content="https://rlmiller.netlify.app/og-image.jpg" />
 </svelte:head>
 
 <svelte:window onkeydown={(e) => { if (e.key === 'Escape' && sidebarMenuOpen) sidebarMenuOpen = false; }} />

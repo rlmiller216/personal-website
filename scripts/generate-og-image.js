@@ -5,7 +5,7 @@
 import sharp from 'sharp';
 
 const WIDTH = 1200;
-const HEIGHT = 630;
+const HEIGHT = 627;
 
 // Design tokens
 const SPACE_INDIGO = '#1D2440';
@@ -59,7 +59,7 @@ const svg = `
 </svg>`;
 
 await sharp(Buffer.from(svg))
-	.png()
-	.toFile('static/og-image.png');
+	.jpeg({ quality: 90 })
+	.toFile('static/og-image.jpg');
 
-console.log('[og-image] Generated static/og-image.png (1200×630)');
+console.log('[og-image] Generated static/og-image.jpg (1200×627)');
