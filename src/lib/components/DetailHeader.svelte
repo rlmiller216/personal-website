@@ -15,7 +15,7 @@
     <!-- Back link — angular arrow, hover slide -->
     <a
       href={backHref}
-      class="inline-flex items-center gap-2 text-sm font-medium text-hero-foreground/70
+      class="inline-flex items-center gap-2 text-sm text-hero-foreground/70
         hover:text-hero-foreground transition-all duration-200 mb-6
         hover:-translate-x-1"
     >
@@ -39,7 +39,7 @@
     {/if}
 
     {#if description}
-      <p class="mt-3 text-base font-medium text-hero-foreground/70 leading-relaxed max-w-3xl line-clamp-3">
+      <p class="mt-3 text-base text-hero-foreground/70 leading-relaxed max-w-3xl line-clamp-3">
         {description}
       </p>
     {/if}

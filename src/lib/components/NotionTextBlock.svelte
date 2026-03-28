@@ -14,7 +14,7 @@
 
 {#if block.type === 'paragraph'}
 	{#if hasContent(block.richText)}
-		<p class="font-medium leading-relaxed">{@html renderRichTextToSafeHtml(block.richText)}</p>
+		<p class="leading-relaxed">{@html renderRichTextToSafeHtml(block.richText)}</p>
 	{:else}
 		<div class="h-4"></div>
 	{/if}
@@ -143,7 +143,7 @@
 
 {:else if block.type === 'toggle'}
 	<details class="group">
-		<summary class="cursor-pointer font-medium hover:opacity-70 transition-opacity">
+		<summary class="cursor-pointer hover:opacity-70 transition-opacity">
 			{@html renderRichTextToSafeHtml(block.richText)}
 		</summary>
 		{#if block.children.length > 0}
