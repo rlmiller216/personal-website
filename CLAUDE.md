@@ -158,7 +158,7 @@ src/
         about.service.ts    → About page fetcher (uses getPageContent)
         image-cache.ts      → Build-time Notion media downloader (images + video → static/images/, PDFs/files → static/files/, dedup, hash, HEIC→JPEG, external URL warning, fallback)
         notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[] (23+ block types incl. pdf)
-        notion-block-utils.ts→ Shared transform helpers: extractRichText, extractMediaUrl, groupListItems
+        notion-block-utils.ts→ Shared transform helpers: extractRichText, extractMediaUrl, groupListItems, parseWidthDirective
         embed-config.ts     → URL pattern → embed provider/aspect-ratio detection
         code-highlight.ts   → Shiki syntax highlighting (promise-cached singleton, dual-theme)
     types/
