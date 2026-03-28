@@ -30,7 +30,7 @@
 			<ArrowRight class="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
 		</h3>
 		{#if project.description}
-			<p class="mt-1 flex-1 text-sm font-medium text-muted-foreground">{project.description}</p>
+			<p class="mt-1 flex-1 text-sm text-muted-foreground">{project.description}</p>
 		{/if}
 		{#if project.sector.length > 0 || project.tags.length > 0}
 			<div class="mt-3 flex flex-wrap gap-1">

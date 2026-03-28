@@ -32,7 +32,7 @@
 			<ArrowRight class="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
 		</h3>
 		{#if tool.description}
-			<p class="mt-1 flex-1 text-sm font-medium text-muted-foreground line-clamp-3">{tool.description}</p>
+			<p class="mt-1 flex-1 text-sm text-muted-foreground line-clamp-3">{tool.description}</p>
 		{/if}
 		{#if tool.tags.length > 0 || tool.category}
 			<div class="mt-3 flex flex-wrap gap-1">

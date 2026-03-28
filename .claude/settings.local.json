@@ -10,7 +10,14 @@
       "Bash(mkdir -p ~/.claude/skills/design)",
       "Bash(brew list:*)",
       "Read(//usr/local/bin/**)",
-      "Read(//opt/homebrew/bin/**)"
+      "Read(//opt/homebrew/bin/**)",
+      "Bash(export PATH=\"$HOME/local/nodejs/node-v22.15.0-darwin-arm64/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\")",
+      "Bash(npx svelte-check:*)",
+      "Bash(export PATH=\"/Users/admin/local/nodejs/node-v22.15.0-darwin-arm64/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\")",
+      "WebFetch(domain:fonts.google.com)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "mcp__Claude_Preview__preview_start"
     ]
   }
 }
