@@ -212,7 +212,7 @@ For About page — transforming Notion page blocks into rendered HTML.
 | `quote` | `quote` | `<blockquote>` | No | |
 | `callout` | `callout` | `<div>` with icon + text | No | |
 | `divider` | `divider` | `<hr>` | No | |
-| `image` | `image` | `<figure><img>` + `<figcaption>` | No | lazy loading |
+| `image` | `image` | `<figure><img>` + `<figcaption>` | No | lazy loading, `[w:XX]` caption directive for width control |
 | `code` | `code` | `<pre><code>` or Shiki HTML | No | Shiki dual-theme, plaintext fallback |
 | `bookmark` | `bookmark` | `<a>` card | No | |
 | `embed` | `embed` | `<iframe>` with aspect-ratio | No | Smart provider detection (YouTube, Miro, etc.) |

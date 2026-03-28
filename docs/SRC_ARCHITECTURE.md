@@ -45,7 +45,7 @@ src/
 │           ├── notion.service.ts         # Notion API client, property extractors (incl. getMediaFiles), generic fetcher, createCachedFetcher, warnSlugCollisions (~263 LOC)
 │           ├── page-content.ts           # getPageContent() — combines getPageBlocks() + transformBlocks()
 │           ├── notion-blocks.ts          # Block transformer: Notion API → ContentBlock[] (22+ types, ~230 LOC)
-│           ├── notion-block-utils.ts     # Shared helpers: extractRichText, extractMediaUrl, groupListItems (~85 LOC)
+│           ├── notion-block-utils.ts     # Shared helpers: extractRichText, extractMediaUrl, groupListItems, parseWidthDirective (~110 LOC)
 │           ├── embed-config.ts           # URL pattern → embed provider/aspect-ratio detection (~53 LOC)
 │           ├── code-highlight.ts         # Shiki syntax highlighting: promise-cached, dual-theme (~82 LOC)
 │           ├── image-cache.ts           # Build-time Notion file downloader: images + videos → static/images/, PDFs/files → static/files/, HEIC→JPEG conversion, dedup, hash. downloadItemMedia (renamed from downloadItemImages) (~148 LOC)
@@ -90,7 +90,7 @@ Pure TypeScript interfaces with zero dependencies. Defines the contract between 
 | `Project` | title, description, sector (string[]), status, role, imageUrl, url, featured, order, tags | projects.service.ts, ProjectCard.svelte |
 | `Tool` | title, description, category, githubUrl, demoUrl, tags, featured, imageUrl, order | tools.service.ts, ToolCard.svelte, ToolListItem.svelte |
 | `Resource` | title, description, type, category, author, url, whyILoveIt, imageUrl | resources.service.ts, ResourceCard.svelte |
-| `ContentBlock` | id, type, richText, children, url, caption, language, checked, icon | notion-blocks.ts, NotionBlock.svelte |
+| `ContentBlock` | id, type, richText, children, url, caption, language, checked, icon, imageWidth | notion-blocks.ts, NotionBlock.svelte |
 | `RichTextSpan` | text, annotations, href | ContentBlock.richText[], NotionBlock.svelte |
 | `RichTextAnnotation` | bold, italic, strikethrough, underline, code, color | RichTextSpan.annotations |
 
@@ -141,7 +141,7 @@ Transforms Notion API `BlockObjectResponse[]` into serializable `ContentBlock[]`
 - `fetchAndTransformChildren()` — recursive child block resolution
 
 **Helper modules (extracted to keep file focused):**
-- `notion-block-utils.ts` — `extractRichText()`, `extractMediaUrl()`, `createBaseBlock()`, `groupListItems()`
+- `notion-block-utils.ts` — `extractRichText()`, `extractMediaUrl()`, `createBaseBlock()`, `groupListItems()`, `parseWidthDirective()`
 - `embed-config.ts` — `getEmbedConfig()` detects embed providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and returns aspect ratios
 - `code-highlight.ts` — `highlightCode()` Shiki-based build-time syntax highlighting
 - `image-cache.ts` — `downloadNotionImage()`, `downloadNotionFile()`, `downloadItemMedia()` (renamed from `downloadItemImages`), `isNotionS3Url()`, `hashUrlToFilename()`. Downloads Notion S3 images and videos (mp4/webm/mov) to `static/images/` and files (PDFs, etc.) to `static/files/` at build time. Auto-detects HEIC images (iPhone uploads) via magic bytes and converts to JPEG via `heic-convert`. Shared `downloadS3File()` internal with content-type safelist (includes `video/*`). Deduplicates via promise Map, falls back to original URL on failure.
