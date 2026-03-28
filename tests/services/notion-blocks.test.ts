@@ -212,6 +212,23 @@ describe('transformBlocks', () => {
 		expect(result[0].caption[0].text).toBe('A nice photo');
 	});
 
+	it('extracts [w:50] from image caption and sets imageWidth', async () => {
+		const blocks = [imageBlock('https://example.com/photo.jpg', 'A photo [w:50]')];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].imageWidth).toBe(50);
+		expect(result[0].caption[0].text).toBe('A photo');
+	});
+
+	it('leaves imageWidth undefined when no directive in image caption', async () => {
+		const blocks = [imageBlock('https://example.com/photo.jpg', 'Just a caption')];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result[0].imageWidth).toBeUndefined();
+		expect(result[0].caption[0].text).toBe('Just a caption');
+	});
+
 	it('transforms a code block with syntax highlighting', async () => {
 		const blocks = [codeBlock('const x = 1;', 'javascript')];
 		const result = await transformBlocks(blocks as never[]);

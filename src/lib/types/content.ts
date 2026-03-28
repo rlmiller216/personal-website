@@ -180,4 +180,8 @@ export interface ContentBlock {
 	embedMinHeight?: string;
 	/** Iframe loading strategy — 'eager' bypasses lazy loading for WebGL embeds that fail on iOS Safari. */
 	embedLoading?: 'lazy' | 'eager';
+
+	// -- Image sizing --
+	/** Image width percentage from caption directive [w:XX]. */
+	imageWidth?: number;
 }

@@ -4,8 +4,8 @@
 // base block creation, and list item grouping.
 
 import { describe, it, expect } from 'vitest';
-import { extractRichText, extractMediaUrl, createBaseBlock, groupListItems } from '$lib/server/services/notion-block-utils';
-import type { ContentBlock } from '$lib/types/content';
+import { extractRichText, extractMediaUrl, createBaseBlock, groupListItems, parseWidthDirective } from '$lib/server/services/notion-block-utils';
+import type { ContentBlock, RichTextSpan } from '$lib/types/content';
 
 describe('extractRichText', () => {
 	it('extracts text and annotations from rich text items', () => {
@@ -119,5 +119,62 @@ describe('groupListItems', () => {
 		expect(result).toHaveLength(2);
 		expect(result[0].type).toBe('paragraph');
 		expect(result[1].type).toBe('heading_1');
+	});
+});
+
+function span(text: string): RichTextSpan {
+	return {
+		text,
+		annotations: { bold: false, italic: false, strikethrough: false, underline: false, code: false, color: 'default' },
+		href: null
+	};
+}
+
+describe('parseWidthDirective', () => {
+	it('extracts [w:50] and returns width 50', () => {
+		const result = parseWidthDirective([span('A photo [w:50]')]);
+		expect(result.width).toBe(50);
+		expect(result.caption[0].text).toBe('A photo');
+	});
+
+	it('handles space in directive [w: 30]', () => {
+		const result = parseWidthDirective([span('Caption [w: 30]')]);
+		expect(result.width).toBe(30);
+		expect(result.caption[0].text).toBe('Caption');
+	});
+
+	it('returns undefined width when no directive present', () => {
+		const result = parseWidthDirective([span('Just a caption')]);
+		expect(result.width).toBeUndefined();
+		expect(result.caption[0].text).toBe('Just a caption');
+	});
+
+	it('strips directive from middle of caption and collapses spaces', () => {
+		const result = parseWidthDirective([span('Before [w:40] after')]);
+		expect(result.width).toBe(40);
+		expect(result.caption[0].text).toBe('Before after');
+	});
+
+	it('handles empty caption array', () => {
+		const result = parseWidthDirective([]);
+		expect(result.width).toBeUndefined();
+		expect(result.caption).toEqual([]);
+	});
+
+	it('is case-insensitive', () => {
+		expect(parseWidthDirective([span('[W:60]')]).width).toBe(60);
+	});
+
+	it('handles directive-only caption (empty after strip)', () => {
+		const result = parseWidthDirective([span('[w:50]')]);
+		expect(result.width).toBe(50);
+		expect(result.caption[0].text).toBe('');
+	});
+
+	it('finds directive in a later span of multi-span caption', () => {
+		const result = parseWidthDirective([span('A photo'), span(' [w:50]')]);
+		expect(result.width).toBe(50);
+		expect(result.caption[0].text).toBe('A photo');
+		expect(result.caption[1].text).toBe('');
 	});
 });
