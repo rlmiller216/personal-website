@@ -115,6 +115,7 @@ Notion databases/pages
 - **Varied card layouts per section**: Projects use feature card + grid (Neon Chartreuse bottom), Open Source uses image cards with Ultra Violet left border, Toolkit uses ResourceCard grid (Neon Chartreuse bottom).
 - Homepage section banding: muted → white → muted (first section gets warm beige)
 - **Image error fallback**: Broken `<img>` in NotionMediaBlock shows a dashed-border placeholder with alt text instead of the browser's broken-image icon. Uses Svelte 5 `$state` + `onerror`. Maintains layout space in grid contexts. Angular SVG icon matches `stroke-linecap:square` convention.
+- **Caption-based image width control:** Image blocks support `[w:XX]` directives in Notion captions (e.g., `[w:50]` for 50% width). Parsed at build time by `parseWidthDirective()` in `notion-block-utils.ts`, stripped from displayed caption, stored as `imageWidth` on `ContentBlock`. `NotionMediaBlock.svelte` applies `max-width` percentage + `mx-auto` centering. Images only. Inside column layouts, the percentage is relative to the column.
 - **Autoplay video cards**: Cards support `<video autoplay loop muted playsinline>` for mp4/webm thumbnails. `CardMedia.svelte` handles video/image detection, poster frame from multi-file Notion properties, and `prefers-reduced-motion` pause (same pattern as LetterSidebar). Detection via `isVideoUrl()` on resolved local paths. Video content guidance: short clips (5-15s), < 10MB, mp4/webm preferred; `.mov` has partial browser support.
 - **Footer**: Space Indigo background, Bodoni Moda "Rebecca L Miller, PhD" branding (`font-bold`, 700), "Science for Good" tagline (`font-medium`, 500 desktop / 400 mobile), land acknowledgement in Bodoni Moda (`#c3bdb8` at 70% opacity, `text-base`), nav links match header styling (`font-medium text-hero-foreground/70 hover:text-hero-foreground`), copyright (`font-medium`, 500 desktop / 400 mobile)
 - **Nav logo**: `text-3xl font-extrabold` (800) on mobile, invisible on md+ (RLM sidebar replaces it)
@@ -303,7 +304,7 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 165 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (30) + `notion-block-utils.test.ts` (10) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (23 — image + video + file download, dedup, hash, content-type validation, external URL warning)
+- 178 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (32) + `notion-block-utils.test.ts` (18) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (23 — image + video + file download, dedup, hash, content-type validation, external URL warning)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs
