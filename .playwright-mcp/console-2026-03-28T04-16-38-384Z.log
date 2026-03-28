@@ -1,0 +1,4 @@
+[     155ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://rlmiller.netlify.app/open-source/vibe-coding-for-science:0
+[     289ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://rlmiller.netlify.app/open-source/vibe-coding-for-science/__data.json?x-sveltekit-invalidated=11:0
+[     290ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://rlmiller.netlify.app/favicon.ico:0
+[     312ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://rlmiller.netlify.app/open-source/vibe-coding-for-science/__data.json?x-sveltekit-invalidated=1:0

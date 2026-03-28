@@ -33,6 +33,7 @@ export function mapResource(page: PageObjectResponse): Resource {
 		description: getRichText(props['Description']),
 		type: getSelect(props['Type']),
 		category: getSelect(props['Category']),
+		status: getSelect(props['Status']),
 		author: getRichText(props['Author']),
 		url: getUrl(props['URL']),
 		whyILoveIt: getRichText(props['Why I Love It']),
@@ -54,7 +55,10 @@ async function fetchAllResources(): Promise<Resource[]> {
 
 	const results = await fetchAndMap(env.NOTION_RESOURCES_DS_ID, mapResource, [
 		{ property: 'Order', direction: 'ascending' }
-	]);
+	], {
+		property: 'Status',
+		select: { does_not_equal: 'Archived' }
+	});
 
 	warnSlugCollisions(results, MODULE);
 	await downloadItemMedia(results);

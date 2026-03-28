@@ -85,9 +85,9 @@ Five content types, each sourced differently from Notion:
 - **Filters:** Featured = true for `getFeaturedTools()`
 - **Sorts:** Order ascending
 
-**Resources** (8 properties)
-- Title (title), Type (select), Category (select), Author (rich_text), URL (url), Why I Love It (rich_text), Image (files)
-- **Grouping:** `groupByType()` groups by Type property (Book, Website, Podcast, etc.)
+**Resources** (11 properties)
+- Title (title), Description (rich_text), Type (select), Category (select), Status (select), Author (rich_text), URL (url), Why I Love It (rich_text), Image (files), Featured (checkbox), Order (number)
+- **Filters:** Status ≠ "Archived" for `getAllResources()`
 
 ### 2.3 Content Rendering Model
 

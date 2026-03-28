@@ -250,6 +250,7 @@ tests/
 | Description | Rich text | Short description |
 | Type | Select | Book, Website, Podcast, Course, Newsletter |
 | Category | Select | Science, Philosophy, Food, etc. |
+| Status | Select | Active, Archived |
 | Author | Text | Creator |
 | URL | URL | Link |
 | Why I Love It | Rich text | Personal recommendation |

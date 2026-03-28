@@ -67,6 +67,7 @@ export interface Resource {
 	description: string;
 	type: string;
 	category: string;
+	status: string;
 	author: string;
 	url: string;
 	whyILoveIt: string;

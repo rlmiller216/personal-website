@@ -17,7 +17,13 @@
       "WebFetch(domain:fonts.google.com)",
       "WebSearch",
       "WebFetch(domain:github.com)",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_console_messages",
+      "mcp__plugin_playwright_playwright__browser_evaluate",
+      "Bash(rm -rf build/ static/images/ static/files/)",
+      "Bash(npm run:*)",
+      "Bash(npx vitest:*)"
     ]
   }
 }

@@ -41,6 +41,7 @@
 
 - [x] **Dark mode support** — toggle with persistent preference
 - [x] **MCA-style sticky section headers** — homepage sections stick below nav, shadow on stuck, varied card layouts per section (feature card, list items, card grid)
+- [x] **Resource Status filtering** — Archived resources hidden via Notion API filter
 - [ ] **Resource filtering** by type/category
 - [ ] **Project filtering** by sector/status
 - [ ] **Lighthouse 90+** all categories
