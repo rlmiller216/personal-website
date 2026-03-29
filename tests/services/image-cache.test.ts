@@ -248,11 +248,12 @@ describe('downloadNotionImage', () => {
 			return false;
 		});
 
+		const fetchMock = mockFetchOk();
 		const result = await downloadNotionImage(pngUrl);
 
 		expect(result).toBe(`/images/${jpgFilename}`);
-		// Should not have fetched — cache hit on JPG variant
 		expect(mockWriteFile).not.toHaveBeenCalled();
+		expect(fetchMock).not.toHaveBeenCalled();
 	});
 
 	it('does not warn about S3 URLs', async () => {
