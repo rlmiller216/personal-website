@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import sharp from 'sharp';
+import { writeFileSync, unlinkSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { randomUUID } from 'node:crypto';
 import { optimizeImage, getImageDimensions } from '$lib/server/services/image-optimize';
 
 async function makeJpeg(w: number, h: number): Promise<Buffer> {
@@ -89,10 +93,6 @@ describe('optimizeImage', () => {
 
 describe('getImageDimensions', () => {
 	it('returns dimensions for a local image path', async () => {
-		const { writeFileSync, unlinkSync } = await import('node:fs');
-		const { join } = await import('node:path');
-		const { tmpdir } = await import('node:os');
-		const { randomUUID } = await import('node:crypto');
 		const buf = await makeJpeg(1024, 768);
 		const tmpPath = join(tmpdir(), `test-dim-${randomUUID()}.jpg`);
 		writeFileSync(tmpPath, buf);

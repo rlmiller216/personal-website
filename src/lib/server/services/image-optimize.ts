@@ -10,12 +10,15 @@ const MODULE = '[image-optimize]';
 const MAX_WIDTH = 1600;
 const JPEG_QUALITY = 80;
 const PNG_COMPRESSION = 8;
+// WebP already well-compressed; skip re-encoding to avoid lossy→lossy quality loss
 const SKIP_EXTS = new Set(['.svg', '.gif', '.webp', '.mp4', '.webm', '.mov', '.pdf']);
 
 export interface OptimizeResult {
 	buffer: Buffer;
 	filename: string;
+	/** Image width in pixels. 0 if unavailable (skipped file type or error). */
 	width: number;
+	/** Image height in pixels. 0 if unavailable (skipped file type or error). */
 	height: number;
 }
 
@@ -34,7 +37,7 @@ export async function optimizeImage(buffer: Buffer, filename: string): Promise<O
 		}
 
 		const isPng = ext === '.png';
-		const hasAlpha = meta.channels === 4 && meta.hasAlpha;
+		const hasAlpha = meta.hasAlpha === true;
 		let outFilename = filename;
 		let result: { data: Buffer; info: sharp.OutputInfo };
 
