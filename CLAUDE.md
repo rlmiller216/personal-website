@@ -27,6 +27,7 @@ npx svelte-check     # type checking
 | Icons | Lucide + Phosphor (phosphor-svelte) | Lucide for UI icons (arrows, sun/moon); Phosphor filled for social/brand icons (GitHub, LinkedIn, envelope) |
 | Syntax Highlighting | Shiki (dev only) | Build-time code highlighting, dual-theme dark mode via CSS variables, 0 client JS |
 | Image Conversion | heic-convert (dev only) | Build-time HEIC→JPEG for iPhone uploads via Notion, 0 client JS |
+| Image Optimization | sharp (dev only) | Build-time resize, compress, PNG→JPEG, dimension extraction, 0 client JS |
 
 ## Architecture
 
@@ -156,7 +157,8 @@ src/
         tools.service.ts    → Tool mapper + queries (uses createCachedFetcher)
         resources.service.ts→ Resource mapper + queries (uses createCachedFetcher)
         about.service.ts    → About page fetcher (uses getPageContent)
-        image-cache.ts      → Build-time Notion media downloader (images + video → static/images/, PDFs/files → static/files/, dedup, hash, HEIC→JPEG, external URL warning, fallback)
+        image-cache.ts      → Build-time Notion media downloader + sharp optimization (images + video → static/images/, dedup, hash, HEIC→JPEG, PNG→JPEG, resize, dimensions)
+        image-optimize.ts   → Build-time sharp optimization (resize ≤1600px, compress, opaque PNG→JPEG, dimensions)
         notion-blocks.ts    → transformBlocks() — Notion API → ContentBlock[] (23+ block types incl. pdf)
         notion-block-utils.ts→ Shared transform helpers: extractRichText, extractMediaUrl, groupListItems, parseWidthDirective
         embed-config.ts     → URL pattern → embed provider/aspect-ratio detection
@@ -186,6 +188,7 @@ tests/
   services/
     notion.service.test.ts
     image-cache.test.ts     → Image, video + file download, dedup, hash, content-type validation, external URL warning tests
+    image-optimize.test.ts  → Image optimization tests (13 — JPEG compression, PNG→JPEG conversion, alpha detection, resize, passthrough, dimensions)
     notion-blocks.test.ts   → Block transform tests (23+ block types incl. pdf, smart embeds, Shiki)
     notion-block-utils.test.ts → Shared block utilities (extractRichText, groupListItems)
     mappers.test.ts         → Tests for mapProject, mapTool, mapResource
@@ -305,7 +308,7 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 178 tests across 11 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (32) + `notion-block-utils.test.ts` (18) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (23 — image + video + file download, dedup, hash, content-type validation, external URL warning)
+- 194 tests across 12 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (32) + `notion-block-utils.test.ts` (18) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (23 — image + video + file download, dedup, hash, content-type validation, external URL warning) + `image-optimize.test.ts` (13 — JPEG compression, PNG→JPEG conversion, alpha detection, resize, passthrough, dimensions)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs
@@ -366,11 +369,12 @@ Errors are written for humans:
 | Approximate/guess color space conversions | Use exact hex or OKLCH from user. If conversion needed, use programmatic tool — never eyeball |
 | Use `loading="lazy"` on WebGL iframes | Set `loading: 'eager'` in embed-config.ts — iOS Safari breaks WebGL context init with lazy loading |
 | Render database Image on detail pages | Database Image = cards + og:image only. Detail page media comes from NotionBlocks |
+| Serve unoptimized Notion images | sharp pipeline in image-cache.ts handles resize + compression at build time |
 
 ## Known Limitations & Mitigations
 
 ### Media Caching (Build-Time Download)
-Notion S3 signed URLs expire after ~1 hour. At build time, `image-cache.ts` downloads all Notion S3 files: images and videos to `static/images/` and other files (PDFs, docs, etc.) to `static/files/`. Both rewrite to permanent `/{dir}/{hash}.ext` paths. A shared `downloadS3File()` function handles both paths with a content-type safelist (rejects S3 XML/HTML error pages). Videos (mp4, webm, mov) are cached alongside images in `static/images/`. HEIC images (iPhone uploads via Notion) are auto-detected by magic bytes and converted to JPEG via `heic-convert`. The dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `mkdir -p build/images build/files` ensures target directories exist (Vite's snapshot doesn't create them on fresh builds since the source dirs are gitignored), then `cp -f` copies file contents (not dirs) from `static/images/*` and `static/files/*` to `build/` — using `*` glob avoids nested directories. Both directories are gitignored. The `handleHttpError` in `svelte.config.js` ignores 404s for `/images/` and `/files/` paths during prerender (files are downloaded mid-prerender, after Vite's snapshot).
+Notion S3 signed URLs expire after ~1 hour. At build time, `image-cache.ts` downloads all Notion S3 files: images and videos to `static/images/` and other files (PDFs, docs, etc.) to `static/files/`. Both rewrite to permanent `/{dir}/{hash}.ext` paths. A shared `downloadS3File()` function handles both paths with a content-type safelist (rejects S3 XML/HTML error pages). Videos (mp4, webm, mov) are cached alongside images in `static/images/`. HEIC images (iPhone uploads via Notion) are auto-detected by magic bytes and converted to JPEG via `heic-convert`. All raster images (JPEG, PNG) are optimized via sharp: resized to max 1600px width, compressed (JPEG q80), and opaque PNGs are converted to JPEG (89% total size reduction from 154 MB to 16 MB). PNG transparency is detected via sharp.stats() alpha channel analysis. Image dimensions are extracted for `<img>` width/height attributes. The dedup `Map<pathname, Promise>` prevents concurrent download races during prerender. Failed downloads fall back to the original S3 URL. Post-build `mkdir -p build/images build/files` ensures target directories exist (Vite's snapshot doesn't create them on fresh builds since the source dirs are gitignored), then `cp -f` copies file contents (not dirs) from `static/images/*` and `static/files/*` to `build/` — using `*` glob avoids nested directories. Both directories are gitignored. The `handleHttpError` in `svelte.config.js` ignores 404s for `/images/` and `/files/` paths during prerender (files are downloaded mid-prerender, after Vite's snapshot).
 
 ### Netlify Free Tier Limits (300 credits/month)
 Each production deploy costs ~15 credits. The free tier allows ~20 deploys/month. **Do not enable scheduled build hooks** — even a 6-hourly hook would consume 2,700 credits/month. Use push-triggered deploys only, plus manual "Trigger deploy" from the Netlify dashboard for content refreshes.

@@ -49,6 +49,7 @@ src/
 │           ├── embed-config.ts           # URL pattern → embed provider/aspect-ratio detection (~53 LOC)
 │           ├── code-highlight.ts         # Shiki syntax highlighting: promise-cached, dual-theme (~82 LOC)
 │           ├── image-cache.ts           # Build-time Notion file downloader: images + videos → static/images/, PDFs/files → static/files/, HEIC→JPEG conversion, dedup, hash. downloadItemMedia (renamed from downloadItemImages) (~148 LOC)
+│           ├── image-optimize.ts       # Build-time sharp optimization: resize ≤1600px, compress JPEG q80, opaque PNG→JPEG, dimension extraction (~71 LOC)
 │           ├── projects.service.ts       # Project mapper + queries (uses createCachedFetcher)
 │           ├── tools.service.ts          # Tool mapper + queries (uses createCachedFetcher)
 │           ├── resources.service.ts      # Resource mapper + queries (uses createCachedFetcher, groupByType)
@@ -145,6 +146,7 @@ Transforms Notion API `BlockObjectResponse[]` into serializable `ContentBlock[]`
 - `embed-config.ts` — `getEmbedConfig()` detects embed providers (YouTube, Vimeo, Miro, Figma, Plotly, Google Docs, Mol*) and returns aspect ratios
 - `code-highlight.ts` — `highlightCode()` Shiki-based build-time syntax highlighting
 - `image-cache.ts` — `downloadNotionImage()`, `downloadNotionFile()`, `downloadItemMedia()` (renamed from `downloadItemImages`), `isNotionS3Url()`, `hashUrlToFilename()`. Downloads Notion S3 images and videos (mp4/webm/mov) to `static/images/` and files (PDFs, etc.) to `static/files/` at build time. Auto-detects HEIC images (iPhone uploads) via magic bytes and converts to JPEG via `heic-convert`. Shared `downloadS3File()` internal with content-type safelist (includes `video/*`). Deduplicates via promise Map, falls back to original URL on failure.
+- `image-optimize.ts` — `optimizeImage()` sharp-based build-time image optimization (resize ≤1600px, compress JPEG q80, opaque PNG→JPEG via stats-based alpha detection, dimension extraction)
 
 **Supported block types:** paragraph, heading_1/2/3, bulleted_list_item, numbered_list_item, to_do, toggle, quote, callout, divider, image, code, bookmark, embed, video, table, audio, file, pdf, column_list, synced_block, equation
 

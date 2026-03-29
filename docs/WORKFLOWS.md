@@ -93,6 +93,16 @@ The primary workflow. Rebecca edits content in Notion; the website rebuilds to r
 | Notion rate limit hit | API returns 429, caught by error handler | Partial content, retry on next build |
 | TypeScript errors | `svelte-check` fails, build aborts | Previous deploy stays live |
 
+### 2.4 Image Optimization
+
+After downloading Notion S3 images, `optimizeImage()` processes each raster file:
+- Resizes images wider than 1600px (maintaining aspect ratio)
+- Converts opaque PNGs to JPEG q80 via stats-based alpha detection (typical 5-10x size reduction)
+- Compresses JPEGs to q80
+- SVGs, GIFs, WebPs, and non-image files pass through unchanged
+- Image dimensions are read by `getImageDimensions()` in notion-blocks.ts for `<img>` width/height attributes (prevents layout shift)
+- Immutable cache headers (1 year) on `/images/*` and `/files/*` since filenames are SHA256 content-hashed
+
 ---
 
 ## 3. Database Fetch Pipeline
