@@ -46,10 +46,18 @@ describe('optimizeImage', () => {
 		expect(result.width).toBe(800);
 	});
 
-	it('keeps PNG with alpha channel as PNG', async () => {
+	it('keeps PNG with real transparency as PNG', async () => {
 		const input = await makePngAlpha(800, 600);
 		const result = await optimizeImage(input, 'logo.png');
 		expect(result.filename).toBe('logo.png');
+	});
+
+	it('converts PNG with opaque alpha channel to JPEG', async () => {
+		// 4-channel RGBA but alpha=1.0 (fully opaque) — common in Notion uploads
+		const input = await sharp({ create: { width: 400, height: 300, channels: 4, background: { r: 128, g: 128, b: 128, alpha: 1 } } })
+			.png().toBuffer();
+		const result = await optimizeImage(input, 'screenshot-rgba.png');
+		expect(result.filename).toBe('screenshot-rgba.jpg');
 	});
 
 	it('resizes oversized PNG and converts to JPEG', async () => {

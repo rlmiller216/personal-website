@@ -52,11 +52,18 @@ export async function optimizeImage(buffer: Buffer, filename: string): Promise<O
 		}
 
 		const isPng = ext === '.png';
-		const hasAlpha = meta.hasAlpha === true;
 		let outFilename = filename;
 		let result: { data: Buffer; info: sharp.OutputInfo };
 
-		if (isPng && !hasAlpha) {
+		// Check if alpha channel is actually used (not just present but fully opaque).
+		// Most Notion PNGs have RGBA format with alpha=255 everywhere.
+		let hasRealTransparency = false;
+		if (isPng && meta.hasAlpha) {
+			const stats = await sharp(buffer).stats();
+			hasRealTransparency = stats.channels.length >= 4 && stats.channels[3].min < 255;
+		}
+
+		if (isPng && !hasRealTransparency) {
 			result = await pipeline.jpeg({ quality: JPEG_QUALITY }).toBuffer({ resolveWithObject: true });
 			outFilename = filename.replace(/\.png$/i, '.jpg');
 			console.log(`${MODULE} PNG→JPEG: ${filename} → ${outFilename}`);
