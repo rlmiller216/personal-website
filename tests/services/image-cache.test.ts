@@ -20,10 +20,17 @@ vi.mock('node:fs/promises', () => ({
 	writeFile: (...args: unknown[]) => mockWriteFile(...args)
 }));
 
+vi.mock('$lib/server/services/image-optimize', () => ({
+	optimizeImage: vi.fn((buffer: Buffer, filename: string) =>
+		Promise.resolve({ buffer, filename, width: 800, height: 600 })),
+	getImageDimensions: vi.fn()
+}));
+
 // Import AFTER mocks are set up
 const { isNotionS3Url, hashUrlToFilename, downloadNotionImage, downloadNotionFile } = await import(
 	'$lib/server/services/image-cache'
 );
+const { optimizeImage: mockOptimizeImage } = await import('$lib/server/services/image-optimize');
 
 // --- Helpers ---
 
@@ -202,6 +209,50 @@ describe('downloadNotionImage', () => {
 			expect.stringContaining('external image URL (not cached)')
 		);
 		spy.mockRestore();
+	});
+
+	it('uses optimized filename when optimizeImage converts PNG to JPG', async () => {
+		mockFetchOk('image/png');
+		const pngUrl =
+			'https://prod-files-secure.s3.us-west-2.amazonaws.com/w/b/convert.png?X-Amz-Expires=3600';
+		const expectedHash = hashUrlToFilename(pngUrl).replace(/\.png$/, '.jpg');
+
+		vi.mocked(mockOptimizeImage).mockImplementationOnce((buffer: Buffer, filename: string) =>
+			Promise.resolve({
+				buffer,
+				filename: filename.replace(/\.png$/i, '.jpg'),
+				width: 800,
+				height: 600
+			})
+		);
+
+		const result = await downloadNotionImage(pngUrl);
+
+		expect(result).toBe(`/images/${expectedHash}`);
+		expect(mockWriteFile).toHaveBeenCalledOnce();
+		// Verify the write path uses the converted filename
+		const writePath = mockWriteFile.mock.calls[0][0] as string;
+		expect(writePath).toContain('.jpg');
+		expect(writePath).not.toContain('.png');
+	});
+
+	it('returns cached JPG path when PNG was previously converted', async () => {
+		const pngUrl =
+			'https://prod-files-secure.s3.us-west-2.amazonaws.com/w/b/cached-convert.png?X-Amz-Expires=3600';
+		const pngFilename = hashUrlToFilename(pngUrl);
+		const jpgFilename = pngFilename.replace(/\.png$/, '.jpg');
+
+		// PNG file does not exist, but JPG variant does
+		mockExistsSync.mockImplementation((path: string) => {
+			if (typeof path === 'string' && path.endsWith(jpgFilename)) return true;
+			return false;
+		});
+
+		const result = await downloadNotionImage(pngUrl);
+
+		expect(result).toBe(`/images/${jpgFilename}`);
+		// Should not have fetched — cache hit on JPG variant
+		expect(mockWriteFile).not.toHaveBeenCalled();
 	});
 
 	it('does not warn about S3 URLs', async () => {

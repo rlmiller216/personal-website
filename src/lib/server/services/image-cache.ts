@@ -12,6 +12,7 @@ import { existsSync, mkdirSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import heicConvert from 'heic-convert';
 import { isVideoUrl } from '$lib/types/content';
+import { optimizeImage } from './image-optimize';
 
 const MODULE = '[files]';
 const IMAGE_DIR = 'static/images';
@@ -114,6 +115,13 @@ async function downloadS3File(
 			if (existsSync(filePath)) {
 				return `${publicPrefix}${filename}`;
 			}
+			// PNG may have been converted to JPG on a previous build
+			if (filename.endsWith('.png')) {
+				const jpgName = filename.replace(/\.png$/i, '.jpg');
+				if (existsSync(`${dir}/${jpgName}`)) {
+					return `${publicPrefix}${jpgName}`;
+				}
+			}
 
 			const response = await fetch(url);
 			if (!response.ok) {
@@ -142,9 +150,12 @@ async function downloadS3File(
 				buffer = await convertHeicToJpeg(buffer, cacheKey);
 			}
 
-			await writeFile(filePath, buffer);
-			console.log(`${MODULE} cached: ${filename}`);
-			return `${publicPrefix}${filename}`;
+			const optimized = await optimizeImage(buffer, filename);
+			const finalFilename = optimized.filename;
+			const finalPath = `${dir}/${finalFilename}`;
+			await writeFile(finalPath, optimized.buffer);
+			console.log(`${MODULE} cached: ${finalFilename}`);
+			return `${publicPrefix}${finalFilename}`;
 		} catch (err) {
 			console.warn(`${MODULE} failed: ${cacheKey}`, err);
 			return url;
