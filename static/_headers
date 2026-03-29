@@ -1,3 +1,10 @@
 # Allow Mol* viewer (molstar.org) to fetch snapshot files
 /molstar/*
   Access-Control-Allow-Origin: *
+
+# Content-hashed assets — immutable caching is safe
+/images/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/files/*
+  Cache-Control: public, max-age=31536000, immutable
