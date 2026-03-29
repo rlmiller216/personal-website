@@ -184,4 +184,8 @@ export interface ContentBlock {
 	// -- Image sizing --
 	/** Image width percentage from caption directive [w:XX]. */
 	imageWidth?: number;
+	/** Native image width in pixels (from sharp at build time). */
+	imageNativeWidth?: number;
+	/** Native image height in pixels (from sharp at build time). */
+	imageNativeHeight?: number;
 }

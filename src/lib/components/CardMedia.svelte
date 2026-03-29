@@ -42,5 +42,5 @@
 		playsinline
 	></video>
 {:else}
-	<img {src} {alt} class={className} loading="lazy" />
+	<img {src} {alt} class={className} loading="lazy" decoding="async" />
 {/if}

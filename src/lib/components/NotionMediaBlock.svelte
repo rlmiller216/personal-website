@@ -23,6 +23,9 @@
 				alt={altText}
 				class="rounded-lg max-w-full shadow-sm border border-border"
 				loading="lazy"
+				decoding="async"
+				width={block.imageNativeWidth || undefined}
+				height={block.imageNativeHeight || undefined}
 				onerror={() => { imageError = true; }}
 			/>
 		{:else}

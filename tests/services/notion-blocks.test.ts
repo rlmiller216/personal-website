@@ -24,6 +24,11 @@ vi.mock('$lib/server/services/image-cache', () => ({
 	downloadNotionFile: vi.fn((url: string) => Promise.resolve(url))
 }));
 
+// Mock image dimensions — returns fixed dimensions for local files
+vi.mock('$lib/server/services/image-optimize', () => ({
+	getImageDimensions: vi.fn(() => Promise.resolve({ width: 800, height: 600 }))
+}));
+
 const { transformBlocks } = await import('$lib/server/services/notion-blocks');
 
 // --- Mock Helpers ---
@@ -210,6 +215,19 @@ describe('transformBlocks', () => {
 		expect(result[0].type).toBe('image');
 		expect(result[0].url).toBe('https://example.com/photo.jpg');
 		expect(result[0].caption[0].text).toBe('A nice photo');
+		// External URLs don't get dimensions (not cached locally)
+		expect(result[0].imageNativeWidth).toBeUndefined();
+		expect(result[0].imageNativeHeight).toBeUndefined();
+	});
+
+	it('reads native dimensions for locally cached images', async () => {
+		const { downloadNotionImage } = await import('$lib/server/services/image-cache');
+		(downloadNotionImage as ReturnType<typeof vi.fn>).mockResolvedValueOnce('/images/abc123.jpg');
+		const blocks = [imageBlock('https://s3.amazonaws.com/notion/photo.jpg', 'Local image')];
+		const result = await transformBlocks(blocks as never[]);
+
+		expect(result[0].imageNativeWidth).toBe(800);
+		expect(result[0].imageNativeHeight).toBe(600);
 	});
 
 	it('extracts [w:50] from image caption and sets imageWidth', async () => {

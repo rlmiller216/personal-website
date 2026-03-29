@@ -16,6 +16,7 @@ import { extractRichText, extractMediaUrl, createBaseBlock, groupListItems, pars
 import { getEmbedConfig } from './embed-config';
 import { highlightCode } from './code-highlight';
 import { downloadNotionImage, downloadNotionFile } from './image-cache';
+import { getImageDimensions } from './image-optimize';
 
 /** Shared heading transform — handles both regular and toggleable headings. */
 async function transformHeading(
@@ -100,7 +101,11 @@ async function blockToContentBlock(block: BlockObjectResponse): Promise<ContentB
 			const localUrl = await downloadNotionImage(rawUrl);
 			const rawCaption = extractRichText(block.image.caption);
 			const { width, caption } = parseWidthDirective(rawCaption);
-			return { ...base, type: 'image', url: localUrl, caption, imageWidth: width };
+			const dims = localUrl.startsWith('/') ? await getImageDimensions(`static${localUrl}`) : undefined;
+			return {
+				...base, type: 'image', url: localUrl, caption, imageWidth: width,
+				imageNativeWidth: dims?.width, imageNativeHeight: dims?.height,
+			};
 		}
 
 		case 'code': {
