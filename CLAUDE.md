@@ -183,7 +183,7 @@ src/
 static/
   robots.txt
   molstar/                  → Mol* 3D viewer session files (.molx)
-  _headers                  → Netlify custom headers (CORS for /molstar/*)
+  _headers                  → Netlify custom headers (CORS for /molstar/*, immutable cache for /images/* + /files/*)
 tests/
   services/
     notion.service.test.ts
@@ -308,7 +308,7 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 194 tests across 12 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (32) + `notion-block-utils.test.ts` (18) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (23 — image + video + file download, dedup, hash, content-type validation, external URL warning) + `image-optimize.test.ts` (13 — JPEG compression, PNG→JPEG conversion, alpha detection, resize, passthrough, dimensions)
+- 194 tests across 12 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (35) + `notion-block-utils.test.ts` (19) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (25 — image + video + file download, dedup, hash, content-type validation, PNG→JPG filename, cache-hit fallback) + `image-optimize.test.ts` (13 — JPEG compression, PNG→JPEG conversion, alpha detection, resize, passthrough, dimensions)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs
