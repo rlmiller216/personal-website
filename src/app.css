@@ -149,6 +149,9 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Poppins', sans-serif;
+    /* overflow-x on body (NOT html) — html-level promotes <html> to a scroll
+       container and breaks position: sticky on iOS Safari during URL-bar retraction */
+    overflow-x: hidden;
   }
   h1, h2, h3, h4 {
     font-family: 'Bodoni Moda', serif;
@@ -164,7 +167,6 @@
   }
   html {
     scroll-behavior: smooth;
-    overflow-x: hidden;          /* prevent horizontal bounce on mobile */
   }
   ::selection {
     background: oklch(0.54 0.26 285.29 / 25%);
