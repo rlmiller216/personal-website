@@ -63,11 +63,18 @@
 <!-- Featured Projects — White band with feature card + grid -->
 {#if data.featuredProjects.length > 0}
 	<StickySection title="FEATURED" highlightWord="PROJECTS" href="/projects" variant="muted">
-		<!-- Feature card: only if first project has media (image or video) -->
+		<!-- Mobile: render first project as a standard card (matches the rest) -->
+		{#if hasFeatureMedia}
+			<div class="sm:hidden mb-6">
+				<ProjectCard project={firstProject} />
+			</div>
+		{/if}
+
+		<!-- Feature card (sm+ only): full-width image with overlay -->
 		{#if hasFeatureMedia}
 			<a
 				href={'/projects/' + firstProject.slug}
-				class="group block relative overflow-hidden rounded-lg mb-8"
+				class="hidden sm:block group relative overflow-hidden rounded-lg mb-8"
 			>
 				<!-- No loading="lazy" — feature card is above the fold -->
 				<CardMedia
