@@ -62,7 +62,7 @@
 
 <!-- Featured Projects — White band with feature card + grid -->
 {#if data.featuredProjects.length > 0}
-	<StickySection title="FEATURED" highlightWord="PROJECTS" href="/projects" variant="muted">
+	<StickySection title="" highlightWord="PROJECTS" href="/projects" variant="muted">
 		<!-- Mobile: render first project as a standard card (matches the rest) -->
 		{#if hasFeatureMedia}
 			<div class="sm:hidden mb-6">

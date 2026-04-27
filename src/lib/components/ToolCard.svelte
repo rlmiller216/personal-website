@@ -8,7 +8,7 @@
 
 <a
 	href={`/open-source/${tool.slug}`}
-	class="group flex flex-col overflow-hidden rounded-lg shadow-sm transition-all
+	class="group flex flex-col overflow-hidden rounded-lg shadow-md transition-all
 		hover:shadow-lg hover:-translate-y-1 bg-card border border-border"
 >
 	{#if tool.imageUrl}

@@ -8,7 +8,7 @@
 
 <a
 	href={`/resources/${resource.slug}`}
-	class="group flex items-start gap-5 rounded-lg p-5 transition-all hover:shadow-md hover:-translate-y-1 bg-card border border-border border-b-4 border-b-secondary"
+	class="group flex items-start gap-5 rounded-lg p-5 shadow-md transition-all hover:shadow-lg hover:-translate-y-1 bg-card border border-border border-b-4 border-b-secondary"
 >
 	{#if resource.imageUrl}
 		<CardMedia

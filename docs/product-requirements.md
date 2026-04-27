@@ -4,7 +4,7 @@
 
 ## Must Have (Launch Blockers)
 
-- [ ] **Home page** with hero section, featured projects, tools, resources
+- [ ] **Home page** with hero section, projects, tools, resources
 - [ ] **About page** rendered from Notion page content
 - [ ] **Projects page** with card grid from Notion database
 - [ ] **Open Source page** with card grid from Notion database

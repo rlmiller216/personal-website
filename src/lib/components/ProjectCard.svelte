@@ -8,7 +8,7 @@
 
 <a
 	href={`/projects/${project.slug}`}
-	class="group flex flex-col overflow-hidden rounded-lg shadow-sm transition-all
+	class="group flex flex-col overflow-hidden rounded-lg shadow-md transition-all
 		hover:shadow-lg hover:-translate-y-1 border-b-4 border-b-secondary"
 >
 	{#if project.imageUrl}
