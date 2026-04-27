@@ -19,11 +19,12 @@ const IMAGE_DIR = 'static/images';
 const FILES_DIR = 'static/files';
 const KNOWN_IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']);
 const KNOWN_VIDEO_EXTS = new Set(['.mp4', '.webm', '.mov']);
-const KNOWN_FILE_EXTS = new Set(['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.pptx', '.csv', '.zip']);
+const KNOWN_FILE_EXTS = new Set(['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.pptx', '.csv', '.zip', '.txt', '.md']);
 
-/** Content types that are safe to cache (reject S3 error pages which are XML/HTML). */
+/** Content types that are safe to cache (reject S3 error pages which are XML/HTML).
+ *  Enumerated, NOT a `text/*` blanket — `text/html` and `text/xml` are S3 error formats. */
 const SAFE_CONTENT_TYPES = ['image/', 'video/', 'application/pdf', 'application/octet-stream',
-	'application/zip', 'application/vnd.', 'text/csv'];
+	'application/zip', 'application/vnd.', 'text/csv', 'text/plain', 'text/markdown'];
 
 /** Dedup map: URL pathname → Promise<local path or original URL>. */
 const inflight = new Map<string, Promise<string>>();
@@ -60,12 +61,14 @@ async function convertHeicToJpeg(buf: Buffer, cacheKey: string): Promise<Buffer>
 	}
 }
 
-/** Deterministic filename from URL path (ignores query params / signatures). */
-export function hashUrlToFilename(url: string): string {
+/** Deterministic filename from URL path (ignores query params / signatures).
+ *  `defaultExt` is used when the URL extension isn't recognized — `.jpg` for images,
+ *  `.bin` for the file path (so unknown attachments don't masquerade as JPEGs). */
+export function hashUrlToFilename(url: string, defaultExt = '.jpg'): string {
 	const pathname = new URL(url).pathname;
 	const dotIdx = pathname.lastIndexOf('.');
 	const rawExt = dotIdx !== -1 ? pathname.slice(dotIdx).toLowerCase() : '';
-	const ext = KNOWN_IMAGE_EXTS.has(rawExt) || KNOWN_VIDEO_EXTS.has(rawExt) || KNOWN_FILE_EXTS.has(rawExt) ? rawExt : '.jpg';
+	const ext = KNOWN_IMAGE_EXTS.has(rawExt) || KNOWN_VIDEO_EXTS.has(rawExt) || KNOWN_FILE_EXTS.has(rawExt) ? rawExt : defaultExt;
 	const hash = createHash('sha256').update(pathname).digest('hex').slice(0, 12);
 	return `${hash}${ext}`;
 }
@@ -78,7 +81,7 @@ export async function downloadNotionImage(url: string): Promise<string> {
 	if (url && !isNotionS3Url(url) && url.startsWith('http')) {
 		console.warn(`${MODULE} external image URL (not cached): ${url}`);
 	}
-	return downloadS3File(url, IMAGE_DIR, '/images/', () => {
+	return downloadS3File(url, IMAGE_DIR, '/images/', '.jpg', () => {
 		if (!imageDirEnsured) { mkdirSync(IMAGE_DIR, { recursive: true }); imageDirEnsured = true; }
 	});
 }
@@ -88,14 +91,14 @@ export async function downloadNotionImage(url: string): Promise<string> {
  * Non-S3 URLs pass through unchanged. Failures fall back to the original URL.
  */
 export async function downloadNotionFile(url: string): Promise<string> {
-	return downloadS3File(url, FILES_DIR, '/files/', () => {
+	return downloadS3File(url, FILES_DIR, '/files/', '.bin', () => {
 		if (!filesDirEnsured) { mkdirSync(FILES_DIR, { recursive: true }); filesDirEnsured = true; }
 	});
 }
 
 /** Shared downloader — caches S3 files to a local directory. */
 async function downloadS3File(
-	url: string, dir: string, publicPrefix: string, ensureDir: () => void
+	url: string, dir: string, publicPrefix: string, defaultExt: string, ensureDir: () => void
 ): Promise<string> {
 	if (!url || !isNotionS3Url(url)) return url;
 
@@ -106,7 +109,7 @@ async function downloadS3File(
 
 	const promise = (async () => {
 		try {
-			const filename = hashUrlToFilename(url);
+			const filename = hashUrlToFilename(url, defaultExt);
 			const filePath = `${dir}/${filename}`;
 
 			ensureDir();

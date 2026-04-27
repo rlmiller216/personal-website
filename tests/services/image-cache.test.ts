@@ -327,4 +327,42 @@ describe('downloadNotionFile', () => {
 		expect(warnSpy).toHaveBeenCalled();
 		warnSpy.mockRestore();
 	});
+
+	it('caches .txt attachments with text/plain content-type', async () => {
+		mockFetchOk('text/plain');
+
+		const result = await downloadNotionFile(
+			'https://prod-files-secure.s3.us-west-2.amazonaws.com/w/b/notes.txt?X-Amz-Expires=3600'
+		);
+
+		expect(mockWriteFile).toHaveBeenCalledOnce();
+		expect(result).toMatch(/^\/files\/[a-f0-9]{12}\.txt$/);
+		expect(result).not.toContain('prod-files-secure');
+		expect(result).not.toContain('.jpg');
+	});
+
+	it('caches .md attachments with text/markdown content-type', async () => {
+		mockFetchOk('text/markdown');
+
+		const result = await downloadNotionFile(
+			'https://prod-files-secure.s3.us-west-2.amazonaws.com/w/b/readme.md?X-Amz-Expires=3600'
+		);
+
+		expect(mockWriteFile).toHaveBeenCalledOnce();
+		expect(result).toMatch(/^\/files\/[a-f0-9]{12}\.md$/);
+	});
+
+	it('still rejects text/html (S3 error pages must not slip through)', async () => {
+		mockFetchOk('text/html');
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+		const result = await downloadNotionFile(
+			'https://prod-files-secure.s3.us-west-2.amazonaws.com/w/b/error.txt?X-Amz-Expires=3600'
+		);
+
+		expect(result).toContain('prod-files-secure');
+		expect(mockWriteFile).not.toHaveBeenCalled();
+		expect(warnSpy).toHaveBeenCalled();
+		warnSpy.mockRestore();
+	});
 });
