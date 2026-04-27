@@ -12,13 +12,15 @@
 		hover:shadow-lg hover:-translate-y-1 border-b-4 border-b-secondary"
 >
 	{#if project.imageUrl}
-		<CardMedia
-			src={project.imageUrl}
-			poster={project.posterUrl}
-			alt={project.title}
-			isVideo={project.isVideo}
-			class="h-48 w-full object-cover"
-		/>
+		<div class="bg-white">
+			<CardMedia
+				src={project.imageUrl}
+				poster={project.posterUrl}
+				alt={project.title}
+				isVideo={project.isVideo}
+				class="h-48 w-full object-cover"
+			/>
+		</div>
 	{:else}
 		<div class="h-48 w-full flex items-center justify-center bg-muted text-muted-foreground text-sm">
 			No image
