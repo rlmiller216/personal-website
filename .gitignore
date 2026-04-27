@@ -25,3 +25,9 @@ vite.config.ts.timestamp-*
 # Downloaded Notion files (regenerated at build time)
 /static/images/
 /static/files/
+
+# Claude Code local-only settings (may contain MCP secrets)
+.claude/settings.local.json
+
+# Copy review progress (cross-session checkpoint, may contain Notion page IDs)
+.copy-review-progress.json
