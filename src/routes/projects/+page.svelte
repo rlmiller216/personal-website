@@ -23,6 +23,6 @@
 			{/each}
 		</div>
 	{:else}
-		<p class="text-muted-foreground">Projects coming soon.</p>
+		<p class="text-muted-foreground">Projects coming soon - check back shortly!</p>
 	{/if}
 </section>

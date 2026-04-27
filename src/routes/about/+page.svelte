@@ -21,6 +21,6 @@
 			<NotionBlocks blocks={data.blocks} />
 		</div>
 	{:else}
-		<p class="text-muted-foreground">About content coming soon.</p>
+		<p class="text-muted-foreground">About page coming soon - check back shortly!</p>
 	{/if}
 </article>

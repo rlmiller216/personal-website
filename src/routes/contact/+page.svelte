@@ -37,7 +37,7 @@
 	<div class="max-w-6xl mx-auto px-6 py-8 sm:py-10">
 		<h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-hero-foreground tracking-tight leading-tight">Get in <span class="text-highlight">Touch</span></h1>
 		<p class="text-hero-foreground/70 mt-3 text-lg">
-			Whether it's about a potential collaboration, a question about my work, or just to say hello.
+			Whether it's about a potential collaboration, a question about my work, or just to say hello - I'd love to hear from you.
 		</p>
 	</div>
 </div>

@@ -146,6 +146,6 @@
 <!-- Empty state -->
 {#if data.featuredProjects.length === 0 && data.featuredTools.length === 0 && data.featuredResources.length === 0}
 	<section class="max-w-6xl mx-auto px-6 py-24 text-center">
-		<p class="text-lg text-muted-foreground">Content coming soon — check back shortly!</p>
+		<p class="text-lg text-muted-foreground">Content coming soon - check back shortly!</p>
 	</section>
 {/if}
