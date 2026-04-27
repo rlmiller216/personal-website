@@ -102,7 +102,7 @@
 		<nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
 			<a
 				href="/"
-				class="text-3xl font-extrabold tracking-tight uppercase md:invisible text-hero-foreground"
+				class="text-3xl font-bold tracking-wide uppercase md:invisible text-hero-foreground"
 			>
 				{data.siteName}
 			</a>
