@@ -6,12 +6,14 @@
 		highlightWord,
 		href,
 		variant = 'white',
+		animationDelay = 0,
 		children
 	}: {
 		title: string;
 		highlightWord: string;
 		href: string;
 		variant?: 'white' | 'muted';
+		animationDelay?: number;
 		children: Snippet;
 	} = $props();
 
@@ -34,10 +36,13 @@
 					text-hero dark:text-hero-foreground hover:text-primary transition-colors uppercase tracking-wide"
 			>
 				{#if title}{title} {/if}<span class="text-highlight">{highlightWord}</span>
-				<!-- Sharp angular arrow — matches Plus Jakarta Sans's geometric character -->
+				<!-- Sharp angular arrow — matches Plus Jakarta Sans's geometric character.
+				     animate-nudge-x adds an idle right-leaning nudge to invite the click;
+				     animation-delay staggers sibling sections out of lockstep. -->
 				<svg
 					class="h-9 w-9 md:h-11 md:w-11 text-primary self-center
-						transition-transform group-hover:translate-x-2"
+						transition-transform group-hover:translate-x-2 animate-nudge-x"
+					style="animation-delay: {animationDelay}s"
 					viewBox="0 0 24 24" fill="none" stroke="currentColor"
 					stroke-width="2.5" stroke-linecap="square" stroke-linejoin="miter"
 				>

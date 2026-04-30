@@ -37,6 +37,10 @@
 	const gridProjects = $derived(
 		hasFeatureMedia ? data.featuredProjects.slice(1) : data.featuredProjects
 	);
+
+	// Per-section offset for the section-heading arrow nudge so the three
+	// arrows don't fire in lockstep. n × NUDGE_STAGGER_S, n = 0..2.
+	const NUDGE_STAGGER_S = 0.6;
 </script>
 
 <!-- Hero — full-width Deep Twilight -->
@@ -62,7 +66,7 @@
 
 <!-- Featured Projects — White band with feature card + grid -->
 {#if data.featuredProjects.length > 0}
-	<StickySection title="" highlightWord="PROJECTS" href="/projects" variant="muted">
+	<StickySection title="" highlightWord="PROJECTS" href="/projects" variant="muted" animationDelay={0 * NUDGE_STAGGER_S}>
 		<!-- Mobile: render first project as a standard card (matches the rest) -->
 		{#if hasFeatureMedia}
 			<div class="sm:hidden mb-6">
@@ -123,7 +127,7 @@
 
 <!-- Open Source — Muted band with list items -->
 {#if data.featuredTools.length > 0}
-	<StickySection title="OPEN" highlightWord="SOURCE" href="/open-source" variant="white">
+	<StickySection title="OPEN" highlightWord="SOURCE" href="/open-source" variant="white" animationDelay={1 * NUDGE_STAGGER_S}>
 		<div class="grid gap-6 sm:grid-cols-2 animate-stagger">
 			{#each data.featuredTools as tool}
 				<ToolListItem {tool} />
@@ -134,7 +138,7 @@
 
 <!-- Toolkit — White band with card grid -->
 {#if data.featuredResources.length > 0}
-	<StickySection title="" highlightWord="TOOLKIT" href="/resources" variant="muted">
+	<StickySection title="" highlightWord="TOOLKIT" href="/resources" variant="muted" animationDelay={2 * NUDGE_STAGGER_S}>
 		<div class="grid gap-6 sm:grid-cols-2 animate-stagger">
 			{#each data.featuredResources as resource}
 				<ResourceCard {resource} />
