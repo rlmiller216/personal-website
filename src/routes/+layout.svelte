@@ -126,12 +126,10 @@
 						></span>
 					</a>
 				{/each}
-				<ThemeToggle class="text-hero-foreground/70 hover:text-hero-foreground" />
 			</div>
 
-			<!-- Mobile: theme toggle + hamburger -->
+			<!-- Mobile: hamburger -->
 			<div class="md:hidden flex items-center gap-1">
-				<ThemeToggle class="text-hero-foreground/70 hover:text-hero-foreground" />
 				<button
 					class="p-2 transition-colors text-hero-foreground/70 hover:text-hero-foreground"
 					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
