@@ -12,7 +12,7 @@
 - [x] ~~**Interests section**~~ — Removed (2026-03-16). Interests content will be added to About page later
 - [ ] **Contact page** with Formspree form
 - [ ] **Responsive design** — mobile, tablet, desktop
-- [x] **Scroll-aware responsive navigation** — desktop nav bar + mobile hamburger menu
+- [x] **Scroll-aware responsive navigation** — desktop nav bar + mobile hamburger menu (56px tap target, exceeds WCAG 44px min; header surface inverts to `bg-white dark:bg-hero` while menu is open so the RLM logo + close icon stay legible). Dark-mode toggle lives only inside the slide-out sidebar panel — never in the header.
 - [x] **Scroll-collapsing RLM letter sidebar** — R fixed, L+M animate on scroll, responsive md/lg sizing
 - [x] **Page header styling** — consistent header treatment across all pages
 - [x] **Footer redesign** — updated layout and styling with Plus Jakarta Sans RLM branding
