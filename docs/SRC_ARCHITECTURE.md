@@ -261,7 +261,7 @@ The visual identity is defined in `app.css` (~240 LOC) using CSS custom properti
 
 **Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Poppins (body, weights 300–900). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px): headings→800 (Bodoni hairlines need max weight), Poppins weights shift down (`font-medium` 500→400, default 400→300) via unlayered CSS overrides.
 
-**Animations:** `fadeUp`, `fadeIn`, `gradientShift` keyframes. Stagger animation support for up to 12 children via `--stagger-index` custom property.
+**Animations:** `fadeUp`, `fadeIn`, `gradientShift`, `nudgeX` keyframes. Stagger animation support for up to 12 children via `--stagger-index` custom property. The `nudgeX` keyframe powers `.animate-nudge-x` on homepage section-heading arrows — an asymmetric right-leaning idle animation (70% rest, ~5px lean) that signals each section heading is a clickable link. De-synced via per-instance `animation-delay` from a StickySection prop. Killed on `.group:hover` / `.group:focus-visible` so the existing `group-hover:translate-x-2` slide owns the transform.
 
 **Dark mode:** `app.html` includes a blocking `<script>` to read `localStorage` before paint, preventing flash. Token values swap via `.dark` class on `<html>`.
 

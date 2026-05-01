@@ -209,6 +209,13 @@
   100% { background-position: 0% 50%; }
 }
 
+/* Idle nudge for section-heading arrows — invites the click.
+   Use only inside a .group link; the hover override below relies on it. */
+@keyframes nudgeX {
+  0%, 70%, 100% { transform: translateX(0); }
+  85%           { transform: translateX(5px); }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .animate-stagger > * {
     opacity: 0;
@@ -230,11 +237,23 @@
   .animate-fade-in {
     animation: fadeIn 600ms ease forwards;
   }
+
+  .animate-nudge-x {
+    animation: nudgeX 2s ease-in-out infinite;
+  }
+  /* On hover/focus, kill the animation so group-hover:translate-x-2 owns the
+     transform cleanly. animation-play-state: paused would keep the animation's
+     transform in effect and beat the hover transform. */
+  .group:hover .animate-nudge-x,
+  .group:focus-visible .animate-nudge-x {
+    animation: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-stagger > *,
-  .animate-fade-in {
+  .animate-fade-in,
+  .animate-nudge-x {
     opacity: 1;
     animation: none;
   }
