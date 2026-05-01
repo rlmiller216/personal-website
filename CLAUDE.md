@@ -104,6 +104,7 @@ Notion databases/pages
 - **MCA-style sticky section headers** on homepage: each section's heading sticks at `top-0` on all screen sizes. Title is a link with bold angular Ultra Violet arrow. No shadow on sticky headers.
 - **Angular icon convention**: all custom SVGs use `stroke-linecap="square"` + `stroke-linejoin="miter"` to match Poppins's geometric character. Applies to hamburger, section arrows, and close icons.
 - **Sidebar hamburger menu**: large angular icon (52px lg, 36px md) matching RLM letter color and width. Opens slide-out nav (w-80) with bold uppercase Poppins links, top-aligned with R. Panel is `bg-white` / `dark:bg-hero` (Space Indigo in dark mode). fly/fade Svelte transitions, Escape dismisses, mutual exclusion with mobile menu.
+- **Mobile hamburger menu (< md)**: 56px tap target (`p-3` + `w-8 h-8` svg) — exceeds WCAG 2.5.5 minimum of 44px. When `mobileMenuOpen`, the `<header>` flips from `bg-transparent` to `bg-white dark:bg-hero` (with `md:bg-transparent md:dark:bg-transparent` resize-while-open guard), and RLM logo + hamburger flip from `text-hero-foreground` (light) to `text-hero dark:text-hero-foreground` so they stay legible. Mobile menu surface mirrors the slide-out panel's color recipe (`bg-white dark:bg-hero` container, `text-primary dark:text-secondary` active link, `text-hero/70 → text-hero` inactive link). `ThemeToggle` is intentionally not rendered in the header — it lives only inside the slide-out panel.
 - **Dark mode sidebar/nav**: LetterSidebar and slide-out panel use `dark:bg-hero` (Space Indigo) with `dark:text-hero-foreground` for letters and links. Borders switch to `dark:border-white/10`.
 - Space Indigo page headers on all content pages with `-mt-16 pt-16` nav overlap, `text-4xl sm:text-5xl lg:text-6xl` Bodoni Moda headings, compact `py-8 sm:py-10` padding
 - Neon Chartreuse `.text-highlight` marker underline effect on last word of every page heading
@@ -140,7 +141,7 @@ src/
       CardMedia.svelte      → Shared card media (video/image with poster + reduced-motion pause)
       ResourceCard.svelte   → Resource card
       StickySection.svelte  → Sticky section header wrapper (homepage, linked title + angular arrow)
-      ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage, accepts class prop)
+      ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage, accepts class prop). Rendered only in the slide-out sidebar panel — not in the header on any page.
       LetterSidebar.svelte  → Floating RLM sidebar (RAF-driven exponential decay scroll physics) + hamburger menu toggle ($bindable)
       DetailHeader.svelte   → Shared detail page header (back link, title, pills slot, optional description subtitle)
       NotionBlocks.svelte   → Renders ContentBlock[] as Svelte components
@@ -200,6 +201,7 @@ tests/
   components/
     notion-render-utils.test.ts → XSS-safe rich text rendering
     float-physics.test.ts       → Exponential decay interpolation (smoothDamp)
+    layout-header.test.ts       → Regression-locks ThemeToggle out of +layout.svelte's header
 ```
 
 ## Site Structure
@@ -308,7 +310,7 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 197 tests across 12 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (35) + `notion-block-utils.test.ts` (19) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (28 — image + video + file download, dedup, hash, content-type validation incl. text/plain + text/markdown, text/html rejection, PNG→JPG filename, cache-hit fallback) + `image-optimize.test.ts` (13 — JPEG compression, PNG→JPEG conversion, alpha detection, resize, passthrough, dimensions)
+- 198 tests across 13 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (35) + `notion-block-utils.test.ts` (19) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (28 — image + video + file download, dedup, hash, content-type validation incl. text/plain + text/markdown, text/html rejection, PNG→JPG filename, cache-hit fallback) + `image-optimize.test.ts` (13 — JPEG compression, PNG→JPEG conversion, alpha detection, resize, passthrough, dimensions) + `layout-header.test.ts` (1 — regression-locks ThemeToggle out of the header)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs

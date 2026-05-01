@@ -56,7 +56,7 @@ src/
 │           └── about.service.ts          # About page fetcher (uses getPageContent)
 │
 └── routes/
-    ├── +layout.svelte                    # Root layout: LetterSidebar + slide-out overlay, non-fixed nav, ThemeToggle, Space Indigo footer w/ land acknowledgement (~206 LOC)
+    ├── +layout.svelte                    # Root layout: LetterSidebar + slide-out overlay (with ThemeToggle), non-fixed nav (no ThemeToggle), mobile menu w/ inverted header surface when open, Space Indigo footer w/ land acknowledgement (~210 LOC)
     ├── +layout.server.ts                 # Loads site metadata from RM_* env vars
     ├── +layout.ts                        # export const prerender = true (all routes static)
     ├── +page.svelte                      # Home: Space Indigo hero with 3-part headline, feature card + grid, stagger animations (~145 LOC)
@@ -209,6 +209,8 @@ Floating RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in
 #### `ThemeToggle.svelte` (~29 LOC)
 
 Dark mode toggle using Lucide Sun/Moon icons. Uses Svelte 5 `$state` for theme tracking. Persists preference to `localStorage` and applies `.dark` class on `<html>`. Accepts optional `class` prop for contextual color overrides (light text on dark hero backgrounds).
+
+**Mounted only inside the slide-out sidebar panel** (`+layout.svelte:92`). Removed from the header on every page (desktop nav and mobile nav) so it doesn't compete with the larger mobile hamburger button.
 
 #### `NotionBlocks.svelte` (16 LOC)
 

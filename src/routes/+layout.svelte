@@ -98,11 +98,17 @@
 
 <div class="min-h-screen flex flex-col md:ml-14 lg:ml-20">
 	<!-- Nav — scrolls away naturally on all screen sizes -->
-	<header class="relative z-10 bg-transparent">
+	<header
+		class="relative z-10 transition-colors
+			{mobileMenuOpen
+				? 'bg-white dark:bg-hero md:bg-transparent md:dark:bg-transparent'
+				: 'bg-transparent'}"
+	>
 		<nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
 			<a
 				href="/"
-				class="text-3xl font-bold tracking-wide uppercase md:invisible text-hero-foreground"
+				class="text-3xl font-bold tracking-wide uppercase md:invisible
+					{mobileMenuOpen ? 'text-hero dark:text-hero-foreground' : 'text-hero-foreground'}"
 			>
 				{data.siteName}
 			</a>
@@ -126,18 +132,19 @@
 						></span>
 					</a>
 				{/each}
-				<ThemeToggle class="text-hero-foreground/70 hover:text-hero-foreground" />
 			</div>
 
-			<!-- Mobile: theme toggle + hamburger -->
+			<!-- Mobile: hamburger -->
 			<div class="md:hidden flex items-center gap-1">
-				<ThemeToggle class="text-hero-foreground/70 hover:text-hero-foreground" />
 				<button
-					class="p-2 transition-colors text-hero-foreground/70 hover:text-hero-foreground"
+					class="p-3 transition-colors
+						{mobileMenuOpen
+							? 'text-hero/70 hover:text-hero dark:text-hero-foreground/70 dark:hover:text-hero-foreground'
+							: 'text-hero-foreground/70 hover:text-hero-foreground'}"
 					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
 					aria-label="Toggle menu"
 				>
-					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						{#if mobileMenuOpen}
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
 						{:else}
@@ -150,12 +157,14 @@
 
 		<!-- Mobile menu -->
 		{#if mobileMenuOpen}
-			<div class="md:hidden bg-background border-t border-border px-6 py-4 flex flex-col gap-1">
+			<div class="md:hidden bg-white dark:bg-hero border-t border-border dark:border-white/10 px-6 py-4 flex flex-col gap-1">
 				{#each navLinks as link}
 					<a
 						href={link.href}
 						class="relative py-2 text-2xl font-bold uppercase tracking-wide transition-colors
-							{isActive(link.href) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
+							{isActive(link.href)
+								? 'text-primary dark:text-secondary'
+								: 'text-hero/70 hover:text-hero dark:text-hero-foreground/70 dark:hover:text-hero-foreground'}"
 						onclick={() => (mobileMenuOpen = false)}
 					>
 						{link.label}
