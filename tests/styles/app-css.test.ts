@@ -73,3 +73,36 @@ describe('app.css — section-heading nudge animation', () => {
 		expect(block).toMatch(/animation\s*:\s*none/);
 	});
 });
+
+// Self-hosting Bodoni Moda eliminates Safari's variable-font opsz misinterpolation.
+// At hero font-sizes Safari auto-picks opsz≈96 (display cut, hairline strokes).
+// Static cuts have no axis to interpolate, so the bug is structurally impossible.
+describe('app.css — self-hosted Bodoni Moda', () => {
+	it('declares @font-face for Bodoni Moda with self-hosted woff2 src', () => {
+		const re = /@font-face\s*{[^}]*?font-family\s*:\s*['"]Bodoni Moda['"][^}]*?}/g;
+		const matches = cssNoComments.match(re);
+		expect(matches, '@font-face for Bodoni Moda must exist').toBeTruthy();
+		expect(matches!.length).toBeGreaterThanOrEqual(2);
+		for (const block of matches!) {
+			expect(block).toMatch(/src\s*:\s*url\(['"]?\/fonts\/bodoni-moda-/);
+			expect(block).toMatch(/format\(['"]woff2['"]\)/);
+		}
+	});
+
+	it('heading fallback chain includes Georgia before generic serif', () => {
+		const headingRule = /h1\s*,\s*h2\s*,\s*h3\s*,\s*h4\s*{[^}]*}/.exec(cssNoComments);
+		expect(headingRule, 'h1,h2,h3,h4 rule must exist').toBeTruthy();
+		expect(headingRule![0]).toMatch(
+			/font-family\s*:\s*['"]Bodoni Moda['"]\s*,\s*Georgia\s*,/
+		);
+		expect(headingRule![0]).toMatch(/serif\s*;/);
+	});
+
+	it('desktop heading default weight is at least 600', () => {
+		const headingRule = /h1\s*,\s*h2\s*,\s*h3\s*,\s*h4\s*{[^}]*}/.exec(cssNoComments);
+		expect(headingRule, 'h1,h2,h3,h4 rule must exist').toBeTruthy();
+		const weightMatch = /font-weight\s*:\s*(\d{3})/.exec(headingRule![0]);
+		expect(weightMatch, 'h1,h2,h3,h4 must declare font-weight').toBeTruthy();
+		expect(Number(weightMatch![1])).toBeGreaterThanOrEqual(600);
+	});
+});
