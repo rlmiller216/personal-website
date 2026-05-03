@@ -259,7 +259,7 @@ The visual identity is defined in `app.css` (~240 LOC) using CSS custom properti
 - Neon Chartreuse — highlights (`.text-highlight` utility, tags, callouts)
 - Two additional palette colors for supporting roles
 
-**Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Poppins (body, weights 300–900). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px): headings→800 (Bodoni hairlines need max weight), Poppins weights shift down (`font-medium` 500→400, default 400→300) via unlayered CSS overrides.
+**Typography:** Bodoni Moda (headings, logo — self-hosted Latin subset under `static/fonts/`: `bodoni-moda-latin-upright.woff2` wght 400-800 axis with opsz pre-pinned at 11pt, plus `bodoni-moda-latin-400-italic.woff2` static italic). Poppins (body, weights 300–900) loaded via Google Fonts CDN with preconnect hints in `app.html`. Bodoni Moda fallback chain: `Georgia, 'Times New Roman', serif` (avoids iOS Didot's hairlines). Desktop heading default weight 600; mobile (< 768px) bumps to 800 for high-DPI screens. Poppins weights shift down on mobile (`font-medium` 500→400, default 400→300) via unlayered CSS overrides.
 
 **Animations:** `fadeUp`, `fadeIn`, `gradientShift`, `nudgeX` keyframes. Stagger animation support for up to 12 children via `--stagger-index` custom property. The `nudgeX` keyframe powers `.animate-nudge-x` on homepage section-heading arrows — an asymmetric right-leaning idle animation (70% rest, ~5px lean) that signals each section heading is a clickable link. De-synced via per-instance `animation-delay` from a StickySection prop. Killed on `.group:hover` / `.group:focus-visible` so the existing `group-hover:translate-x-2` slide owns the transform.
 
@@ -326,7 +326,8 @@ The visual identity is defined in `app.css` (~240 LOC) using CSS custom properti
 
 **External dependencies (runtime):**
 - `@lucide/svelte` — icon components (Github, Linkedin, Mail, Sun, Moon, ArrowRight, Send)
-- Google Fonts CDN — Bodoni Moda (variable) + Plus Jakarta Sans, loaded via `<link>` in `app.html`
+- Google Fonts CDN — Poppins (body), loaded via `<link>` in `app.html`
+- Self-hosted Bodoni Moda — Latin woff2 subset under `static/fonts/`, declared via `@font-face` in `app.css`
 
 ---
 

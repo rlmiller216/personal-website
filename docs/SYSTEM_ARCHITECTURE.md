@@ -286,10 +286,10 @@ Colors use hex values for brand-critical accuracy (OKLCH approximations caused c
 
 | Role | Typeface | Source |
 |---|---|---|
-| Headings | Bodoni Moda | Google Fonts CDN |
-| Body | Plus Jakarta Sans | Google Fonts CDN |
+| Headings | Bodoni Moda | Self-hosted (`static/fonts/`, Latin subset, opsz pre-pinned at 11pt) |
+| Body | Poppins | Google Fonts CDN |
 
-Font links are loaded in `app.html` `<head>`. Tailwind `@theme` maps `--font-heading` and `--font-body` to utility classes.
+Poppins loads via `<link>` in `app.html` `<head>`. Bodoni Moda is declared via `@font-face` in `app.css` (self-hosted to eliminate Safari's `opsz` axis misinterpolation at hero sizes). Tailwind 4 `@utility font-display` and `@utility font-body` blocks expose them as utility classes.
 
 ### 8.3 Dark Mode
 

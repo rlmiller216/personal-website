@@ -32,7 +32,8 @@
 - [x] ~~**Hourly rebuilds**~~ — Not viable on free tier (300 credits/month, ~15/deploy). Using push-triggered + manual dashboard deploys instead
 - [ ] **Featured items on homepage** — checkbox-driven from Notion databases
 - [x] **Design system with custom color palette** — cohesive typography, color, spacing via CSS variables
-- [x] **Google Fonts integration (Bodoni Moda + Plus Jakarta Sans)** — distinctive typography pairing
+- [x] **Typography pairing (Bodoni Moda self-hosted, Poppins via Google Fonts)** — Didone serif headings + geometric sans body
+- [x] **Cross-browser font readability** — self-host Bodoni Moda to eliminate Safari's `opsz` axis hairline misinterpolation at hero sizes
 - [ ] **Page load animations** — staggered reveals for delight
 - [x] **"Scientific Warmth" aesthetic** — distinctive, not generic AI design
 - [x] **Card hover animations / micro-interactions** — subtle feedback on interactive elements
