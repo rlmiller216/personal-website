@@ -49,7 +49,7 @@ A **build-time static site** that pulls content from Notion databases and pages 
 ```
 Personal Website v0.1.0
 ├── src/lib/server/services/  ~870 LOC — Notion API client, data fetchers, block transformer, image cache
-├── src/lib/components/       ~660 LOC — Cards, NotionBlock renderers, LetterSidebar, ThemeToggle
+├── src/lib/components/       ~630 LOC — Cards, NotionBlock renderers, LetterSidebar
 ├── src/lib/types/            ~149 LOC — Domain type definitions
 ├── src/routes/               ~550 LOC — 9 page routes + layouts + error page
 ├── src/app.css               ~240 LOC — Design system tokens, typography, animations
@@ -291,10 +291,6 @@ Colors use hex values for brand-critical accuracy (OKLCH approximations caused c
 
 Font links are loaded in `app.html` `<head>`. Tailwind `@theme` maps `--font-heading` and `--font-body` to utility classes.
 
-### 8.3 Dark Mode
+### 8.3 Theme
 
-Light/dark mode uses a `.dark` class on the `<html>` element. CSS custom properties switch values inside a `.dark {}` block in `app.css`, so all components update automatically without per-component logic.
-
-**Persistence:** `localStorage` stores the user's preference. On first visit, `prefers-color-scheme` media query determines the default.
-
-**Flash prevention:** An inline `<script>` in `app.html` runs before paint — reads `localStorage` (or `prefers-color-scheme`) and sets the `.dark` class synchronously, preventing a light-to-dark flash on dark-mode pages.
+Light-mode only. The site renders the same palette regardless of system `prefers-color-scheme` or time of day. The invariant test suite at `tests/styles/no-dark-mode.test.ts` enforces this — a future `.dark` selector, `dark:` Tailwind variant, or `prefers-color-scheme` bootstrap script fails CI.

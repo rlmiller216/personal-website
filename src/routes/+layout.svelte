@@ -5,7 +5,6 @@
 	import GithubLogoIcon from 'phosphor-svelte/lib/GithubLogoIcon';
 	import LinkedinLogoIcon from 'phosphor-svelte/lib/LinkedinLogoIcon';
 	import EnvelopeSimpleIcon from 'phosphor-svelte/lib/EnvelopeSimpleIcon';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import LetterSidebar from '$lib/components/LetterSidebar.svelte';
 
 	let { children, data } = $props();
@@ -69,7 +68,7 @@
 		<nav
 			class="fixed top-0 left-14 lg:left-20 z-40 h-screen w-80
 				flex flex-col gap-3 px-10 pb-16 overflow-y-auto
-				bg-white dark:bg-hero border-r border-border dark:border-white/10 shadow-xl"
+				bg-white border-r border-border shadow-xl"
 			style="padding-top: 0.75rem;"
 			transition:fly={{ x: -400, duration: 300 }}
 		>
@@ -77,8 +76,8 @@
 				<a
 					href={link.href}
 					class="relative py-3 px-4 text-2xl lg:text-3xl font-bold uppercase tracking-wide transition-colors rounded-lg
-						hover:bg-accent dark:hover:bg-white/10
-						{isActive(link.href) ? 'text-primary dark:text-secondary' : 'text-hero dark:text-hero-foreground'}"
+						hover:bg-accent
+						{isActive(link.href) ? 'text-primary' : 'text-hero'}"
 					onclick={() => sidebarMenuOpen = false}
 				>
 					{link.label}
@@ -87,11 +86,6 @@
 					{/if}
 				</a>
 			{/each}
-			<!-- ThemeToggle — pushed to bottom of panel -->
-			<div class="mt-auto pt-4 border-t border-border dark:border-white/10 flex items-center gap-2 px-4">
-				<ThemeToggle class="text-muted-foreground hover:text-foreground dark:text-hero-foreground/60 dark:hover:text-hero-foreground" />
-				<span class="text-sm text-muted-foreground dark:text-hero-foreground/60 uppercase tracking-wide">Theme</span>
-			</div>
 		</nav>
 	{/if}
 </div>
@@ -126,26 +120,22 @@
 						></span>
 					</a>
 				{/each}
-				<ThemeToggle class="text-hero-foreground/70 hover:text-hero-foreground" />
 			</div>
 
-			<!-- Mobile: theme toggle + hamburger -->
-			<div class="md:hidden flex items-center gap-1">
-				<ThemeToggle class="text-hero-foreground/70 hover:text-hero-foreground" />
-				<button
-					class="p-2 transition-colors text-hero-foreground/70 hover:text-hero-foreground"
-					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
-					aria-label="Toggle menu"
-				>
-					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						{#if mobileMenuOpen}
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-						{:else}
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-						{/if}
-					</svg>
-				</button>
-			</div>
+			<!-- Mobile hamburger -->
+			<button
+				class="md:hidden p-2 transition-colors text-hero-foreground/70 hover:text-hero-foreground"
+				onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
+				aria-label="Toggle menu"
+			>
+				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					{#if mobileMenuOpen}
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+					{:else}
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+					{/if}
+				</svg>
+			</button>
 		</nav>
 
 		<!-- Mobile menu -->

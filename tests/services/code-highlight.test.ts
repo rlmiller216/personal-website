@@ -33,8 +33,7 @@ describe('highlightCode', () => {
 		expect(result).toContain('shiki');
 		expect(mockHighlighter.codeToHtml).toHaveBeenCalledWith('const x = 1;', {
 			lang: 'javascript',
-			themes: { light: 'github-light', dark: 'github-dark' },
-			defaultColor: false
+			theme: 'github-light'
 		});
 	});
 

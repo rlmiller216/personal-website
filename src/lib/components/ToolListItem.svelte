@@ -11,7 +11,7 @@
 	href={`/open-source/${tool.slug}`}
 	class="group flex flex-col overflow-hidden rounded-lg shadow-md transition-all
 		hover:shadow-lg hover:-translate-y-1 border border-border border-l-4 border-l-primary
-		bg-background dark:bg-card"
+		bg-background"
 >
 	{#if tool.imageUrl}
 		<CardMedia

@@ -24,8 +24,8 @@ npx svelte-check     # type checking
 | Hosting | Netlify (free tier) | Static hosting, auto-deploys on push to `main` |
 | Contact Form | Formspree | adapter-static can't do server-side form handling |
 | Typography | Bodoni Moda + Poppins (Google Fonts) | Didone serif headings + geometric sans body |
-| Icons | Lucide + Phosphor (phosphor-svelte) | Lucide for UI icons (arrows, sun/moon); Phosphor filled for social/brand icons (GitHub, LinkedIn, envelope) |
-| Syntax Highlighting | Shiki (dev only) | Build-time code highlighting, dual-theme dark mode via CSS variables, 0 client JS |
+| Icons | Lucide + Phosphor (phosphor-svelte) | Lucide for UI icons (arrows); Phosphor filled for social/brand icons (GitHub, LinkedIn, envelope) |
+| Syntax Highlighting | Shiki (dev only) | Build-time code highlighting (github-light), 0 client JS |
 | Image Conversion | heic-convert (dev only) | Build-time HEIC→JPEG for iPhone uploads via Notion, 0 client JS |
 | Image Optimization | sharp (dev only) | Build-time resize, compress, PNG→JPEG, dimension extraction, 0 client JS |
 
@@ -67,9 +67,9 @@ Notion databases/pages
 |-----|------|------|
 | `#6D3BFF` | Ultra Violet | Primary — links, buttons, active states |
 | `#F6F5F4` | White Smoke | Light background |
-| `#0D0D0D` | Onyx | Body text, dark mode base |
+| `#0D0D0D` | Onyx | Body text |
 | `#eeff5d` | Neon Chartreuse | Secondary — highlights, CTAs, energy |
-| `#1D2440` | Space Indigo | Dark background — hero, footer, dark mode |
+| `#1D2440` | Space Indigo | Hero/footer background, slide-out panel |
 | `#E8E0F3` | Pill Accent | Solid light purple tier-1 pill background (default) |
 | `#F2EDF7` | Pill Accent Light | Lighter variant used on `.bg-card` (white) backgrounds |
 
@@ -98,13 +98,12 @@ Notion databases/pages
 
 ### Key Patterns
 - `overflow-x: hidden` on `html` — prevents horizontal bounce on mobile from elements slightly exceeding viewport width
-- Hex + OKLCH design tokens in `app.css` with light/dark mode. Brand-critical colors use hex directly (`#1D2440` Space Indigo, `#eeff5d` Neon Chartreuse) to prevent OKLCH approximation drift. Dark mode variants use `color-mix()` (e.g., `color-mix(in oklch, #1D2440 85%, white)`). `--hero`/`--hero-foreground` tokens power Space Indigo sections.
+- Hex + OKLCH design tokens in `app.css`. Brand-critical colors use hex directly (`#1D2440` Space Indigo, `#eeff5d` Neon Chartreuse) to prevent OKLCH approximation drift. `--hero`/`--hero-foreground` tokens power Space Indigo sections (footer, page headers, sidebar).
 - **Floating RLM letter sidebar** (inspired by mca.com.au): R stays fixed at top (0px md, -12px lg), L and M drift toward it on scroll via exponential decay interpolation in a RAF loop. Each letter has a different damping rate (R=8, L=5, M=3) creating a cascading wave where R arrives first and M trails behind. Collapse range extends 1.8× beyond hero height for a slow, cinematic feel. Responsive two-tier sizing: 68px/60px font at md, 80px/72px font at lg. Hidden on mobile.
 - **Non-fixed nav**: nav scrolls away naturally on ALL screen sizes (`relative z-10 bg-transparent`). Always transparent with light text — all page headers extend behind nav via `-mt-16 pt-16 bg-hero`. Footer nav links serve as persistent navigation once the header scrolls away on mobile.
 - **MCA-style sticky section headers** on homepage: each section's heading sticks at `top-0` on all screen sizes. Title is a link with bold angular Ultra Violet arrow. No shadow on sticky headers. Arrow carries an idle right-leaning nudge (`animate-nudge-x`, 2s asymmetric translateX, 70% rest, ~5px lean right) so the heading reads as a pressable button. `StickySection` takes an `animationDelay` prop (homepage passes 0 / 0.6 / 1.2s for the three sections) so the three arrows don't nudge in lockstep. On hover/focus, the animation is killed (`animation: none`) so `group-hover:translate-x-2` owns the transform cleanly — `animation-play-state: paused` would keep the animation's transform in effect and beat the hover transform. Gated behind `prefers-reduced-motion`.
 - **Angular icon convention**: all custom SVGs use `stroke-linecap="square"` + `stroke-linejoin="miter"` to match Poppins's geometric character. Applies to hamburger, section arrows, and close icons.
-- **Sidebar hamburger menu**: large angular icon (52px lg, 36px md) matching RLM letter color and width. Opens slide-out nav (w-80) with bold uppercase Poppins links, top-aligned with R. Panel is `bg-white` / `dark:bg-hero` (Space Indigo in dark mode). fly/fade Svelte transitions, Escape dismisses, mutual exclusion with mobile menu.
-- **Dark mode sidebar/nav**: LetterSidebar and slide-out panel use `dark:bg-hero` (Space Indigo) with `dark:text-hero-foreground` for letters and links. Borders switch to `dark:border-white/10`.
+- **Sidebar hamburger menu**: large angular icon (52px lg, 36px md) matching RLM letter color and width. Opens slide-out nav (w-80) with bold uppercase Poppins links, top-aligned with R. Panel is `bg-white`. fly/fade Svelte transitions, Escape dismisses, mutual exclusion with mobile menu.
 - Space Indigo page headers on all content pages with `-mt-16 pt-16` nav overlap, `text-4xl sm:text-5xl lg:text-6xl` Bodoni Moda headings, compact `py-8 sm:py-10` padding
 - Neon Chartreuse `.text-highlight` marker underline effect on last word of every page heading
 - Stagger fade-up animations (up to 12 children), gated behind `prefers-reduced-motion`
@@ -140,7 +139,6 @@ src/
       CardMedia.svelte      → Shared card media (video/image with poster + reduced-motion pause)
       ResourceCard.svelte   → Resource card
       StickySection.svelte  → Sticky section header wrapper (homepage, linked title + angular arrow)
-      ThemeToggle.svelte    → Dark mode toggle (Sun/Moon icons, localStorage, accepts class prop)
       LetterSidebar.svelte  → Floating RLM sidebar (RAF-driven exponential decay scroll physics) + hamburger menu toggle ($bindable)
       DetailHeader.svelte   → Shared detail page header (back link, title, pills slot, optional description subtitle)
       NotionBlocks.svelte   → Renders ContentBlock[] as Svelte components

@@ -39,7 +39,7 @@
 
 ## Could Have (Nice Extras)
 
-- [x] **Dark mode support** — toggle with persistent preference
+- ~~**Dark mode support**~~ — removed; site is light-mode only (enforced by `tests/styles/no-dark-mode.test.ts`)
 - [x] **MCA-style sticky section headers** — homepage sections stick below nav, shadow on stuck, varied card layouts per section (feature card, list items, card grid)
 - [x] **Resource Status filtering** — Archived resources hidden via Notion API filter
 - [ ] **Resource filtering** by type/category

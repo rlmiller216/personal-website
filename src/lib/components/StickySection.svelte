@@ -17,11 +17,7 @@
 		children: Snippet;
 	} = $props();
 
-	// Background class — white variant uses bg-white in light, bg-background in dark
-	// to avoid card-on-card visual confusion
-	const bgClass = $derived(
-		variant === 'white' ? 'bg-white dark:bg-background' : 'bg-background'
-	);
+	const bgClass = $derived(variant === 'white' ? 'bg-white' : 'bg-background');
 </script>
 
 <section class="relative w-full {bgClass}">
@@ -33,7 +29,7 @@
 			<a
 				href={href}
 				class="group inline-flex items-baseline gap-3 text-3xl md:text-4xl font-bold
-					text-hero dark:text-hero-foreground hover:text-primary transition-colors uppercase tracking-wide"
+					text-hero hover:text-primary transition-colors uppercase tracking-wide"
 			>
 				{#if title}{title} {/if}<span class="text-highlight">{highlightWord}</span>
 				<!-- Sharp angular arrow — matches Plus Jakarta Sans's geometric character.

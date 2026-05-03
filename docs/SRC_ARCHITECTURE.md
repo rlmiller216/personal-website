@@ -29,7 +29,6 @@ src/
 │   │   ├── ResourceCard.svelte           # Resource card: Neon Chartreuse bottom border, hover arrow (~45 LOC)
 │   │   ├── CardMedia.svelte              # Shared card media — renders <video> or <img> with poster + reduced-motion pause
 │   │   ├── StickySection.svelte          # Sticky section header: linked title + angular arrow (~54 LOC)
-│   │   ├── ThemeToggle.svelte            # Dark mode toggle: Sun/Moon icons, localStorage, class prop (~29 LOC)
 │   │   ├── LetterSidebar.svelte          # Floating RLM sidebar (RAF-driven scroll physics) + hamburger toggle (~170 LOC)
 │   │   ├── DetailHeader.svelte           # Shared detail page header: back link, title, badge slot (~40 LOC)
 │   │   ├── NotionBlocks.svelte           # Iterates ContentBlock[] → renders each via NotionBlock
@@ -56,7 +55,7 @@ src/
 │           └── about.service.ts          # About page fetcher (uses getPageContent)
 │
 └── routes/
-    ├── +layout.svelte                    # Root layout: LetterSidebar + slide-out overlay, non-fixed nav, ThemeToggle, Space Indigo footer w/ land acknowledgement (~206 LOC)
+    ├── +layout.svelte                    # Root layout: LetterSidebar + slide-out overlay, non-fixed nav, Space Indigo footer w/ land acknowledgement (~206 LOC)
     ├── +layout.server.ts                 # Loads site metadata from RM_* env vars
     ├── +layout.ts                        # export const prerender = true (all routes static)
     ├── +page.svelte                      # Home: Space Indigo hero with 3-part headline, feature card + grid, stagger animations (~145 LOC)
@@ -204,11 +203,6 @@ Floating RLM monogram sidebar inspired by mca.com.au. Three letters (R, L, M) in
 - **`prefers-reduced-motion`:** Forces `heroHeight=0` → letters always collapsed, snap to targets on every scroll (no RAF)
 - **Gap interpolation:** Single `gap` value interpolated between `spreadGap` and `collapsedGap`, target positions = `[R_TOP, R_TOP+gap, R_TOP+gap*2]` — guarantees equal spacing
 - **`$bindable` menuOpen prop:** Parent binds `sidebarMenuOpen` state. Hamburger button toggles it. X icon shows when open. `aria-expanded` and dynamic `aria-label` for accessibility.
-- **Dark mode:** Sidebar and slide-out panel use `dark:bg-hero` (Space Indigo) with `dark:text-hero-foreground` for letters/links. Borders switch to `dark:border-white/10`.
-
-#### `ThemeToggle.svelte` (~29 LOC)
-
-Dark mode toggle using Lucide Sun/Moon icons. Uses Svelte 5 `$state` for theme tracking. Persists preference to `localStorage` and applies `.dark` class on `<html>`. Accepts optional `class` prop for contextual color overrides (light text on dark hero backgrounds).
 
 #### `NotionBlocks.svelte` (16 LOC)
 
@@ -262,8 +256,6 @@ The visual identity is defined in `app.css` (~240 LOC) using CSS custom properti
 **Typography:** Bodoni Moda (headings, logo — variable, optical size 6–96, weights 400–800) + Poppins (body, weights 300–900). Loaded via Google Fonts CDN with preconnect hints in `app.html`. Mobile screens (< 768px): headings→800 (Bodoni hairlines need max weight), Poppins weights shift down (`font-medium` 500→400, default 400→300) via unlayered CSS overrides.
 
 **Animations:** `fadeUp`, `fadeIn`, `gradientShift`, `nudgeX` keyframes. Stagger animation support for up to 12 children via `--stagger-index` custom property. The `nudgeX` keyframe powers `.animate-nudge-x` on homepage section-heading arrows — an asymmetric right-leaning idle animation (70% rest, ~5px lean) that signals each section heading is a clickable link. De-synced via per-instance `animation-delay` from a StickySection prop. Killed on `.group:hover` / `.group:focus-visible` so the existing `group-hover:translate-x-2` slide owns the transform.
-
-**Dark mode:** `app.html` includes a blocking `<script>` to read `localStorage` before paint, preventing flash. Token values swap via `.dark` class on `<html>`.
 
 ---
 
@@ -337,7 +329,7 @@ The visual identity is defined in `app.css` (~240 LOC) using CSS custom properti
 | Notion block transformer + utils | ~450 | 4 (notion-blocks, block-utils, embed-config, code-highlight) |
 | Notion client + fetcher | ~263 | 1 |
 | NotionBlock dispatcher + sub-components | ~340 | 5 (dispatcher, 3 sub-components, render-utils) |
-| Card components + ThemeToggle + LetterSidebar | ~240 | 5 |
+| Card components + LetterSidebar | ~210 | 4 |
 | Design system (app.css + app.html) | ~260 | 2 |
 | Content types | ~149 | 1 |
 | Content fetcher services | ~283 | 5 |

@@ -325,15 +325,6 @@ Palette hex → OKLCH conversion → CSS custom properties (:root in app.css)
 
 Each color is defined once as an OKLCH value in `:root`. Tailwind's `@theme` block references these custom properties, generating utility classes. Components use only Tailwind utilities — never raw hex or OKLCH values.
 
-## 7. Dark Mode Workflow
+## 7. Theme
 
-```
-Page load → inline <script> in app.html (runs before paint)
-  → checks localStorage for saved preference
-  → falls back to prefers-color-scheme media query
-  → sets .dark class on <html> synchronously (no flash)
-  → CSS custom properties switch via .dark {} block in app.css
-  → all components automatically reflect the active mode
-```
-
-The inline script runs before any rendering, so users never see a light-mode flash on dark-mode pages. Toggling the mode updates `localStorage` and flips the `.dark` class; no page reload is needed.
+Light-mode only. There is no theme switch, no `prefers-color-scheme` bootstrap, no `.dark` selector. CSS custom properties live in a single `:root` block in `app.css`. The invariants are enforced by `tests/styles/no-dark-mode.test.ts`.

@@ -1,8 +1,8 @@
 // Server-side syntax highlighting via Shiki.
 //
 // Promise-cached singleton prevents race conditions during concurrent
-// adapter-static builds. Dual-theme output supports light/dark mode
-// via CSS variables (no JS theme switching needed at runtime).
+// adapter-static builds. Single-theme (github-light) output — site is
+// light-mode only.
 //
 // Used by: notion-blocks.ts when transforming code blocks
 // Depends on: shiki
@@ -18,7 +18,7 @@ let highlighterPromise: Promise<Highlighter> | null = null;
 function getHighlighter(): Promise<Highlighter> {
 	if (highlighterPromise) return highlighterPromise;
 	highlighterPromise = createHighlighter({
-		themes: ['github-light', 'github-dark'],
+		themes: ['github-light'],
 		langs: ['javascript', 'typescript', 'python', 'bash', 'json', 'html', 'css', 'plaintext']
 	});
 	return highlighterPromise;
@@ -51,7 +51,7 @@ function escapeHtml(text: string): string {
 }
 
 /**
- * Highlights code with dual-theme Shiki output.
+ * Highlights code with single-theme Shiki output (github-light).
  * Falls back to escaped `<pre><code>` on error (unknown grammar, etc.).
  */
 export async function highlightCode(code: string, notionLanguage: string): Promise<string> {
@@ -72,8 +72,7 @@ export async function highlightCode(code: string, notionLanguage: string): Promi
 
 		return highlighter.codeToHtml(code, {
 			lang,
-			themes: { light: 'github-light', dark: 'github-dark' },
-			defaultColor: false
+			theme: 'github-light'
 		});
 	} catch (error) {
 		console.warn(`[code-highlight] highlighting failed for "${notionLanguage}":`, error);

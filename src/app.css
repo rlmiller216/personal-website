@@ -2,9 +2,7 @@
 
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
-/* ── Light mode: White Smoke base, Ultra Violet primary, Neon Chartreuse secondary ── */
+/* ── White Smoke base, Ultra Violet primary, Neon Chartreuse secondary ── */
 :root {
   --sidebar-width: 5rem;
   --radius: 0.625rem;
@@ -45,45 +43,6 @@
   /* Solid pill background — looks identical on light and dark backgrounds */
   --pill-accent: oklch(0.919 0.027 305);          /* #E8E0F3 solid light purple (default) */
   --pill-accent-foreground: oklch(0.54 0.26 285.29); /* Ultra Violet text */
-}
-
-/* ── Dark mode: Space Indigo base, Ultra Violet primary, Neon Chartreuse accents ── */
-.dark {
-  --background: #1D2440;                          /* Space Indigo */
-  --foreground: oklch(0.97 0.003 90);            /* White Smoke */
-  --card: color-mix(in oklch, #1D2440 85%, white);/* Space Indigo lightened */
-  --card-foreground: oklch(0.97 0.003 90);
-  --popover: color-mix(in oklch, #1D2440 85%, white);
-  --popover-foreground: oklch(0.97 0.003 90);
-  --primary: oklch(0.54 0.26 285.29);               /* Ultra Violet — same (brand anchor) */
-  --primary-foreground: oklch(0.97 0.003 90);
-  --secondary: color-mix(in srgb, #eeff5d 70%, transparent); /* Neon Chartreuse at 70% */
-  --secondary-foreground: oklch(0.14 0 0);
-  --muted: color-mix(in oklch, #1D2440 78%, white);/* Space Indigo lighter */
-  --muted-foreground: oklch(0.97 0.003 90 / 60%); /* White Smoke at 60% */
-  --accent: oklch(0.54 0.26 285.29 / 15%);          /* Ultra Violet at 15% */
-  --accent-foreground: #eeff5d;     /* Neon Chartreuse */
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.97 0.003 90 / 10%);          /* White Smoke at 10% */
-  --input: oklch(0.97 0.003 90 / 15%);
-  --ring: oklch(0.54 0.26 285.29);
-  --chart-1: oklch(0.62 0.26 285.29);
-  --chart-2: #eeff5d;
-  --chart-3: oklch(0.97 0.003 90);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: #1D2440;
-  --sidebar-foreground: oklch(0.97 0.003 90);
-  --sidebar-primary: oklch(0.62 0.26 285.29);
-  --sidebar-primary-foreground: oklch(0.97 0.003 90);
-  --sidebar-accent: oklch(0.54 0.26 285.29 / 15%);
-  --sidebar-accent-foreground: #eeff5d;
-  --sidebar-border: oklch(0.97 0.003 90 / 10%);
-  --sidebar-ring: oklch(0.54 0.26 285.29);
-  --hero: color-mix(in oklch, #1D2440 85%, black);/* Darker Space Indigo for hero in dark mode */
-  --hero-foreground: oklch(0.97 0.003 90);
-  --pill-accent: oklch(0.919 0.027 305);          /* #E8E0F3 same default in dark mode */
-  --pill-accent-foreground: oklch(0.54 0.26 285.29);
 }
 
 /* Lighter pill on white card backgrounds */
@@ -259,9 +218,3 @@
   }
 }
 
-/* Shiki dual-theme: maps to site light/dark mode */
-html.dark .shiki,
-html.dark .shiki span {
-  color: var(--shiki-dark) !important;
-  background-color: var(--shiki-dark-bg) !important;
-}
