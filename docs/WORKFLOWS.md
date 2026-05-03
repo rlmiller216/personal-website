@@ -101,7 +101,18 @@ After downloading Notion S3 images, `optimizeImage()` processes each raster file
 - Compresses JPEGs to q80
 - SVGs, GIFs, WebPs, and non-image files pass through unchanged
 - Image dimensions are read by `getImageDimensions()` in notion-blocks.ts for `<img>` width/height attributes (prevents layout shift)
-- Immutable cache headers (1 year) on `/images/*` and `/files/*` since filenames are SHA256 content-hashed
+- Immutable cache headers (1 year) on `/images/*`, `/files/*`, and `/fonts/*` since filenames are content-hashed or self-hosted brand assets
+
+### 2.5 Cross-Browser Font Verification
+
+Bodoni Moda has rendered differently in Safari vs Chrome historically (the variable `opsz` axis interpolated to hairline-thin display cuts in Safari). When changing typography, verify the hero heading on a deploy preview in:
+
+- **Desktop Chrome** — baseline reference rendering
+- **Desktop Safari** — must visually match Chrome (no thin-stroke regression)
+- **Desktop Firefox** — must match
+- **iOS Safari** — must match (mobile bumps headings to weight 800; verify no regression)
+
+In Safari devtools: `document.fonts.check('1em "Bodoni Moda"')` should return `true`, and the Network tab should show `/fonts/bodoni-moda-latin-upright.woff2` 200 OK from the same origin (not `fonts.gstatic.com`). Computed `font-family` on `<h1>` should resolve to Bodoni Moda, not Georgia (the fallback).
 
 ---
 

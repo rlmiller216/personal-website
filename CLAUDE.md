@@ -23,7 +23,7 @@ npx svelte-check     # type checking
 | CMS | Notion API (@notionhq/client) | Rebecca already uses Notion daily. Edit there → site rebuilds |
 | Hosting | Netlify (free tier) | Static hosting, auto-deploys on push to `main` |
 | Contact Form | Formspree | adapter-static can't do server-side form handling |
-| Typography | Bodoni Moda + Poppins (Google Fonts) | Didone serif headings + geometric sans body |
+| Typography | Bodoni Moda (self-hosted) + Poppins (Google Fonts) | Didone serif headings + geometric sans body |
 | Icons | Lucide + Phosphor (phosphor-svelte) | Lucide for UI icons (arrows, sun/moon); Phosphor filled for social/brand icons (GitHub, LinkedIn, envelope) |
 | Syntax Highlighting | Shiki (dev only) | Build-time code highlighting, dual-theme dark mode via CSS variables, 0 client JS |
 | Image Conversion | heic-convert (dev only) | Build-time HEIC→JPEG for iPhone uploads via Notion, 0 client JS |
@@ -74,8 +74,9 @@ Notion databases/pages
 | `#F2EDF7` | Pill Accent Light | Lighter variant used on `.bg-card` (white) backgrounds |
 
 ### Typography
-- **Headings:** Bodoni Moda (Didone serif, variable optical size). Bumped to font-weight 800 (extrabold) on mobile (< 768px) — hairline strokes need max weight on small/high-DPI screens.
+- **Headings:** Bodoni Moda (Didone serif). Self-hosted Latin subset under `static/fonts/` — `bodoni-moda-latin-upright.woff2` (wght 400-800 axis, opsz pre-pinned at 11pt) + `bodoni-moda-latin-400-italic.woff2` (static italic). Variable `opsz` axis intentionally avoided: Safari's `font-optical-sizing: auto` interpolates `opsz` toward 96 (display cut, hairline strokes) at hero sizes, while Chrome doesn't. Desktop default weight 600; bumped to 800 (extrabold) on mobile (< 768px) for high-DPI screens.
 - **Body:** Poppins (geometric sans-serif). Weights 300–900 loaded from Google Fonts.
+- **Fallback chain:** `'Bodoni Moda', Georgia, 'Times New Roman', serif`. Georgia chosen as moderate-contrast intermediate fallback — never falls through to iOS Didot (which has its own hairline rendering).
 - **Mobile weight reduction:** On mobile (< 768px), Poppins weights shift down: `font-medium` (500) → 400, default body (400) → 300, `font-normal` (400) → 300. Implemented via unlayered CSS overrides that beat Tailwind utilities. Secondary text elements use `font-medium` (500 desktop / 400 mobile). Applies to: card descriptions, Notion paragraphs, media captions, detail header back link + description, footer tagline + copyright, and contact form inputs.
 
 ### Font Utilities
@@ -370,6 +371,7 @@ Errors are written for humans:
 | Use `loading="lazy"` on WebGL iframes | Set `loading: 'eager'` in embed-config.ts — iOS Safari breaks WebGL context init with lazy loading |
 | Render database Image on detail pages | Database Image = cards + og:image only. Detail page media comes from NotionBlocks |
 | Serve unoptimized Notion images | sharp pipeline in image-cache.ts handles resize + compression at build time |
+| Load Bodoni Moda from Google Fonts with the `opsz` axis | Self-host the Latin subset (opsz pre-pinned at 11pt). Safari's `font-optical-sizing: auto` interpolates `opsz` toward 96 (display cut) at hero sizes, producing illegible hairline strokes. Chrome doesn't — split rendering is the symptom. |
 
 ## Known Limitations & Mitigations
 
@@ -386,8 +388,8 @@ Uses CSS-based configuration (`@import "tailwindcss"`) instead of v3's JS config
 - `npx sv create` and `npx sv add` require clean git working directory or `--skip-preflight`
 - Tailwind CSS 4 setup: install `tailwindcss` + `@tailwindcss/vite`, add plugin to `vite.config.ts`, use `@import 'tailwindcss'` in `app.css`
 
-### Google Fonts via CDN
-Bodoni Moda and Poppins load from Google Fonts CDN. Potential FOUC on slow connections. If this becomes a problem, self-host the font files in `static/fonts/`.
+### Fonts
+Poppins loads from Google Fonts CDN (potential FOUC on slow connections). Bodoni Moda is self-hosted under `static/fonts/` (Latin subset, ~41 KB total) to eliminate Safari's `opsz` axis misinterpolation at hero sizes. Cached `immutable` for one year via `static/_headers`.
 
 ### Slugs Derived from Titles
 Slugs are generated at build time from Notion titles via `slugify()`. If Rebecca renames an item in Notion, old URLs break after the next build. No redirect system exists yet.
