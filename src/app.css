@@ -171,6 +171,11 @@
   h1, h2, h3, h4 {
     font-family: 'Bodoni Moda', Georgia, 'Times New Roman', serif;
     font-weight: 600;               /* desktop baseline; mobile @media bumps to 800 */
+    /* Force grayscale antialiasing so Safari (subpixel-antialiased default)
+       matches Chrome's lighter rendering. Without this, Safari renders Bodoni
+       strokes visibly heavier than Chrome at the same font-weight. */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   /* Mobile bump: Bodoni hairlines vanish on small/high-DPI screens at weight 600 */
   @media (max-width: 767px) {

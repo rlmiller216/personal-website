@@ -105,4 +105,11 @@ describe('app.css — self-hosted Bodoni Moda', () => {
 		expect(weightMatch, 'h1,h2,h3,h4 must declare font-weight').toBeTruthy();
 		expect(Number(weightMatch![1])).toBeGreaterThanOrEqual(600);
 	});
+
+	it('headings force grayscale antialiasing so Safari matches Chrome', () => {
+		const headingRule = /h1\s*,\s*h2\s*,\s*h3\s*,\s*h4\s*{[^}]*}/.exec(cssNoComments);
+		expect(headingRule, 'h1,h2,h3,h4 rule must exist').toBeTruthy();
+		expect(headingRule![0]).toMatch(/-webkit-font-smoothing\s*:\s*antialiased/);
+		expect(headingRule![0]).toMatch(/-moz-osx-font-smoothing\s*:\s*grayscale/);
+	});
 });
