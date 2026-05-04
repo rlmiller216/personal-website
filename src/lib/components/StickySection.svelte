@@ -1,3 +1,23 @@
+<!--
+	StickySection — pinned section header for the homepage.
+
+	CONTRACT — DO NOT BREAK:
+	1. No ancestor of <StickySection> in the DOM may set
+	   overflow: hidden | auto | scroll. Such an ancestor becomes the
+	   stickiness scope and clips/disables the pin. overflow-x: clip is OK
+	   (it does not establish a scroll container); overflow-x: hidden is NOT.
+	2. The global rule `html { overflow-x: clip }` in src/app.css is
+	   load-bearing. Reverting it to `overflow-x: hidden` makes <html> the
+	   scroll-port and breaks sticky on iOS Safari.
+	3. `stickyTop` must equal the height of any fixed nav above the section.
+	   Today the nav is position: relative and scrolls away, so 0 is correct.
+	   If the nav becomes fixed/sticky, pass a matching offset.
+	4. `bgClass` must be opaque and visually match the section background, or
+	   the pinned title appears transparent over scrolling cards (looks
+	   identical to "sticky stopped working" even though it is still pinned).
+
+	Regression guard: tests/styles/sticky-section.test.ts.
+-->
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
@@ -7,6 +27,7 @@
 		href,
 		variant = 'white',
 		animationDelay = 0,
+		stickyTop = '0px',
 		children
 	}: {
 		title: string;
@@ -14,6 +35,7 @@
 		href: string;
 		variant?: 'white' | 'muted';
 		animationDelay?: number;
+		stickyTop?: string;
 		children: Snippet;
 	} = $props();
 
@@ -25,9 +47,12 @@
 </script>
 
 <section class="relative w-full {bgClass}">
-	<!-- Sticky header — pins at top of viewport on all screen sizes -->
+	<!-- Sticky header — pins at top of viewport on all screen sizes.
+	     `top` is set inline from the stickyTop prop so callers can match a
+	     future fixed-nav height without editing this component. -->
 	<div
-		class="sticky z-30 py-4 {bgClass} top-0"
+		class="sticky z-30 py-4 {bgClass}"
+		style="top: {stickyTop}"
 	>
 		<div class="max-w-6xl mx-auto px-6">
 			<a

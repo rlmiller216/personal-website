@@ -128,6 +128,15 @@ Notion databases/pages
 - Neon Chartreuse on Space Indigo: ~10:1 -- excellent
 - Video cards respect `prefers-reduced-motion`: CardMedia pauses video when reduced motion is preferred
 
+### Sticky headers — fragility contract
+`StickySection` (homepage section headers) keeps regressing when unrelated PRs change global CSS or layout wrappers. Four invisible preconditions must hold; breaking any of them silently disables `position: sticky`:
+1. **`html { overflow-x: clip }`** in `src/app.css` is load-bearing. `overflow-x: hidden` here turns `<html>` into the scroll-port and breaks sticky on iOS Safari. `clip` prevents horizontal bounce *without* establishing a scroll container.
+2. **No ancestor of `<StickySection>`** (in `+layout.svelte`, the homepage wrappers, or any future route adopting it) may set `overflow: hidden|auto|scroll` on the chain. `overflow-x: clip` is OK; `overflow-x: hidden` is not.
+3. **`stickyTop` prop** must equal the height of any fixed nav above the section. Today the nav is `position: relative` and scrolls away, so the default `'0px'` is correct. Set this prop if the nav becomes fixed/sticky.
+4. **`bgClass` must be opaque** and match the surrounding section background — a transparent pinned title looks identical to "sticky stopped working" even though it's still pinned.
+
+Regression guard: `tests/styles/sticky-section.test.ts` (3 tests) reads `app.css`, `+layout.svelte`, and `+page.svelte` and fails CI if any of rules 1, 2 are violated. Component-level contract is duplicated as a comment block at the top of `StickySection.svelte`.
+
 ## Project Structure
 
 ```
@@ -308,7 +317,7 @@ Machine-local memory at `~/.claude/projects/.../memory/` persists user profile, 
 
 ## Tests
 
-- 201 tests across 13 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (35) + `notion-block-utils.test.ts` (19) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (28 — image + video + file download, dedup, hash, content-type validation incl. text/plain + text/markdown, text/html rejection, PNG→JPG filename, cache-hit fallback) + `image-optimize.test.ts` (13 — JPEG compression, PNG→JPEG conversion, alpha detection, resize, passthrough, dimensions) + `app-css.test.ts` (4 — section-heading nudge keyframes, utility, hover/focus override, reduced-motion entry)
+- 204 tests across 14 files: `notion.service.test.ts` (35) + `notion-blocks.test.ts` (35) + `notion-block-utils.test.ts` (19) + `mappers.test.ts` (15) + `slug-collisions.test.ts` (6) + `content.test.ts` (12) + `embed-config.test.ts` (11) + `code-highlight.test.ts` (6) + `notion-render-utils.test.ts` (12) + `float-physics.test.ts` (5) + `image-cache.test.ts` (28 — image + video + file download, dedup, hash, content-type validation incl. text/plain + text/markdown, text/html rejection, PNG→JPG filename, cache-hit fallback) + `image-optimize.test.ts` (13 — JPEG compression, PNG→JPEG conversion, alpha detection, resize, passthrough, dimensions) + `app-css.test.ts` (4 — section-heading nudge keyframes, utility, hover/focus override, reduced-motion entry) + `sticky-section.test.ts` (3 — html overflow-x: clip foundation, layout ancestor chain, homepage ancestor chain)
 - Includes undefined-property guard tests (prevents crashes when Notion DB schema changes)
 - Mapper tests verify all 3 service mappers with complete/missing/empty properties
 - Slug collision tests verify warning/error logging for empty and duplicate slugs

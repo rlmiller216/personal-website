@@ -164,7 +164,12 @@
   }
   html {
     scroll-behavior: smooth;
-    overflow-x: hidden;          /* prevent horizontal bounce on mobile */
+    /* overflow-x: clip prevents horizontal bounce on mobile WITHOUT establishing
+       a scroll container. Required for `position: sticky` on descendants — using
+       overflow-x: hidden here breaks StickySection on iOS Safari (it makes <html>
+       the scroll-port and sticky pins inertly). See StickySection.svelte contract
+       and tests/styles/sticky-section.test.ts. */
+    overflow-x: clip;
   }
   ::selection {
     background: oklch(0.54 0.26 285.29 / 25%);
